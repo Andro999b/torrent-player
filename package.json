@@ -1,0 +1,44 @@
+{
+  "name": "torrent-player",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "nodemonConfig": {
+    "ignore": [
+      "client/*"
+    ],
+    "delay": "2500"
+  },
+  "scripts": {
+    "start": "concurrently -n \"SERVER,CLIENT\" \"npm run watch-server\" \"npm run watch-client\"",
+    "watch-server": "DEBUG=tracker nodemon --inspect index.js",
+    "watch-client": "parcel watch ./client/index.html -d ./client/dist --public-url ./",
+    "build-client": "parcel build ./client/index.html -d ./client/dist --public-url ./"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-preset-react-app": "^3.1.1",
+    "concurrently": "^3.5.1",
+    "eslint": "^4.17.0",
+    "eslint-plugin-react": "^7.7.0",
+    "nodemon": "^1.14.12",
+    "parcel-bundler": "^1.6.2"
+  },
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "debug": "^3.1.0",
+    "express": "^4.16.2",
+    "lodash": "^4.17.5",
+    "material-ui": "^1.0.0-beta.34",
+    "material-ui-icons": "^1.0.0-beta.35",
+    "osmosis": "^1.1.6",
+    "parse-torrent": "^5.8.3",
+    "range-parser": "^1.2.0",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "rimraf": "^2.6.2",
+    "urlencode": "^1.1.0",
+    "webtorrent": "^0.98.21"
+  }
+}
