@@ -1,0 +1,83 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+html {
+    min-height: 100%
+}
+
+.main-navigation {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.screan-content {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 56px;
+}
+
+.search-view {
+    padding: 10px;
+    height: 100%;
+    position: relative;
+}
+
+.search-bar {
+    padding: 10px;
+    position: relative;
+    z-index: 2;
+}
+
+.search-results {
+    position: absolute;
+    overflow-y: auto;
+    overflow-x: hidden;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    top: 65px;
+    z-index: 1;
+    padding: 10px 10px 0 10px;
+}
+
+.search-results-item {
+    margin-bottom: 10px;
+}
+
+.loading-center {
+    text-align: center;
+    padding: 20px;
+}
+
+.poster {
+    width: 100%;
+    height: auto;
+}
+
+.torrents-list {
+    overflow-y: auto;
+    max-height: 100%;
+    padding: 10px;
+}
+
+.expand {
+    transform: rotate(0deg);
+    transition: transform 300ms !important;
+} 
+
+.expandOpen {
+    transform: rotate(180deg);
+}
+
+.files-list {
+    width: 100%;
+    overflow-y: auto;
+    max-height: 600px;
+}

@@ -1,4 +1,5 @@
 const osmosis = require('osmosis')
+const parseTorrent = require('parse-torrent')
 const debug = require('debug')('tracker-provider')
 
 class Provider {
@@ -32,6 +33,7 @@ class Provider {
         if (page < 1) page = 1
         if (pageCount < 1) pageCount = 1
 
+        const name = this.getName()
         const { scope, selectors, pagenatorSelector, userAgent, pageSize } = this.config
 
         return new Promise(
@@ -64,7 +66,12 @@ class Provider {
                         resolve(results)
                     })
             }
-        ).then(this._postProcessResult.bind(this))
+        )
+            .then(this._postProcessResult.bind(this))
+            .then((results) => results.map((item) => {
+                item.provider = name
+                return item
+            }))
     }
 
     getTorrentInfo(torrentId) {
@@ -84,7 +91,9 @@ class Provider {
                     .data(resolve)
                     .error(reject)
             }
-        ).then(this._postProcessResulDetails.bind(this))
+        )
+            .then(this._postProcessResultDetails.bind(this))
+            .then(this._loadTorrentFileInfo.bind(this))
     }
 
     // eslint-disable-next-line no-unused-vars
@@ -97,9 +106,28 @@ class Provider {
         throw new Error('Provider not implement getTorrentInfo()')
     }
 
-    _postProcessResult(results){ return results }
+    _postProcessResult(results) { return results }
 
-    _postProcessResulDetails(details){ return details }
+    _postProcessResultDetails(details) { return details }
+
+    _loadTorrentFileInfo(details) {
+        return new Promise(
+            (resolve, reject) => {
+                parseTorrent.remote(details.torrentUrl, (err, parsedTorrent) => {
+                    if(err) {
+                        reject(err)
+                        return
+                    }
+
+                    details.files = parsedTorrent.files.map((file) => ({
+                        name: file.name,
+                        length: file.length
+                    }))
+
+                    resolve(details)
+                })
+            })
+    }
 }
 
 module.exports = Provider

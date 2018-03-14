@@ -1,8 +1,27 @@
 import React, { Component } from 'react'
-import MainNavigation from './components/MainNavigation'
+import Root from './Root'
+import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles'
+import DevTools from 'mobx-react-devtools'
 
-export default class App extends Component {
+import navigationStore from './store/navigation-store'
+
+const theme = createMuiTheme({
+    palette: {
+
+    }
+})
+
+class App extends Component {
     render() {
-        return <MainNavigation/>
+        return (
+            <div>
+                <MuiThemeProvider theme={theme}>
+                    <Root navigationStore={navigationStore}/>
+                </MuiThemeProvider>
+                <DevTools />
+            </div>
+        )
     }
 }
+
+export default App

@@ -24,6 +24,11 @@ module.exports = class TfileProvider extends Provider {
                 torrentUrl: '#dlbt@href'
             }
         })
+
+        this.filterDescription = [
+            'Перевод', 'Субтитры', 'Формат', 'Страна', 'Режиссер', 'Жанр', 'Продолжительность',
+            'Год выпуска', 'В ролях', 'Описание', 'Видео', 'Аудио'
+        ]
     }
 
     getName() {
@@ -41,24 +46,33 @@ module.exports = class TfileProvider extends Provider {
         return this.config.baseUrl + '/forum/viewtopic.php?t=' + torrentId.slice(1)
     }
 
-    _postProcessResulDetails(details) {
+    _postProcessResultDetails(details) {
+        const { filterDescription } = this
         const rawDescription = details.description.replace(/[\n\r]+/g, '\n')
         let parts = rawDescription.split('\n').slice(0, -1)
-        
+
         //extract titles
+        let usedNames = []
         details.title = parts[0]
         details.description = parts.slice(1).reduce((acc, item) => {
             const pair = item.split(': ', 2)
-            if(pair.length == 2) {
-                acc.push({
-                    name: pair[0],
-                    value: pair[1].trim()
-                })
+            if (pair.length == 2) {
+                const name = pair[0].trim()
+                const value = pair[1].trim()
+                if (value && name) {
+                    if (
+                        filterDescription.indexOf(name) != -1 &&
+                        usedNames.indexOf(name) == -1
+                    ) {
+                        usedNames.push(name)
+                        acc.push({ name, value })
+                    }
+                }
             }
             return acc
         }, [])
 
-        details.torrentUrl = this.config.baseUrl + '/' + details.torrentUrl
+        details.torrentUrl = this.config.baseUrl + '/forum/' + details.torrentUrl
 
         return details
     }
