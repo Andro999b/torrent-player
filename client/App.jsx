@@ -1,9 +1,10 @@
 import React, { Component } from 'react'
 import Root from './Root'
 import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles'
-import DevTools from 'mobx-react-devtools'
+// import DevTools from 'mobx-react-devtools'
 
-import navigationStore from './store/navigation-store'
+import stores from './store'
+import { Provider } from 'mobx-react'
 
 const theme = createMuiTheme({
     palette: {
@@ -16,9 +17,11 @@ class App extends Component {
         return (
             <div>
                 <MuiThemeProvider theme={theme}>
-                    <Root navigationStore={navigationStore}/>
+                    <Provider {...stores}>
+                        <Root />
+                    </Provider>
                 </MuiThemeProvider>
-                <DevTools />
+                {/* <DevTools /> */}
             </div>
         )
     }

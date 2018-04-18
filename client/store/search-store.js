@@ -1,6 +1,7 @@
 import { observable, action } from 'mobx'
 import { fetchOnce } from '../utils'
 import request from 'superagent'
+import notificationStore from './notifications-store'
 
 const fetchSuggestions = fetchOnce()
 const searchProviders = ['tfile']
@@ -35,7 +36,8 @@ class SearchReusltItem {
                 this.details = res.body
                 this.loadingDetails = false
             })
-            .catch(() => {
+            .catch((err) => {
+                console.error(err)
                 this.loadingError = 'Fail to fetch details'
                 this.loadingDetails = false
             })
@@ -74,6 +76,10 @@ class SearchStore {
             return fetch(`/api/trackers/${provider}/search`)
                 .query({ q: searchQuery })
                 .then((res) => res.body)
+                .catch((err) => {
+                    console.error(err)
+                    notificationStore.showMessage('Fail to fetch results')
+                })
         })
 
         Promise.all(fetches).then((fetchesResults) => {

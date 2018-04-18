@@ -28,9 +28,17 @@ function torrentFileName(torrent) {
 
 module.exports = {
     addTorrent(magnetUri) {
-        return torrentClient.add(magnetUri, { path: torrentsDir }, torrent => {
-            fs.writeFile(torrentFileName(torrent), torrent.torrentFile, err => {
-                console.error('Fail to write torrent fiel', err)
+        return new Promise((resolve, reject) => {
+            torrentClient.add(magnetUri, { path: torrentsDir }, torrent => {
+                const filePath = torrentFileName(torrent)
+                fs.writeFile(filePath, torrent.torrentFile, (err) => {
+                    if(err) {
+                        console.error(`Fail to write torrent file ${filePath}`, err)
+                        reject(err)
+                    } else {
+                        resolve(torrent)
+                    }
+                })
             })
         })
     },

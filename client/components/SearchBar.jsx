@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import Paper from 'material-ui/Paper'
-import Autosuggest from 'react-autosuggest';
+import Autosuggest from 'react-autosuggest'
 import Input, { InputAdornment } from 'material-ui/Input'
 import { MenuList, MenuItem } from 'material-ui/Menu'
 import Collapse from 'material-ui/transitions/Collapse'
@@ -49,30 +49,30 @@ class SearchBar extends Component {
         this.state = {
             searchQuery: ''
         }
-        this.onInput = debounce(this.onInput.bind(this), 200)
+        this.onInput = debounce(this.handleInput.bind(this), 200)
     }
 
-    onInput({ value }) {
+    handleInput({ value }) {
         this.props.onInput(value)
     }
 
-    onChange(e, { newValue }) {
+    handleChange(e, { newValue }) {
         this.setState({ searchQuery: newValue })
     }
 
-    onClean() {
+    handleClean() {
         const searchQuery = ''
         this.props.onInput(searchQuery)
         this.setState({ searchQuery })
     }
 
-    onKeyDown(e) {
+    handleKeyDown(e) {
         if (e.key == 'Enter') {
-            this.onSubmit(this.state.searchQuery)
+            this.handleSubmit(this.state.searchQuery)
         }
     }
 
-    onSubmit(searchQuery) {
+    handleSubmit(searchQuery) {
         this.props.onInput('')
         this.props.onSubmit(searchQuery)
         this.setState({ searchQuery: '' })
@@ -88,9 +88,9 @@ class SearchBar extends Component {
                 <Autosuggest
                     renderInputComponent={renderInput}
                     suggestions={toJS(suggestions)}
-                    onSuggestionsFetchRequested={this.onInput.bind(this)}
-                    onSuggestionsClearRequested={this.onClean.bind(this)}
-                    onSuggestionSelected={(e, { suggestion }) => this.onSubmit(suggestion)}
+                    onSuggestionsFetchRequested={this.handleInput.bind(this)}
+                    onSuggestionsClearRequested={this.handleClean.bind(this)}
+                    onSuggestionSelected={(e, { suggestion }) => this.handleSubmit(suggestion)}
                     renderSuggestionsContainer={renderSuggestionsContainer}
                     getSuggestionValue={(suggestion) => suggestion}
                     renderSuggestion={renderSuggestion}
@@ -100,8 +100,8 @@ class SearchBar extends Component {
                         autoFocus: true,
                         placeholder: 'Type for search',
                         value: searchQuery,
-                        onKeyDown: this.onKeyDown.bind(this),
-                        onChange: this.onChange.bind(this),
+                        onKeyDown: this.handleKeyDown.bind(this),
+                        onChange: this.handleChange.bind(this),
                         startAdornment: (
                             <InputAdornment>
                                 <SearchIcon />
@@ -109,7 +109,7 @@ class SearchBar extends Component {
                         ),
                         endAdornment: (
                             <InputAdornment>
-                                <IconButton onClick={this.onClean.bind(this)}>
+                                <IconButton onClick={this.handleClean.bind(this)}>
                                     <ClearIcon />
                                 </IconButton>
                             </InputAdornment>

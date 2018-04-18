@@ -2,11 +2,10 @@ import React, { Component } from 'react'
 import SearchBar from '../components/SearchBar'
 import SearchResults from '../components/SearchResults'
 import { CircularProgress } from 'material-ui/Progress'
-import { observer } from 'mobx-react'
+import { observer, inject } from 'mobx-react'
 import PropTypes from 'prop-types'
 
-
-@observer
+@inject('searchStore') @observer
 class SearchView extends Component {
     render() {
         const { searchStore } = this.props
@@ -27,7 +26,7 @@ class SearchView extends Component {
 }
 
 SearchView.propTypes = {
-    searchStore: PropTypes.object.isRequired
+    searchStore: PropTypes.object
 }
 
 export default SearchView

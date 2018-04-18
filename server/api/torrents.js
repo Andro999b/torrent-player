@@ -11,11 +11,13 @@ router.get('/', (req, res) => {
     res.json(torrentsService.getTorrents().map(mapTorrent))
 })
 
-router.put('/', (req, res) => {
-    if (!req.body.magnet_link)
-        throw new ResponseError('magnet_link reuired')
+router.post('/', (req, res, next) => {
+    if (!req.body.magnetUrl)
+        throw new ResponseError('magnetUrl reuired')
 
-    res.json(mapTorrent(torrentsService.addTorrent(req.body.magnet_link)))
+    torrentsService.addTorrent(req.body.magnetUrl)
+        .then((torrent) => res.json(mapTorrent(torrent)))
+        .catch(next)
 })
 
 router.get('/:id', (req, res) => {
@@ -25,11 +27,11 @@ router.get('/:id', (req, res) => {
 router.delete('/:id', (req, res, next) => {
     torrentsService
         .removeTorrent(req.params.id)
-        .then(() => res.sendStatus(200))
+        .then(() => res.json({status: 'OK'}))
         .catch(next)
 })
 
-router.get('/:torrentId/files/:fileId/stream', (req, res) => {
+router.get('/:torrentId/files/:fileId', (req, res) => {
     const torrent = torrentsService.getTorrent(req.params.torrentId)
     if (!torrent) throw new ResponseError('Torrent not found', 404)
 
@@ -98,7 +100,7 @@ function mapTorrent(torrent) {
         'progress'
     ]))
     filterdTorrent.files = filtredFiles
-    
+
     return filterdTorrent
 }
 

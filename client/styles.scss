@@ -44,16 +44,13 @@ html {
     bottom: 0px;
     top: 65px;
     z-index: 1;
-    padding: 10px 10px 0 10px;
-}
-
-.search-results-item {
-    margin-bottom: 10px;
+    padding: 10px;
 }
 
 .loading-center {
     text-align: center;
     padding: 20px;
+    width: 100%;
 }
 
 .poster {
@@ -65,6 +62,14 @@ html {
     overflow-y: auto;
     max-height: 100%;
     padding: 10px;
+}
+
+.expand-header {
+    flex-wrap: wrap
+}
+
+.expand-header__row {
+    flex-basis: 100%
 }
 
 .expand {
@@ -80,4 +85,52 @@ html {
     width: 100%;
     overflow-y: auto;
     max-height: 600px;
+}
+
+.video-controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.video-player__screen {
+    height: 100%;
+}
+
+.video-player__video-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 68px;
+    background: black;
+
+    video {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 100%    !important;
+        height: auto   !important;
+    }
+}
+
+.fullscreen-enabled {
+    .video-player__video-screen {
+        bottom: 0;
+    }
+}
+
+.video-controls__panel {
+    display: flex;
+    justify-content: space-between;
+}
+
+.video-player__file-list {
+    overflow-y: auto;
+    width: 320px;
+    position: absolute;
+    right: 0;
+    bottom: 68px;
+    top: 0;
 }

@@ -1,28 +1,30 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import MainNavigation from './components/MainNavigation'
+import Notification from './components/Notification'
 
 import SearchView from './views/SearchView'
 import TorrentsView from './views/TorrentsView'
+import PlayerView from './views/PlayerView'
 
-import searchStore from './store/search-store'
-import torrentsStore from './store/torrents-store'
+import { observer, inject } from 'mobx-react'
 
-import { observer } from 'mobx-react'
-
-@observer
+@inject('transitionStore') @observer
 class Root extends Component {
     render() {
-        const { navigationStore } = this.props
-        const { screen } = navigationStore
+        const { transitionStore } = this.props
+        const { screen } = transitionStore
 
         let screanView
         switch (screen) {
             case 'search':
-                screanView = <SearchView searchStore={searchStore} />
+                screanView = <SearchView/>
                 break
             case 'torrents':
-                screanView = <TorrentsView torrentsStore={torrentsStore}/>
+                screanView = <TorrentsView/>
+                break
+            case 'player':
+                screanView = <PlayerView/>
                 break
         }
 
@@ -31,14 +33,15 @@ class Root extends Component {
                 <div className='screan-content'>
                     {screanView}
                 </div>
-                <MainNavigation screen={screen} goToScreen={(screen) => navigationStore.goToScreen(screen)} />
+                <MainNavigation screen={screen} goToScreen={(screen) => transitionStore.goToScreen(screen)} />
+                <Notification/>
             </div>
         )
     }
 }
 
 Root.propTypes = {
-    navigationStore: PropTypes.object.isRequired
+    transitionStore: PropTypes.object
 }
 
 export default Root

@@ -11,7 +11,7 @@ module.exports = class TfileProvider extends Provider {
             scope: '.tor',
             selectors: {
                 torrent: '@id',
-                title: '.t a',
+                name: '.t a',
                 size: '.dl',
                 seeds: '.dl:skip(1)',
                 leechs: '.dl:skip(2)'
@@ -53,7 +53,7 @@ module.exports = class TfileProvider extends Provider {
 
         //extract titles
         let usedNames = []
-        details.title = parts[0]
+        details.name = parts[0]
         details.description = parts.slice(1).reduce((acc, item) => {
             const pair = item.split(': ', 2)
             if (pair.length == 2) {
