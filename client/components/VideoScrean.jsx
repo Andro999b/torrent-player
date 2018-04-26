@@ -1,11 +1,58 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import { CircularProgress } from 'material-ui/Progress'
+import Typography from 'material-ui/Typography'
+import ReactResizeDetector from 'react-resize-detector'
 import { reaction } from 'mobx'
 import { observer } from 'mobx-react'
 import { invokeAll } from '../utils'
 
 @observer
 class VideoScrean extends Component {
+    constructor(props, context) {
+        super(props, context)
+
+        this.state = {
+            startLoading: true,
+            failed: false,
+            videoScale: 'hor'
+        }
+    }
+
+    handleLoadStart() {
+        this.setState({ startLoading: true, failed: false })
+    }
+
+    handleError() {
+        this.setState({ sfailed: true })
+    }
+
+    handleLoadedMetadata() {
+        this.handleUpdate()
+        this.setState({
+            startLoading: false,
+            videoScale: this.getVideoScale()
+        })
+    }
+
+    handleResize() {
+        if (this.video) {
+            this.setState({
+                videoScale: this.getVideoScale()
+            })
+        }
+    }
+
+    getVideoScale() {
+        const originAspect = this.video.videoWidth / this.video.videoHeight
+        const containerAspect = this.container.clientWidth / this.container.clientHeight
+
+        if (originAspect < containerAspect)
+            return 'vert'
+
+        return 'hor'
+    }
+
     handleUpdate() {
         const { output } = this.props
         output.onUpdate({
@@ -13,6 +60,13 @@ class VideoScrean extends Component {
             buffered: this.video.buffered.length > 0 ? this.video.buffered.end(0) : 0,
             currentTime: this.video.currentTime
         })
+    }
+
+    handleEnded() {
+        const { output, onEnded } = this.props
+
+        output.pause()
+        onEnded()
     }
 
     componentDidMount() {
@@ -45,23 +99,26 @@ class VideoScrean extends Component {
     }
 
     componentWillUnmount() {
-        if(this.dispose) this.dispose()
-    }
-
-    handleEnded() {
-        const { output, onEnded } = this.props
-
-        output.pause()
-        onEnded()
+        if (this.dispose) this.dispose()
     }
 
     render() {
         const { output } = this.props
+        const { startLoading, failed, videoScale } = this.state
 
         return (
-            <div className="video-player__video-screen">
+            <div className="player__player-screen" ref={(el) => this.container = el}>
+                <ReactResizeDetector
+                    skipOnMount
+                    handleWidth
+                    handleHeight
+                    onResize={this.handleResize.bind(this)}
+                />
+                {failed && <Typography align="center" variant="display1">Can`t play media source</Typography>}
+                {startLoading && <div className="loading-center"><CircularProgress /></div>}
                 {output.url &&
                     <video
+                        className={`scale_${videoScale}`}
                         ref={(video) => {
                             this.video = video
                             if (video) {
@@ -75,10 +132,12 @@ class VideoScrean extends Component {
                             }
                         }}
                         onDurationChange={this.handleUpdate.bind(this)}
-                        onLoadedMetadata={this.handleUpdate.bind(this)}
+                        onLoadedMetadata={this.handleLoadedMetadata.bind(this)}
                         onProgress={this.handleUpdate.bind(this)}
                         onTimeUpdate={this.handleUpdate.bind(this)}
                         onEnded={this.handleEnded.bind(this)}
+                        onLoadStart={this.handleLoadStart.bind(this)}
+                        onError={this.handleError.bind(this)}
                     >
                         <source src={output.url} />
                     </video>

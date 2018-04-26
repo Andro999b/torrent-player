@@ -10,7 +10,7 @@ export function fetchOnce() {
     }
 }
 
-const playableExtensions = ['avi', 'mkv', 'mp4', 'webm']
+const playableExtensions = ['ogv', 'mp4', 'webm']
 
 export function isPlayable(fileName) {
     return playableExtensions.findIndex((ext) => {

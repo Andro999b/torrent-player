@@ -53,7 +53,7 @@ class TorrentListItem extends Component {
         </div>
 
         return (
-            <ListItem key={file.name} button={playable} onClick={() => onPlayFile(torrent, file.name)}>
+            <ListItem key={fileIndex} button={playable} onClick={() => onPlayFile(torrent, file.name)}>
                 <ListItemIcon>
                     {playable ? <PlayableIcon /> : <NotPlayableIcon />}
                 </ListItemIcon>

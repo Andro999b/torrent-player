@@ -5,6 +5,7 @@ import Idle from 'react-idle'
 import VideoControls from '../components/VideoControls'
 import PlayerFilesList from '../components/PlayerFilesList'
 import VideoScrean from '../components/VideoScrean'
+import Typography from 'material-ui/Typography'
 import { observer, inject } from 'mobx-react'
 import PropTypes from 'prop-types'
 
@@ -46,10 +47,18 @@ class PlayerView extends Component {
         if (!playerStore) return null
 
         const local = playerStore.output.isLocal()
+        const hasAnyFiles = playerStore.lastPosition.files.length > 0
 
         return (
             <MuiThemeProvider theme={playerTheme}>
-                {local && this.renderLocal(playerStore)}
+                <div className="player__screen">
+                    {!hasAnyFiles && <Typography align="center" variant="display1">Nothing to play</Typography>}
+                    {hasAnyFiles &&
+                        <Fragment>
+                            {local && this.renderLocal(playerStore)}
+                        </Fragment>
+                    }
+                </div>
             </MuiThemeProvider>
         )
     }
@@ -65,25 +74,23 @@ class PlayerView extends Component {
                 onChange={(isFullscreen) => output.isFullscreen = isFullscreen}
             >
                 <Idle timeout={IDLE_TIMEOUT} onChange={({ idle }) => this.handleIdle(idle)} />
-                <div className="video-player__screen">
-                    <VideoScrean output={output} onEnded={playerStore.nextFile} />
-                    {(!idle || !fullscreen) && (
-                        <Fragment>
-                            <PlayerFilesList
-                                open={playlistOpen}
-                                lastPosition={playerStore.lastPosition}
-                                onFileSelected={(fileIndex) => playerStore.switchFile(fileIndex)}
-                            />
-                            <VideoControls
-                                output={playerStore.output}
-                                onNext={() => playerStore.nextFile()}
-                                onPrev={() => playerStore.prevFile()}
-                                onPlaylistToggle={this.handleTogglePlayList.bind(this)}
-                            />
-                        </Fragment>
-                    )}
-                </div>
-            </Fullscreen>
+                <VideoScrean output={output} onEnded={playerStore.nextFile} />
+                {(!idle || !fullscreen) && (
+                    <Fragment>
+                        <PlayerFilesList
+                            open={playlistOpen}
+                            lastPosition={playerStore.lastPosition}
+                            onFileSelected={(fileIndex) => playerStore.switchFile(fileIndex)}
+                        />
+                        <VideoControls
+                            output={playerStore.output}
+                            onNext={() => playerStore.nextFile()}
+                            onPrev={() => playerStore.prevFile()}
+                            onPlaylistToggle={this.handleTogglePlayList.bind(this)}
+                        />
+                    </Fragment>
+                )}
+            </Fullscreen >
         )
     }
 }

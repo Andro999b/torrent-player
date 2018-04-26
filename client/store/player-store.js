@@ -22,7 +22,7 @@ class OutputDevice {
 
 class LocalOutput extends OutputDevice {
     @observable volume = 1
-    @observable isMuted = false
+    @observable isMuted = true
     @observable isFullscreen = false
     @observable url = null
     @observable seekTime = null
@@ -38,10 +38,10 @@ class LocalOutput extends OutputDevice {
         }
     }
 
-    @action play(seekTime) {
+    @action play(currentTime) {
         this.isPlaying = true
-        if(seekTime != undefined) {
-            this.seekTime = seekTime
+        if(currentTime != undefined) {
+            this.currentTime = currentTime
         }
     }
 
@@ -73,8 +73,8 @@ class LocalOutput extends OutputDevice {
 // }
 
 class LastPosition {
-    files = []
-    currentIndex = 0
+    @observable files = []
+    @observable currentIndex = 0
     currentTime = 0
 }
 
@@ -130,11 +130,11 @@ class PlayerStore {
     }
 
     @action.bound prevFile() {
-        this.switchFile(this.lastPosition.currentIndex+1)
+        this.switchFile(this.lastPosition.currentIndex-1)
     }
 
     @action.bound nextFile() {
-        this.switchFile(this.lastPosition.currentIndex-1)
+        this.switchFile(this.lastPosition.currentIndex+1)
     }
 }
 

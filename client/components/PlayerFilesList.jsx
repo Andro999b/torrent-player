@@ -5,7 +5,9 @@ import Paper from 'material-ui/Paper'
 import Slide from 'material-ui/transitions/Slide'
 
 import PlayingIcon from 'material-ui-icons/PlayArrow'
+import { observer } from 'mobx-react'
 
+@observer
 class PlayerFilesList extends Component {
     render() {
         const { lastPosition, open, onFileSelected } = this.props
@@ -13,12 +15,12 @@ class PlayerFilesList extends Component {
 
         return (
             <Slide direction="left" in={open} mountOnEnter unmountOnExit>
-                <Paper elevation={12} square className="video-player__file-list">
+                <Paper elevation={12} square className="player__file-list">
                     <List>
                         {files.map((file, fileIndex) =>
                             <ListItem
                                 button
-                                key={file.name}
+                                key={fileIndex}
                                 onClick={() => onFileSelected(fileIndex)}
                             >
                                 {

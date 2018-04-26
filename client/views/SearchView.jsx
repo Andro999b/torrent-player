@@ -18,8 +18,8 @@ class SearchView extends Component {
                     onSubmit={(q) => searchStore.search(q)}
                     suggestions={suggestions}
                 />
-                {loading && <div className="loading-center"><CircularProgress/></div>}
-                {!loading && <SearchResults results={searchResults} />}
+                { loading && <div className="loading-center"><CircularProgress/></div> }
+                { !loading && <SearchResults results={searchResults} /> }
             </div>
         )
     }

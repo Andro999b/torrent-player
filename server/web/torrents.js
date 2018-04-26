@@ -1,9 +1,11 @@
 const express = require('express')
 const rangeParser = require('range-parser')
-
 const torrentsService = require('../service/torrents')
+const transcodeService = require('../service/transcode')
 const ResponseError = require('../utils/ResponseError')
 const pick = require('lodash/pick')
+const { isVideo } = require('../utils')
+
 
 const router = express.Router()
 
@@ -27,7 +29,7 @@ router.get('/:id', (req, res) => {
 router.delete('/:id', (req, res, next) => {
     torrentsService
         .removeTorrent(req.params.id)
-        .then(() => res.json({status: 'OK'}))
+        .then(() => res.json({ status: 'OK' }))
         .catch(next)
 })
 
@@ -38,6 +40,34 @@ router.get('/:torrentId/files/:fileId', (req, res) => {
     const file = torrent.files[req.params.fileId]
     if (!file) throw new ResponseError('File not found', 404)
 
+    writeFileRange(file, req, res)
+})
+
+router.get('/:torrentId/files/:fileId/transcoded', (req, res, next) => {
+    const torrent = torrentsService.getTorrent(req.params.torrentId)
+    if (!torrent) throw new ResponseError('Torrent not found', 404)
+
+    const fileId = req.params.fileId
+    const file = torrent.files[fileId]
+    if (!file) throw new ResponseError('File not found', 404)
+    if (!isVideo(file.path)) throw new ResponseError('Not video file', 400)
+
+    transcodeService.getTranscodedFile(torrent, fileId)
+        .then((transcodingFile) => {
+            if (transcodingFile.isCompleted) {
+                writeFileRange(transcodingFile, req, res)
+            } else {
+                res.set('Accept-Ranges', 'none')
+                res.connection.on('close', () => {
+                    transcodingFile.requestStop()
+                })
+                transcodingFile.createReadStream().pipe(res)
+            }
+        })
+        .catch(next)
+})
+
+function writeFileRange(file, req, res) {
     // indicate this resource can be partially requested
     res.set('Accept-Ranges', 'bytes')
     res.set('Content-Length', file.length)
@@ -74,7 +104,7 @@ router.get('/:torrentId/files/:fileId', (req, res) => {
     } else {
         file.createReadStream().pipe(res)
     }
-})
+}
 
 function mapTorrent(torrent) {
     const filterdTorrent = pick(torrent, [

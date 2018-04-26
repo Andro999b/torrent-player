@@ -87,18 +87,19 @@ html {
     max-height: 600px;
 }
 
-.video-controls {
+.player-controls {
     position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
 }
 
-.video-player__screen {
+.player__screen {
     height: 100%;
+    background: black;
 }
 
-.video-player__video-screen {
+.player__player-screen {
     position: absolute;
     top: 0;
     left: 0;
@@ -106,27 +107,35 @@ html {
     bottom: 68px;
     background: black;
 
-    video {
+    video.scale_hor {
         position: absolute;
         top: 50%;
         transform: translateY(-50%);
         width: 100%    !important;
         height: auto   !important;
     }
+
+    video.scale_vert {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        width: auto    !important;
+        height: 100%   !important;
+    }
 }
 
 .fullscreen-enabled {
-    .video-player__video-screen {
+    .player__player-screen {
         bottom: 0;
     }
 }
 
-.video-controls__panel {
+.player-controls__panel {
     display: flex;
     justify-content: space-between;
 }
 
-.video-player__file-list {
+.player__file-list {
     overflow-y: auto;
     width: 320px;
     position: absolute;

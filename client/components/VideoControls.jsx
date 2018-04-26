@@ -24,21 +24,18 @@ class VideoControls extends Component {
     render() {
         const { onPlaylistToggle, output, onPrev, onNext } = this.props
 
-        let volumeControls = output.isLocal() ?
+        const local = output.isLocal()
+        const volumeControls = local ?
             <Fragment>
                 <IconButton onClick={() => output.toggleMute()}>
                     {output.isMuted && <VolumeOffIcon />}
                     {!output.isMuted && <VolumeOnIcon />}
                 </IconButton>
-                <IconButton onClick={() => output.toggleFullsceen()}>
-                    {!output.isFullscreen && <FullscreenIcon />}
-                    {output.isFullscreen && <FullscreenExitIcon />}
-                </IconButton>
             </Fragment> : null
 
 
         return (
-            <Paper elevation={0} square className="video-controls">
+            <Paper elevation={0} square className="player-controls">
                 {
                     output.isSeekable() &&
                     <VideoSeekSlider
@@ -51,8 +48,8 @@ class VideoControls extends Component {
                         minutesPrefix="00:"
                     />
                 }
-                <div className="video-controls__panel">
-                    <div className="video-controls__panel-section">
+                <div className="player-controls__panel">
+                    <div className="player-controls__panel-section">
                         <IconButton onClick={onPrev}>
                             <PreviousIcon />
                         </IconButton>
@@ -71,7 +68,13 @@ class VideoControls extends Component {
                         </IconButton>
                         {volumeControls}
                     </div>
-                    <div className="video-controls__panel-section">
+                    <div className="player-controls__panel-section">
+                        {local &&
+                            <IconButton onClick={() => output.toggleFullsceen()}>
+                                {!output.isFullscreen && <FullscreenIcon />}
+                                {output.isFullscreen && <FullscreenExitIcon />}
+                            </IconButton>
+                        }
                         <IconButton>
                             <CastIcon />
                         </IconButton>

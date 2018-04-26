@@ -17,12 +17,12 @@ import { inject } from 'mobx-react'
 }))
 class SearchResultsItemDetails extends Component {
 
-    renderFile(file) {
+    renderFile(file, fileIndex) {
         const { details, onPlayFile, onCastFile } = this.props
         const playable = isPlayable(file.name)
 
         return (
-            <ListItem key={file.name} button={playable} onClick={() => onPlayFile(details, file.name)}>
+            <ListItem key={fileIndex} button={playable} onClick={() => onPlayFile(details, file.name)}>
                 <ListItemIcon>
                     {playable ? <PlayableIcon /> : <NotPlayableIcon />}
                 </ListItemIcon>

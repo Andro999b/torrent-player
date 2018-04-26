@@ -18,7 +18,6 @@ class TorrentsView extends Component {
         }
     }
 
-
     componentDidMount() {
         this.props.torrentsStore.startUpdate()
         //this.props.torrentsStore.updateTorrents()
@@ -47,20 +46,22 @@ class TorrentsView extends Component {
         const { torrentToDelete } = this.state
 
         return (
-            <Grid container spacing={16} className="torrents-list">
-                {loading && <div className="loading-center"><CircularProgress /></div>}
+            <div>
                 {!loading && torrents.length == 0 && <Typography align="center" variant="display1">No active torrents</Typography>}
-                {!loading && torrents.map((torrent) =>
-                    <Grid item xs={12} key={torrent.infoHash}>
-                        <TorrentListItem torrent={torrent} onDelete={this.handleAskDeleteToprrent.bind(this)} />
-                    </Grid>
-                )}
-                <DeleteTorrentDialog
-                    torrent={torrentToDelete}
-                    onAccept={this.handleAcceptDeleteToprrent.bind(this)}
-                    onReject={this.handleRejectDeleteToprrent.bind(this)}
-                />
-            </Grid>
+                <Grid container spacing={16} className="torrents-list">
+                    {loading && <div className="loading-center"><CircularProgress /></div>}
+                    {!loading && torrents.map((torrent) =>
+                        <Grid item xs={12} key={torrent.infoHash}>
+                            <TorrentListItem torrent={torrent} onDelete={this.handleAskDeleteToprrent.bind(this)} />
+                        </Grid>
+                    )}
+                    <DeleteTorrentDialog
+                        torrent={torrentToDelete}
+                        onAccept={this.handleAcceptDeleteToprrent.bind(this)}
+                        onReject={this.handleRejectDeleteToprrent.bind(this)}
+                    />
+                </Grid>
+            </div>
         )
     }
 }
