@@ -10,7 +10,7 @@ export function fetchOnce() {
     }
 }
 
-const playableExtensions = ['ogv', 'mp4', 'webm']
+const playableExtensions = ['ogv', 'mp4', 'webm', 'avi']
 
 export function isPlayable(fileName) {
     return playableExtensions.findIndex((ext) => {
@@ -20,6 +20,10 @@ export function isPlayable(fileName) {
 
 export function getTorrentFileContentLink(hashInfo, fileIndex) {
     return '/api/torrents/' + hashInfo + '/files/' + fileIndex
+}
+
+export function getTorrentFileTranscodeLink(hashInfo, fileIndex) {
+    return '/api/torrents/' + hashInfo + '/files/' + fileIndex + '/transcode'
 }
 
 export function invokeAll() {

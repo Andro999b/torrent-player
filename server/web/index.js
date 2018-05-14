@@ -32,5 +32,7 @@ module.exports = function () {
     })
 
     // eslint-disable-next-line no-console
-    app.listen(WEB_PORT, () => console.log(`WEB Server started at port ${WEB_PORT}`))
+    const server = app.listen(WEB_PORT, () => console.log(`WEB Server started at port ${WEB_PORT}`))
+
+    server.on('connection', socket => socket.setKeepAlive(true))
 }

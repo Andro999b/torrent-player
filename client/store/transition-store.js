@@ -2,7 +2,7 @@ import { observable, action } from 'mobx'
 import notificationStore from './notifications-store'
 import playerStore from './player-store'
 import request from 'superagent'
-import { isPlayable, getTorrentFileContentLink } from '../utils'
+import { isPlayable, getTorrentFileContentLink, getTorrentFileTranscodeLink } from '../utils'
 
 class TransitionStore {
     @observable screen = 'search'
@@ -54,7 +54,9 @@ class TransitionStore {
         return torrent.files
             .map((file, fileIndex) => ({
                 name: file.name,
-                url: getTorrentFileContentLink(torrent.infoHash, fileIndex)
+                source: {
+                    url: getTorrentFileTranscodeLink(torrent.infoHash, fileIndex)
+                } 
             }))
             .filter((file) => isPlayable(file.name))
     }

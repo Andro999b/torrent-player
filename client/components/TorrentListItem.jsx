@@ -21,9 +21,9 @@ import NotPlayableIcon from 'material-ui-icons/InsertDriveFile'
 import CastIcon from 'material-ui-icons/Cast'
 import { inject } from 'mobx-react'
 
-@inject(({ transitionStore }) => ({
-    onPlayFile: transitionStore.playTorrent,
-    onCastFile: transitionStore.castTorrent
+@inject(({ transitionStore: { playTorrent, castTorrent} }) => ({
+    onPlayFile: playTorrent,
+    onCastFile: castTorrent
 }))
 class TorrentListItem extends Component {
 
@@ -36,7 +36,7 @@ class TorrentListItem extends Component {
     }
 
     handleToggleDetails() {
-        this.setState((prevState) => ({ showDetails: !prevState.showDetails }))
+        this.setState(({ showDetails }) => ({ showDetails: !showDetails }))
     }
 
     renderFile(file, fileIndex) {

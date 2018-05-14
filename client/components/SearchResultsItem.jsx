@@ -13,8 +13,8 @@ import red from 'material-ui/colors/red'
 import green from 'material-ui/colors/green'
 
 
-@inject(({ transitionStore }) => ({
-    onDownload: transitionStore.download
+@inject(({ transitionStore: { download } }) => ({
+    onDownload: download
 }))
 @observer
 class SearchResultsItem extends Component {

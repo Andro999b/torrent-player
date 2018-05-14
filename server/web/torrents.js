@@ -1,10 +1,9 @@
 const express = require('express')
-const rangeParser = require('range-parser')
 const torrentsService = require('../service/torrents')
 const transcodeService = require('../service/transcode')
 const ResponseError = require('../utils/ResponseError')
-const pick = require('lodash/pick')
-const { isVideo } = require('../utils')
+const { isVideo, parseRange, formatDLNADuration } = require('../utils')
+const { pick } = require('lodash')
 
 
 const router = express.Router()
@@ -40,29 +39,57 @@ router.get('/:torrentId/files/:fileId', (req, res) => {
     const file = torrent.files[req.params.fileId]
     if (!file) throw new ResponseError('File not found', 404)
 
+    req.socket.setKeepAlive(true)
     writeFileRange(file, req, res)
 })
 
 router.get('/:torrentId/files/:fileId/transcoded', (req, res, next) => {
     const torrent = torrentsService.getTorrent(req.params.torrentId)
+    const clientId = req.query['clientId']
+
+    if (!clientId) throw new ResponseError('clientId required', 404)
     if (!torrent) throw new ResponseError('Torrent not found', 404)
 
     const fileId = req.params.fileId
     const file = torrent.files[fileId]
+
     if (!file) throw new ResponseError('File not found', 404)
     if (!isVideo(file.path)) throw new ResponseError('Not video file', 400)
 
-    transcodeService.getTranscodedFile(torrent, fileId)
-        .then((transcodingFile) => {
-            if (transcodingFile.isCompleted) {
-                writeFileRange(transcodingFile, req, res)
-            } else {
-                res.set('Accept-Ranges', 'none')
-                res.connection.on('close', () => {
-                    transcodingFile.requestStop()
-                })
-                transcodingFile.createReadStream().pipe(res)
+    let start = 0
+    const dlnaTimeSeek = req.header('TimeSeekRange.dlna.org')
+    if (dlnaTimeSeek) {
+        const ranges = parseRange(dlnaTimeSeek)
+        if (ranges === -2)
+            throw new ResponseError('Malformed range', 400)
+
+        if (ranges === -1) {
+            // unsatisfiable range
+            throw new ResponseError('Unsatisfiable ranges', 416)
+        }
+
+        start = ranges[0].start
+    }
+
+    const transcoder = transcodeService.getTranscoder(clientId)
+    transcoder.transcode(torrent, file, start)
+        .then(({ buffer, metadata: { format } }) => {
+            const duration = formatDLNADuration(format.duration)
+            const startTime = formatDLNADuration(start)
+            const headers = {
+                'TransferMode.dlna.org': 'Streaming',
+                'TimeSeekRange.dlna.org': 'npt=' + startTime + '-' + duration + '/' + duration,
+                'X-Seek-Range': 'npt=' + startTime + '-' + duration + '/' + duration
             }
+
+            res.writeHead(200, headers)
+
+            // Write the headers to the socket
+            res.socket.write(res._header)
+            // Mark the headers as sent
+            res._headerSent = true
+
+            buffer.readStream().pipe(res)
         })
         .catch(next)
 })
@@ -70,11 +97,10 @@ router.get('/:torrentId/files/:fileId/transcoded', (req, res, next) => {
 function writeFileRange(file, req, res) {
     // indicate this resource can be partially requested
     res.set('Accept-Ranges', 'bytes')
-    res.set('Content-Length', file.length)
     // if this is a partial request
     if (req.headers.range) {
         // parse ranges
-        var ranges = rangeParser(file.length, req.headers.range)
+        var ranges = parseRange(req.headers.range)
         if (ranges === -2)
             throw new ResponseError('Malformed range', 400)
 
@@ -93,12 +119,14 @@ function writeFileRange(file, req, res) {
             throw new ResponseError('Multiple ranges not supported', 416)
         }
 
-        var start = ranges[0].start
-        var end = ranges[0].end
-        // formatting response
-        res.status(206)
-        res.set('Content-Length', (end - start) + 1) // end is inclusive
-        res.set('Content-Range', 'bytes ' + start + '-' + end + '/' + file.length)
+        var start = ranges[0].start || 0
+        var end = ranges[0].end || file.length
+
+        res.writeHead(206, {
+            'Content-Length': (end - start) + 1,
+            'Content-Range': 'bytes ' + start + '-' + end + '/' + file.length
+        })
+
         // slicing the stream to partial content
         file.createReadStream({ start, end }).pipe(res)
     } else {

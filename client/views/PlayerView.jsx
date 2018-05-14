@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react'
 import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles'
 import Fullscreen from 'react-full-screen'
 import Idle from 'react-idle'
-import VideoControls from '../components/VideoControls'
+import MediaControls from '../components/MediaControls'
 import PlayerFilesList from '../components/PlayerFilesList'
 import VideoScrean from '../components/VideoScrean'
 import Typography from 'material-ui/Typography'
@@ -82,7 +82,7 @@ class PlayerView extends Component {
                             lastPosition={playerStore.lastPosition}
                             onFileSelected={(fileIndex) => playerStore.switchFile(fileIndex)}
                         />
-                        <VideoControls
+                        <MediaControls
                             output={playerStore.output}
                             onNext={() => playerStore.nextFile()}
                             onPrev={() => playerStore.prevFile()}

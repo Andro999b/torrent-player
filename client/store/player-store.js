@@ -11,7 +11,7 @@ class OutputDevice {
     isLocal() { return true }
 
     /* eslint-disable no-unused-vars */
-    setUrl(url) { }
+    setSource(source) { }
     pause() { }
     play(currentTime) { }
     seek(currentTime) { }
@@ -31,9 +31,9 @@ class LocalOutput extends OutputDevice {
         this.volume = volume
     }
 
-    @action setUrl(url) {
-        if(url != this.url) {
-            this.url = url
+    @action setSource(source) {
+        if(source.url != this.url) {
+            this.url = source.url
             this.currentTime = 0
         }
     }
@@ -125,7 +125,7 @@ class PlayerStore {
             return
 
         this.lastPosition.currentIndex = fileIndex
-        this.output.setUrl(files[fileIndex].url)
+        this.output.setSource(files[fileIndex].source)
         this.output.play()
     }
 

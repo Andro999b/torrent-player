@@ -6,16 +6,6 @@
     "configurations": [
         {
             "type": "node",
-            "request": "launch",
-            "name": "nodemon",
-            "runtimeExecutable": "nodemon",
-            "program": "${workspaceFolder}/index.js",
-            "restart": true,
-            "console": "integratedTerminal",
-            "internalConsoleOptions": "neverOpen"
-        },
-        {
-            "type": "node",
             "request": "attach",
             "name": "Attach",
             "port": 9229

@@ -1,14 +1,11 @@
 const upnp = require('peer-upnp')
-const uuid = require('node-uuid')
-const mime = require('mime-types')
+//const uuid = require('uuid')
 const http = require('http')
-const ip = require('ip')
 const { toXML } = require('jstoxml')
 const torrentsService = require('../service/torrents')
-const { isVideo, isAudio } = require('../utils')
-const { DLNA_PORT, WEB_PORT } = require('../config')
+const { DLNA_PORT } = require('../config')
+const getMediaResource = require('./resources')
 const debug = require('debug')('dlna')
-
 const server = http.createServer()
 
 function browseContent(inputs) {
@@ -25,7 +22,7 @@ function browseTorrentsList(inputs) { // eslint-disable-line no-unused-vars
     const torrents = torrentsService.getTorrents()
     const sliced = torrents.slice(begin, end)
 
-    const didl = toDIDL(
+    const didl = toDIDLXml(
         sliced
             .map((tor) => ({
                 id: tor.infoHash,
@@ -51,47 +48,31 @@ function browseTorrentFiles(inputs) {
     const end = begin + parseInt(inputs.RequestedCount)
     const sliced = torrent.files.slice(begin, end)
 
-    const didl = toDIDL(
-        sliced
-            .map((file, id) => ({
-                id: id,
-                infoHash: torrent.infoHash,
-                title: file.name,
-                path: file.path
-            }))
-            .map(toDIDLItem)
-    )
-
-    return {
-        Result: didl,
-        NumberReturned: sliced.length,
-        TotalMatches: torrent.files.length,
-        UpdateID: 0
-    }
+    return Promise.all(
+        sliced.map((file, index) => getMediaResource(torrent.infoHash, index, file)))
+        .then((didls) => ({
+            Result: toDIDLXml(didls),
+            NumberReturned: didls.length,
+            TotalMatches: torrent.files.length,
+            UpdateID: 0
+        }))
 }
 
-function browseMetadata(inputs) { // eslint-disable-line no-unused-vars
+function browseMetadata(inputs) { 
     const id = inputs.ObjectID
     const parts = id.split(':')
-    const torrentId = parts[0]
+    const infoHash = parts[0]
     const fileIndex = parts[1]
 
-    const file = torrentsService.getTorrent(torrentId).files[fileIndex]
-    const didl = toDIDL([
-        toDIDLItem({
-            id: fileIndex,
-            infoHash: torrentId,
-            title: file.name,
-            path: file.path
-        })
-    ])
+    const file = torrentsService.getTorrent(infoHash).files[fileIndex]
 
-    return {
-        Result: didl,
-        NumberReturned: 1,
-        TotalMatches: 1,
-        UpdateID: 0
-    }
+    return getMediaResource(infoHash, fileIndex, file)
+        .then((didl) => ({
+            Result: toDIDLXml([didl]),
+            NumberReturned: 1,
+            TotalMatches: 1,
+            UpdateID: 0
+        }))
 }
 
 function toDIDLContainer(item) {
@@ -99,7 +80,7 @@ function toDIDLContainer(item) {
         _name: 'container',
         _attrs: {
             id: `${item.id}`,
-            parentID: `${item.infoHash}`,
+            parentID: `0`,
             childCount: `${item.count}`,
             restricted: '1'
         },
@@ -110,72 +91,21 @@ function toDIDLContainer(item) {
     }
 }
 
-function toDIDLItem(item) {
-    const upnpClass = getItemClass(item)
-
-    const content = [
-        { 'dc:title': item.title },
-        { 'upnp:class': upnpClass },
-        {
-            _name: 'res',
-            _attrs: {
-                'xmlns:dlna': 'urn:schemas-dlna-org:metadata-1-0/',
-                'protocolInfo': `http-get:*:${mime.lookup(item.path)}:*`,
-                'size': -1
-            },
-            _content: `http://${ip.address()}:${WEB_PORT}/api/torrents/${item.infoHash}/files/${item.id}`
-        }
-    ]
-
-    if(upnpClass == 'object.item.videoItem') {
-        const attrs = {
-            'xmlns:dlna': 'urn:schemas-dlna-org:metadata-1-0/',
-            'protocolInfo': 'http-get:*:video/mpegts:*',
-            'size': -1
-        }
-
-        content.push({
-            _name: 'res',
-            _attrs: attrs,
-            _content: `http://${ip.address()}:${WEB_PORT}/api/torrents/${item.infoHash}/files/${item.id}/transcoded`
-        })
-    }
-
-    return {
-        _name: 'item',
+function toDIDLXml(content) {
+    const didl = toXML({
+        _name: 'DIDL-Lite',
         _attrs: {
-            id: `${item.infoHash}:${item.id}`,
-            parentID: `${item.infoHash}`,
-            restricted: '1'
+            'xmlns': 'urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/',
+            'xmlns:dc': 'http://purl.org/dc/elements/1.1/',
+            'xmlns:upnp': 'urn:schemas-upnp-org:metadata-1-0/upnp/',
+            'xmlns:pv': 'http://www.pv.com/pvns/',
+            'xmlns:sec': 'http://www.sec.co.kr/'
         },
         _content: content
-    }
+    })
+    debug(didl)
+    return didl
 }
-
-function toDIDL(content) {
-    return toXML(
-        {
-            _name: 'DIDL-Lite',
-            _attrs: {
-                'xmlns': 'urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/',
-                'xmlns:dc': 'http://purl.org/dc/elements/1.1/',
-                'xmlns:upnp': 'urn:schemas-upnp-org:metadata-1-0/upnp/',
-                'xmlns:pv': 'http://www.pv.com/pvns/',
-                'xmlns:sec': 'http://www.sec.co.kr/'
-            },
-            _content: content
-        }
-    )
-}
-
-function getItemClass(item) {
-    if (isVideo(item.path))
-        return 'object.item.videoItem'
-    if (isAudio(item.path))
-        return 'object.item.audioItem'
-    return 'object.item'
-}
-
 
 module.exports = function () {
     server.listen(DLNA_PORT)
@@ -191,9 +121,11 @@ module.exports = function () {
         device.advertise()
     }).start()
 
+    peer.ssdpPeer.on('error', (err) => console.error(err))
+
     const device = peer.createDevice({
         autoAdvertise: false,
-        uuid: uuid(),
+        uuid: 1,//uuid(),
         productName: 'Torrents',
         productVersion: '0.0.1',
         domain: 'schemas-upnp-org',
@@ -221,7 +153,6 @@ module.exports = function () {
                         case 'BrowseDirectChildren': res = browseContent(inputs); break
                         case 'BrowseMetadata': res = browseMetadata(inputs); break
                     }
-                    debug(res)
                     return res
                 } catch (e) {
                     debug(e)

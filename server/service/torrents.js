@@ -1,12 +1,12 @@
 const WebTorrent = require('webtorrent')
 const path = require('path')
-const fs = require('fs')
+const fs = require('fs-extra')
 const util = require('util')
 const rimraf = util.promisify(require('rimraf'))
 const pstats = util.promisify(fs.stat)
 const punlink = util.promisify(fs.unlink)
 const { stopTranscoding } = require('./transcode')
-const { TRANSCODE_DIR, TORRENTS_DIR } = require('../config')
+const { TORRENTS_DIR } = require('../config')
 const debug = require('debug')('torrents')
 
 const torrentClient = WebTorrent()
@@ -18,6 +18,7 @@ function torrentFileName(torrent) {
 module.exports = {
     restoreTorrents() {
         //restore torrents
+        fs.ensureDir(TORRENTS_DIR)
         const torrentsFolders = fs.readdirSync(TORRENTS_DIR)
         torrentsFolders.forEach(file => {
             if (file.endsWith('torrent')) {
@@ -59,7 +60,6 @@ module.exports = {
 
             const seedTorrentFile = torrentFileName(torrent)
             const downloadName = path.join(TORRENTS_DIR, torrent.name)
-            const transcodeName = path.join(TRANSCODE_DIR, torrent.name)
 
             const operations = [
                 punlink(seedTorrentFile)
@@ -75,15 +75,6 @@ module.exports = {
                                 return rimraf(downloadName)
                             else
                                 return punlink(downloadName)
-                        })
-                )
-                operations.push(
-                    pstats(transcodeName)
-                        .then(stats => {
-                            if (stats.isDirectory())
-                                return rimraf(transcodeName)
-                            else
-                                return punlink(transcodeName)
                         })
                 )
             }
