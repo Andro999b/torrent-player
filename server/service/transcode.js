@@ -24,6 +24,7 @@ class Transcoder {
             this.torrentHash = torrent.infoHash
             this.filePath = file.path
             this.lastStart = start
+            this.transcoderInput = file.progress == 1 ? path.join(TORRENTS_DIR, this.filePath) : file.createReadStream()
 
             return metadataService
                 .getMetdadata(file)
@@ -31,15 +32,19 @@ class Transcoder {
                     return new Promise((resolve, reject) => {
                         debug(`Start transcoding ${this.torrentHash} ${this.filePath}, tile pos ${start}`)
                         const { videoBitrate, audioBitrate, videoSize } = getEncodingSettings(metadata)
+                        
 
                         this.metadata = metadata
                         this._isRunning = true
-                        this.buffer = new CycleBuffer({ capacity: 1024 * 20 })
-                        this.buffer.on('continueWritting', () => this.continue())
-                        this.buffer.on('stopWritting', () => this.stop())
-                        this.buffer.on('full', () => this.kill())
+                       
+                        const buffer = new CycleBuffer({ capacity: 1024 * 20 })
+                        buffer.on('continueWritting', () => this.continue())
+                        buffer.on('stopWritting', () => this.stop())
+                        buffer.on('full', () => this.kill())
 
-                        this.command = ffmpeg(path.join(TORRENTS_DIR, this.filePath))
+                        this.buffer = buffer
+
+                        this.command = ffmpeg(this.transcoderInput)
                             .seekInput(start)
                             .videoCodec('libx264')
                             .videoBitrate(videoBitrate * 1024)
@@ -68,9 +73,9 @@ class Transcoder {
                             .on('start', resolve)
 
                         this.transcoderStream = this.command.stream()
-                            .on('data', (chunk) => this.buffer.write(chunk))
-                            .on('error', () => this.buffer.final())
-                            .on('end', () => this.buffer.final())
+                            .on('data', (chunk) => buffer.write(chunk))
+                            .on('error', () => buffer.final())
+                            .on('end', () => buffer.final())
                     })
                 })
         }
@@ -117,6 +122,7 @@ class Transcoder {
             debug(`Stop transcoding ${this.torrentHash} ${this.filePath}`)
             this.command.kill()
             this.command = null
+            this.buffer = null
             this.transcoderStream = null
             this._isRunning = false
         }
