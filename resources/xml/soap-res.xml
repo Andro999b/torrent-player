@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+	<s:Body>
+	<% if(typeof outputs != "undefined") { %>
+		<u:<%=actionName%>Response xmlns:u="<%=serviceType%>">
+		<% for(var name in outputs){ 
+			var value = outputs[name];
+		%>
+			<<%= name%>><%=value%></<%= name%>>
+		<% } %>
+		</u:<%=actionName%>Response>
+	<% } else if(typeof error != "undefined") { %>
+	<s:Fault>
+		<faultcode>s:Client</faultcode>
+		<faultstring>UPnPError</faultstring>
+		<detail>
+			<UPnPError xmlns="urn:schemas-upnp-org:control-1-0">
+				<errorCode><%=error.code%></errorCode>
+				<errorDescription><%=error.message%></errorDescription>
+			</UPnPError>
+		</detail>
+	</s:Fault>
+	<% } %>
+	</s:Body>
+</s:Envelope>

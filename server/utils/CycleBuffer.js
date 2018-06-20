@@ -14,6 +14,7 @@ class CycleBuffer extends EventEmitter {
         this.continueWatermark = (options.continueFactor || 0.5) * this.capacity
         this.stopWatermark = (options.stopFactor || 0.75) * this.capacity
         this.writeFinished = false
+        this.bytesWrited = 0
     }
 
     _resetReadIndex() {
@@ -59,9 +60,11 @@ class CycleBuffer extends EventEmitter {
         const freeSpace = this.freeSpace()
         if (freeSpace > 0) {
             this.chunks[this.writeIndex] = chunk
+            this.bytesWrited += chunk.length
             this._incWriteIndex()
         } else if (this.readedSpace() > 0) {
             this.chunks[this.writeIndex] = chunk
+            this.bytesWrited += chunk.length
             this._incWriteIndex()
             this._incZeroIndex() // move zero
         } else {

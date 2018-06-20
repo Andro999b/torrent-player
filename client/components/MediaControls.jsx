@@ -1,8 +1,8 @@
 import React, { Component, Fragment } from 'react'
 import { VideoSeekSlider } from 'react-video-seek-slider'
-import '../../node_modules/react-video-seek-slider/lib/video-seek-slider.css'
+import '../../node_modules/react-video-seek-slider/lib/ui-video-seek-slider.css'
 import PropTypes from 'prop-types'
-import { Paper, IconButton } from 'material-ui'
+import { Paper, IconButton } from '@material-ui/core'
 import {
     PlayArrow as PlayIcon,
     Pause as PauseIcon,
@@ -14,7 +14,7 @@ import {
     List as ListIcon,
     Fullscreen as FullscreenIcon,
     FullscreenExit as FullscreenExitIcon
-} from 'material-ui-icons'
+} from '@material-ui/icons'
 
 import { observer } from 'mobx-react'
 

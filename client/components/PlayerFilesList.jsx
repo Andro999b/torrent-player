@@ -1,37 +1,31 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List'
-import Paper from 'material-ui/Paper'
-import Slide from 'material-ui/transitions/Slide'
-
-import PlayingIcon from 'material-ui-icons/PlayArrow'
+import { 
+    List,
+    ListItem,
+    ListItemText,
+    Paper, 
+    Slide
+} from '@material-ui/core'
+import { grey } from '@material-ui/core/colors'
 import { observer } from 'mobx-react'
 
 @observer
 class PlayerFilesList extends Component {
     render() {
-        const { lastPosition, open, onFileSelected } = this.props
-        const { files, currentIndex } = lastPosition
+        const { output: {files, currentFileIndex}, open, onFileSelected } = this.props
 
         return (
             <Slide direction="left" in={open} mountOnEnter unmountOnExit>
                 <Paper elevation={12} square className="player__file-list">
                     <List>
-                        {files.map((file, fileIndex) =>
-                            <ListItem
-                                button
-                                key={fileIndex}
-                                onClick={() => onFileSelected(fileIndex)}
-                            >
-                                {
-                                    currentIndex == fileIndex &&
-                                    <ListItemIcon>
-                                        <PlayingIcon />
-                                    </ListItemIcon>
-                                }
+                        {files.map((file, fileIndex) => {
+                            const style =  currentFileIndex === fileIndex ? { background: grey[600] } : {}
+
+                            return (<ListItem button key={fileIndex} style={style} onClick={() => onFileSelected(fileIndex)}>
                                 <ListItemText primary={file.name} />
-                            </ListItem>
-                        )}
+                            </ListItem>)
+                        })}
                     </List>
                 </Paper>
             </Slide>
@@ -40,7 +34,7 @@ class PlayerFilesList extends Component {
 }
 
 PlayerFilesList.propTypes = {
-    lastPosition: PropTypes.object.isRequired,
+    output: PropTypes.object.isRequired,
     open: PropTypes.bool,
     onFileSelected: PropTypes.func.isRequired
 }

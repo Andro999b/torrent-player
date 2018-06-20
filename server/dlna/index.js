@@ -1,18 +1,25 @@
-const upnp = require('peer-upnp')
-//const uuid = require('uuid')
-const http = require('http')
+const uuid = require('uuid')
+const UPNPServer = require('./upnp-server/Server')
 const { toXML } = require('jstoxml')
 const torrentsService = require('../service/torrents')
 const { DLNA_PORT } = require('../config')
 const getMediaResource = require('./resources')
 const debug = require('debug')('dlna')
-const server = http.createServer()
 
-function browseContent(inputs) {
+function getClientId(req) {
+    const userAgent = req.headers['user-agent']
+
+    if(userAgent && userAgent.includes('PlayStation'))
+        return 'ps'
+
+    return uuid()
+}
+
+function browseContent(inputs, req) {
     if (inputs.ObjectID == '0') {
         return browseTorrentsList(inputs)
     } else {
-        return browseTorrentFiles(inputs)
+        return browseTorrentFiles(inputs, req)
     }
 }
 
@@ -40,7 +47,7 @@ function browseTorrentsList(inputs) { // eslint-disable-line no-unused-vars
     }
 }
 
-function browseTorrentFiles(inputs) {
+function browseTorrentFiles(inputs, req) {
     const id = inputs.ObjectID
     const torrent = torrentsService.getTorrent(id)
 
@@ -49,7 +56,7 @@ function browseTorrentFiles(inputs) {
     const sliced = torrent.files.slice(begin, end)
 
     return Promise.all(
-        sliced.map((file, index) => getMediaResource(torrent.infoHash, index, file)))
+        sliced.map((file, index) => getMediaResource(torrent.infoHash, index, file, getClientId(req))))
         .then((didls) => ({
             Result: toDIDLXml(didls),
             NumberReturned: didls.length,
@@ -80,7 +87,7 @@ function toDIDLContainer(item) {
         _name: 'container',
         _attrs: {
             id: `${item.id}`,
-            parentID: `0`,
+            parentID: '0',
             childCount: `${item.count}`,
             restricted: '1'
         },
@@ -108,23 +115,13 @@ function toDIDLXml(content) {
 }
 
 module.exports = function () {
-    server.listen(DLNA_PORT)
-
     // Create a UPnP Peer. 
-    const peer = upnp.createPeer({
+    const server = new UPNPServer({
         prefix: '/dlna',
-        server: server
-    }).on('ready', function () {
-        // eslint-disable-next-line no-console
-        console.log(`DNLA Server started at port ${DLNA_PORT}`)
-        // advertise device after peer is ready
-        device.advertise()
-    }).start()
+        port: DLNA_PORT
+    })
 
-    peer.ssdpPeer.on('error', (err) => console.error(err))
-
-    const device = peer.createDevice({
-        autoAdvertise: false,
+    const device = server.createDevice({
         uuid: 1,//uuid(),
         productName: 'Torrents',
         productVersion: '0.0.1',
@@ -136,7 +133,6 @@ module.exports = function () {
         modelName: 'Torrents',
         modelDescription: 'Torrents',
         modelNumber: '0.0.1',
-        serialNumber: '1234-1234-1234-1234'
     })
 
     device.createService({
@@ -145,17 +141,15 @@ module.exports = function () {
         version: '1',
         // Service Implementation
         implementation: {
-            Browse(inputs) {
-                debug('Browse', inputs)
+            Browse(inputs, req) {
                 try {
                     let res
                     switch (inputs.BrowseFlag) {
-                        case 'BrowseDirectChildren': res = browseContent(inputs); break
+                        case 'BrowseDirectChildren': res = browseContent(inputs, req); break
                         case 'BrowseMetadata': res = browseMetadata(inputs); break
                     }
                     return res
                 } catch (e) {
-                    debug(e)
                     throw e
                 }
             },
@@ -207,4 +201,7 @@ module.exports = function () {
             }
         }
     })
+
+    server.start(() => console.log(`DLNA Server started at port ${DLNA_PORT}`))// eslint-disable-line no-console
+    process.on('exit', () => server.stop())
 }

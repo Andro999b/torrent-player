@@ -1,6 +1,6 @@
-const osmosis = require('osmosis')
+const crawler = require('../../utils/crawler')
 const parseTorrent = require('parse-torrent')
-const debug = require('debug')('tracker-provider')
+const urlencode = require('urlencode')
 
 class Provider {
     constructor(config) {
@@ -19,7 +19,10 @@ class Provider {
 
         this.config.detailsSelectors = Object.assign(
             {
-                magnetUrl: 'a[href*="magnet:?xt=urn:btih:"]@href'
+                magnetUrl: { 
+                    selector: 'a[href*="magnet:?xt=urn:btih:"]', 
+                    transform: ($el) => $el.attr('href') 
+                }
             },
             this.config.detailsSelectors
         )
@@ -34,65 +37,49 @@ class Provider {
         if (pageCount < 1) pageCount = 1
 
         const name = this.getName()
-        const { scope, selectors, pagenatorSelector, userAgent, pageSize } = this.config
+        const {
+            scope,
+            selectors,
+            pagenatorSelector,
+            userAgent,
+            pageSize,
+            encoding
+        } = this.config
 
-        return new Promise(
-            (resolve) => {
-                const results = []
-                const limit = pageCount * pageSize
+        const limit = pageCount * pageSize
 
-                osmosis.get(this.getSearchUrl(query, page))
-                    .config({
-                        headers: {
-                            'User-Agent': userAgent
-                        }
-                    })
-                    .find(scope)
-                    .log(debug)
-                    .set(selectors)
-                    .paginate(pagenatorSelector)
-                    .then(function (context, data, next, done) {
-                        if (results.length < limit) {
-                            next(context, data)
-                        } else {
-                            done()
-                        }
-                    })
-                    .data(items => results.push(items))
-                    .done(() => {
-                        resolve(results)
-                    })
-                    .error(() => {
-                        resolve(results)
-                    })
-            }
-        )
+        return crawler
+            .get(this.getSearchUrl(urlencode(query, encoding), page))
+            .headers({
+                'User-Agent': userAgent
+            })
+            .scope(scope)
+            .set(selectors)
+            .paginate(pagenatorSelector)
+            .limit(limit)
+            .gather() 
             .then(this._postProcessResult.bind(this))
-            .then((results) => results.map((item) => {
-                item.provider = name
-                return item
-            }))
+            .then((results) =>
+                results.map((item) => {
+                    item.provider = name
+                    return item
+                })
+            )
     }
 
-    getTorrentInfo(torrentId) {
+    getInfo(resultsId) {
         const { detailsScope, detailsSelectors, userAgent } = this.config
 
-        return new Promise(
-            (resolve, reject) => {
-                osmosis.get(this.getTorrentInfoUrl(torrentId))
-                    .config({
-                        headers: {
-                            'User-Agent': userAgent
-                        }
-                    })
-                    .find(detailsScope)
-                    .log(debug)
-                    .set(detailsSelectors)
-                    .data(resolve)
-                    .error(reject)
-            }
-        )
-            .then(this._postProcessResultDetails.bind(this))
+        return crawler
+            .get(this.getInfoUrl(resultsId))
+            .headers({
+                'User-Agent': userAgent
+            })
+            .scope(detailsScope)
+            .set(detailsSelectors)
+            .gather() 
+            .then((details) => details[0])
+            .then((details) => this._postProcessResultDetails(details, resultsId))
             .then(this._loadTorrentFileInfo.bind(this))
     }
 
@@ -102,31 +89,39 @@ class Provider {
     }
 
     // eslint-disable-next-line no-unused-vars
-    getTorrentInfoUrl(torrentId) {
-        throw new Error('Provider not implement getTorrentInfo()')
+    getInfoUrl(resultsId) {
+        throw new Error('Provider not implement getInfoUrl()')
     }
 
-    _postProcessResult(results) { return results }
+    _postProcessResult(results) {
+        results.forEach((result) => result.infoUrl = this.getInfoUrl(result.id))
+        return results
+    }
 
-    _postProcessResultDetails(details) { return details }
+    _postProcessResultDetails(details) {
+        return details
+    }
 
     _loadTorrentFileInfo(details) {
-        return new Promise(
-            (resolve, reject) => {
-                parseTorrent.remote(details.torrentUrl, (err, parsedTorrent) => {
-                    if(err) {
-                        reject(err)
-                        return
-                    }
+        if(!details.torrentUrl) {
+            return Promise.resolve(details)
+        }
 
-                    details.files = parsedTorrent.files.map((file) => ({
-                        name: file.name,
-                        length: file.length
-                    }))
+        return new Promise((resolve, reject) => {
+            parseTorrent.remote(details.torrentUrl, (err, parsedTorrent) => {
+                if (err) {
+                    reject(err)
+                    return
+                }
 
-                    resolve(details)
-                })
+                details.files = parsedTorrent.files.map((file) => ({
+                    name: file.name,
+                    length: file.length
+                }))
+
+                resolve(details)
             })
+        })
     }
 }
 

@@ -1,14 +1,22 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import Typography from 'material-ui/Typography'
-import List, { ListItem, ListItemIcon, ListItemSecondaryAction, ListItemText } from 'material-ui/List'
-import IconButton from 'material-ui/IconButton'
-import Grid from 'material-ui/Grid'
+
+import {
+    Typography,
+    List,
+    ListItem,
+    ListItemIcon,
+    ListItemSecondaryAction,
+    ListItemText,
+    IconButton,
+    Grid
+} from '@material-ui/core'
+
 import { isPlayable } from '../utils'
 
-import PlayableIcon from 'material-ui-icons/PlayArrow'
-import NotPlayableIcon from 'material-ui-icons/InsertDriveFile'
-import CastIcon from 'material-ui-icons/Cast'
+import PlayableIcon from '@material-ui/icons/PlayArrow'
+import NotPlayableIcon from '@material-ui/icons/InsertDriveFile'
+import CastIcon from '@material-ui/icons/Cast'
 import { inject } from 'mobx-react'
 
 @inject(({ transitionStore }) => ({
@@ -23,7 +31,7 @@ class SearchResultsItemDetails extends Component {
 
         return (
             <ListItem key={fileIndex} button={playable} onClick={() => onPlayFile(details, file.name)}>
-                <ListItemIcon>
+                <ListItemIcon className="hide-on-mobile">
                     {playable ? <PlayableIcon /> : <NotPlayableIcon />}
                 </ListItemIcon>
                 <ListItemText primary={<div style={{ wordBreak: 'break-all' }}>{file.name}</div>} style={{ paddingLeft: 0 }} />
@@ -48,9 +56,9 @@ class SearchResultsItemDetails extends Component {
                     <Grid item xs={12}>
                         <Typography variant='title'>{details.name}</Typography>
                     </Grid>
-                    <Grid item sm={12} md={3}>
+                    {details.image && <Grid item sm={12} md={3}>
                         <img className="poster" src={`/proxyMedia?url=${encodeURIComponent(details.image)}`} alt='no image' />
-                    </Grid>
+                    </Grid>}
                     <Grid item sm={12} md={5}>
                         {details.description.map((item) => (
                             <Typography key={item.name}><b>{item.name}:</b> {item.value}</Typography>

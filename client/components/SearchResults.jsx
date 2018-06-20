@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import SearchResultsItem from './SearchResultsItem'
-import Typography from 'material-ui/Typography'
+
+import Typography from '@material-ui/core/Typography'
+
 import PropTypes from 'prop-types'
 import InfiniteScroll from 'react-infinite-scroller'
 
@@ -42,7 +44,7 @@ class SearchResults extends Component {
                     useWindow={false}
                 >
                     {items.map((item) =>
-                        (<SearchResultsItem key={`${item.provider}_${item.torrent}`} item={item} />)
+                        (<SearchResultsItem key={`${item.provider}_${item.id}`} item={item} />)
                     )}
                 </InfiniteScroll>
             </div>

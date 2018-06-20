@@ -1,12 +1,24 @@
 import React, { Component } from 'react'
-import Paper from 'material-ui/Paper'
 import Autosuggest from 'react-autosuggest'
-import Input, { InputAdornment } from 'material-ui/Input'
-import { MenuList, MenuItem } from 'material-ui/Menu'
-import Collapse from 'material-ui/transitions/Collapse'
-import { IconButton } from 'material-ui'
-import SearchIcon from 'material-ui-icons/Search'
-import ClearIcon from 'material-ui-icons/Clear'
+import { SEARCH_RPVODERS, SEARCH_RPVODERS_NAME } from '../contants'
+
+import {
+    Paper,
+    Input,
+    InputAdornment,
+    Menu,
+    MenuList,
+    MenuItem,
+    Collapse,
+    IconButton,
+    ListItemText,
+    Checkbox
+} from '@material-ui/core'
+
+import SearchIcon from '@material-ui/icons/Search'
+import ClearIcon from '@material-ui/icons/Clear'
+import MoreIcon from '@material-ui/icons/MoreVert'
+
 import PropTypes from 'prop-types'
 import debounce from 'lodash.debounce'
 import { toJS } from 'mobx'
@@ -14,13 +26,7 @@ import { toJS } from 'mobx'
 function renderInput(inputProps) {
     const { ref, ...other } = inputProps
 
-    return (
-        <Input
-            fullWidth
-            ref={ref}
-            {...other}
-        />
-    )
+    return <Input fullWidth ref={ref} {...other} />
 }
 
 function renderSuggestion(suggestion, { isHighlighted }) {
@@ -36,9 +42,7 @@ function renderSuggestionsContainer(options) {
 
     return (
         <Collapse in={children && query != ''}>
-            <MenuList {...containerProps}>
-                {children}
-            </MenuList>
+            <MenuList {...containerProps}>{children}</MenuList>
         </Collapse>
     )
 }
@@ -47,7 +51,8 @@ class SearchBar extends Component {
     constructor(props, context) {
         super(props, context)
         this.state = {
-            searchQuery: ''
+            searchQuery: '',
+            settingsAnchorEl: null
         }
         this.onInput = debounce(this.handleInput.bind(this), 200)
     }
@@ -79,18 +84,57 @@ class SearchBar extends Component {
         this.lastSearchQuery = searchQuery
     }
 
+    handleOpenSettings(event) {
+        this.setState({ settingsAnchorEl: event.currentTarget })
+    }
+
+    handleCloseSettings() {
+        this.setState({ settingsAnchorEl: null })
+    }
+
+    toggleProvider(provider) {
+        const { searchProviders, onSelectProviders } = this.props
+
+        const index = searchProviders.indexOf(provider)
+        if(index != -1) {
+            onSelectProviders(searchProviders.filter((v, i) => i != index))
+        } else {
+            onSelectProviders(searchProviders.concat([provider]))
+        }
+    }
+
+    renderSettings() {
+        const { props: { searchProviders }, state: { settingsAnchorEl } } = this
+        return (
+            <Menu anchorEl={settingsAnchorEl}
+                open={settingsAnchorEl != null}
+                onClose={this.handleCloseSettings.bind(this)}>
+                {SEARCH_RPVODERS.map((provider) => (
+                    <MenuItem key={provider}>
+                        <Checkbox
+                            checked={searchProviders.indexOf(provider) != -1}
+                            onClick={() => this.toggleProvider(provider)}
+                        />
+                        <ListItemText primary={SEARCH_RPVODERS_NAME[provider]} />
+                    </MenuItem>
+                ))}
+            </Menu>
+        )
+    }
+
     render() {
         const { searchQuery } = this.state
         const { suggestions } = this.props
-
         return (
-            <Paper className='search-bar'>
+            <Paper className="search-bar">
                 <Autosuggest
                     renderInputComponent={renderInput}
                     suggestions={toJS(suggestions)}
                     onSuggestionsFetchRequested={this.handleInput.bind(this)}
                     onSuggestionsClearRequested={this.handleClean.bind(this)}
-                    onSuggestionSelected={(e, { suggestion }) => this.handleSubmit(suggestion)}
+                    onSuggestionSelected={(e, { suggestion }) =>
+                        this.handleSubmit(suggestion)
+                    }
                     renderSuggestionsContainer={renderSuggestionsContainer}
                     getSuggestionValue={(suggestion) => suggestion}
                     renderSuggestion={renderSuggestion}
@@ -109,21 +153,30 @@ class SearchBar extends Component {
                         ),
                         endAdornment: (
                             <InputAdornment>
-                                <IconButton onClick={this.handleClean.bind(this)}>
+                                <IconButton
+                                    onClick={this.handleClean.bind(this)}
+                                >
                                     <ClearIcon />
+                                </IconButton>
+                                <IconButton>
+                                    <MoreIcon onClick={this.handleOpenSettings.bind(this)} />
+                                    {this.renderSettings()}
                                 </IconButton>
                             </InputAdornment>
                         )
-                    }} />
+                    }}
+                />
             </Paper>
         )
     }
 }
 
 SearchBar.propTypes = {
+    searchProviders: PropTypes.object.isRequired,
     onInput: PropTypes.func.isRequired,
     onSubmit: PropTypes.func.isRequired,
-    suggestions: PropTypes.object.isRequired,
+    onSelectProviders: PropTypes.func.isRequired,
+    suggestions: PropTypes.object.isRequired
 }
 
 export default SearchBar

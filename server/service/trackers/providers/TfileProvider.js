@@ -1,33 +1,69 @@
 const Provider = require('../Provider')
-const urlencode = require('urlencode')
 
 module.exports = class TfileProvider extends Provider {
     constructor() {
         super({
             encoding: 'windows-1251',
-            baseUrl: 'http://tfile.cc',
+            baseUrl: 'http://tfile-home.org',
             searchUrl: 'http://tfile-search.cc',
             pageSize: 50,
             scope: '.tor',
             selectors: {
-                torrent: '@id',
+                id: { transform: ($el) => $el.attr('id').substr(1) },
                 name: '.t a',
-                size: '.dl',
-                seeds: '.dl:skip(1)',
-                leechs: '.dl:skip(2)'
+                size: {
+                    selector: '.dl',
+                    transform: ($el) =>
+                        $el
+                            .eq(0)
+                            .text()
+                            .trim()
+                },
+                seeds: {
+                    selector: '.dl',
+                    transform: ($el) =>
+                        $el
+                            .eq(1)
+                            .text()
+                            .trim()
+                },
+                leechs: {
+                    selector: '.dl',
+                    transform: ($el) =>
+                        $el
+                            .eq(2)
+                            .text()
+                            .trim()
+                }
             },
             pagenatorSelector: 'a.next',
-            detailsScope: '.pC:first',
+            detailsScope: '.pC',
             detailsSelectors: {
-                image: 'img.postImgAligned@src',
+                image: {
+                    selector: 'img.postImgAligned',
+                    transform: ($el) => $el.attr('src')
+                },
                 description: '.pT',
-                torrentUrl: '#dlbt@href'
+                torrentUrl: {
+                    selector: '#dlbt',
+                    transform: ($el) => $el.attr('href')
+                }
             }
         })
 
         this.filterDescription = [
-            'Перевод', 'Субтитры', 'Формат', 'Страна', 'Режиссер', 'Жанр', 'Продолжительность',
-            'Год выпуска', 'В ролях', 'Описание', 'Видео', 'Аудио'
+            'Перевод',
+            'Субтитры',
+            'Формат',
+            'Страна',
+            'Режиссер',
+            'Жанр',
+            'Продолжительность',
+            'Год выпуска',
+            'В ролях',
+            'Описание',
+            'Видео',
+            'Аудио'
         ]
     }
 
@@ -36,19 +72,23 @@ module.exports = class TfileProvider extends Provider {
     }
 
     getSearchUrl(query, page) {
-        const { searchUrl, encoding, pageSize } = this.config
-        return searchUrl +
-            '?q=' + urlencode.encode(query, encoding) + '&c=2' +
-            '&start=' + pageSize * (page - 1)
+        const { searchUrl, pageSize } = this.config
+        return `${searchUrl}?q=${query}'&start=${pageSize * (page - 1)}`
     }
 
-    getTorrentInfoUrl(torrentId) {
-        return this.config.baseUrl + '/forum/viewtopic.php?t=' + torrentId.slice(1)
+    getInfoUrl(resultsId) {
+        const { baseUrl } = this.config
+        return `${baseUrl}/forum/viewtopic.php?t=${resultsId}`
     }
 
     _postProcessResultDetails(details) {
-        const { filterDescription } = this
-        const rawDescription = details.description.replace(/[\n\r]+/g, '\n')
+        const {
+            filterDescription,
+            config: { baseUrl }
+        } = this
+        const rawDescription = details.description
+            .replace(/[\n\r]+/g, '\n')
+            .trim()
         let parts = rawDescription.split('\n').slice(0, -1)
 
         //extract titles
@@ -72,7 +112,7 @@ module.exports = class TfileProvider extends Provider {
             return acc
         }, [])
 
-        details.torrentUrl = this.config.baseUrl + '/forum/' + details.torrentUrl
+        details.torrentUrl = `${baseUrl}/forum/${details.torrentUrl}`
 
         return details
     }

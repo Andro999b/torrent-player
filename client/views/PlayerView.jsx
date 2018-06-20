@@ -1,11 +1,13 @@
 import React, { Component, Fragment } from 'react'
-import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles'
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
 import Fullscreen from 'react-full-screen'
 import Idle from 'react-idle'
 import MediaControls from '../components/MediaControls'
 import PlayerFilesList from '../components/PlayerFilesList'
 import VideoScrean from '../components/VideoScrean'
-import Typography from 'material-ui/Typography'
+
+import Typography from '@material-ui/core/Typography'
+
 import { observer, inject } from 'mobx-react'
 import PropTypes from 'prop-types'
 
@@ -18,7 +20,6 @@ const playerTheme = (mainTheme) => createMuiTheme({
         type: 'dark',
     }
 })
-
 
 @inject('playerStore') @observer
 class PlayerView extends Component {
@@ -47,7 +48,7 @@ class PlayerView extends Component {
         if (!playerStore) return null
 
         const local = playerStore.output.isLocal()
-        const hasAnyFiles = playerStore.lastPosition.files.length > 0
+        const hasAnyFiles = playerStore.output.files.length > 0
 
         return (
             <MuiThemeProvider theme={playerTheme}>
@@ -79,11 +80,11 @@ class PlayerView extends Component {
                     <Fragment>
                         <PlayerFilesList
                             open={playlistOpen}
-                            lastPosition={playerStore.lastPosition}
+                            output={output}
                             onFileSelected={(fileIndex) => playerStore.switchFile(fileIndex)}
                         />
                         <MediaControls
-                            output={playerStore.output}
+                            output={output}
                             onNext={() => playerStore.nextFile()}
                             onPrev={() => playerStore.prevFile()}
                             onPlaylistToggle={this.handleTogglePlayList.bind(this)}

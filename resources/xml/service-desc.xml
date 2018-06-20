@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scpd xmlns="urn:schemas-upnp-org:service-1-0" configId="<%=configId%>">
+	<specVersion>
+		<major>1</major>
+		<minor>0</minor>
+	</specVersion>
+	<actionList>
+	<% 	for(var actionName in actions){ 
+		var action = actions[actionName];%>
+		<action>
+			<name><%=actionName%></name>
+			<argumentList>
+			<% 	for(var inputName in action.inputs){ 
+				var variableName = action.inputs[inputName];%>
+				<argument>
+					<name><%=inputName%></name>
+					<direction>in</direction>
+					<relatedStateVariable><%=variableName%></relatedStateVariable>
+				</argument>
+			<% } %>
+			<% 	for(var outputName in action.outputs){ 
+				var variableName = action.outputs[outputName];%>
+				<argument>
+					<name><%=outputName%></name>
+					<direction>out</direction>
+					<relatedStateVariable><%=variableName%></relatedStateVariable>
+				</argument>
+			<% } %>
+			</argumentList>
+		</action>
+	<% } %>
+	</actionList>
+	<serviceStateTable>
+	<% 	for(var variableName in variables){ 
+		var variable = variables[variableName];
+		variable = (typeof variable == "string")? {type: variable}: variable;%>
+		<stateVariable sendEvents="<%=(variable.event===true?'yes':'no')%>" multicast="<%=(variable.multicast===true?'yes':'no')%>">
+			<name><%=variableName%></name>
+			<dataType><%=variable.type%></dataType>
+			<% if(typeof variable.default != "undefined"){ %>
+			<defaultValue><%=variable.default%></defaultValue>
+			<% } if(typeof variable.range == "object"){ %>
+			<allowedValueRange>
+				<minimum><%=variable.range.min%></minimum>
+				<maximum><%=variable.range.max%></maximum>
+				<% if(typeof variable.range.step == "number"){ %>
+				<step><%=variable.range.step%></step>
+				<% } %>
+			</allowedValueRange>
+			<% } if(variable.enum instanceof Array){ %>
+			<allowedValueList>
+			    <% 	for(var i in variable.enum){ %> 
+				<allowedValue><%=variable.enum[i]%></allowedValue>
+				<% } %>
+			</allowedValueList>
+			<% } %>
+		</stateVariable>
+	<% } %>
+	</serviceStateTable>
+</scpd>

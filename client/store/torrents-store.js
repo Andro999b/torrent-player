@@ -20,7 +20,7 @@ class TorrentsStore {
 
     @action startUpdate() {
         if (this.updateId === 0) {
-            this.updateId = setInterval(() => this.updateTorrents(), 1000)
+            this.updateId = setInterval(() => this.updateTorrents(), 5000)
             this.updateTorrents()
         }
     }

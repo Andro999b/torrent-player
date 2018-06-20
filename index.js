@@ -4,7 +4,7 @@ const web = require('./server/web')
 
 torrentsService.restoreTorrents()
 web()
-dlna()
+// dlna()
 
 process.on('uncaughtException', function (err) {
     console.error(err)

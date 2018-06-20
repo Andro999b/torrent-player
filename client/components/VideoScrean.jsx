@@ -1,11 +1,16 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { CircularProgress } from 'material-ui/Progress'
-import Typography from 'material-ui/Typography'
+
+import {
+    CircularProgress,
+    Typography
+} from '@material-ui/core'
+
 import ReactResizeDetector from 'react-resize-detector'
 import { reaction } from 'mobx'
 import { observer } from 'mobx-react'
 import { invokeAll } from '../utils'
+import Hls from 'hls.js'
 
 @observer
 class VideoScrean extends Component {
@@ -24,7 +29,7 @@ class VideoScrean extends Component {
     }
 
     handleError() {
-        this.setState({ sfailed: true })
+        this.setState({ failed: true, startLoading: false })
     }
 
     handleLoadedMetadata() {
@@ -55,10 +60,12 @@ class VideoScrean extends Component {
 
     handleUpdate() {
         const { output } = this.props
+        const { video: { buffered, duration, currentTime } } = this
+
         output.onUpdate({
-            duration: this.video.duration,
-            buffered: this.video.buffered.length > 0 ? this.video.buffered.end(0) : 0,
-            currentTime: this.video.currentTime
+            duration,
+            buffered: buffered.length > 0 ? buffered.end(buffered.length - 1) : 0,
+            currentTime
         })
     }
 
@@ -67,6 +74,16 @@ class VideoScrean extends Component {
 
         output.pause()
         onEnded()
+    }
+
+    handleClick() {
+        const { props: { output } } = this
+
+        if (output.isPlaying) {
+            output.pause()
+        } else {
+            output.play()
+        }
     }
 
     componentDidMount() {
@@ -93,17 +110,53 @@ class VideoScrean extends Component {
                     (isMuted) => {
                         this.video.muted = isMuted
                     }
+                ),
+                reaction(
+                    () => this.props.output.url,
+                    () => this.initVideo()
                 )
             )
         }
+        this.initVideo()
     }
 
     componentWillUnmount() {
         if (this.dispose) this.dispose()
     }
 
+    initVideo() {
+        const { video, props: { output } } = this
+
+        if(this.hls) {
+            const { hls } = this
+            hls.stopLoad()
+            hls.detachMedia()
+        }
+
+        const restoreVideoState = () => {
+            video.currentTime = output.currentTime
+            video.muted = output.isMuted
+            if (output.isPlaying) {
+                video.play()
+            } else {
+                video.pause()
+            }
+        }
+
+        if (output.hls && Hls.isSupported()) {
+            const hls = new Hls()
+            hls.loadSource(output.url)
+            hls.attachMedia(video)
+            hls.on(Hls.Events.MANIFEST_PARSED, () => restoreVideoState())
+
+            this.hls = hls
+        } else {
+            video.src = output.url
+            restoreVideoState()
+        }
+    }
+
     render() {
-        const { output } = this.props
         const { startLoading, failed, videoScale } = this.state
 
         return (
@@ -116,32 +169,17 @@ class VideoScrean extends Component {
                 />
                 {failed && <Typography align="center" variant="display1">Can`t play media source</Typography>}
                 {startLoading && <div className="loading-center"><CircularProgress /></div>}
-                {output.url &&
-                    <video
-                        className={`scale_${videoScale}`}
-                        ref={(video) => {
-                            this.video = video
-                            if (video) {
-                                video.currentTime = output.currentTime
-                                video.muted = output.isMuted
-                                if (output.isPlaying) {
-                                    video.play()
-                                } else {
-                                    video.pause()
-                                }
-                            }
-                        }}
-                        onDurationChange={this.handleUpdate.bind(this)}
-                        onLoadedMetadata={this.handleLoadedMetadata.bind(this)}
-                        onProgress={this.handleUpdate.bind(this)}
-                        onTimeUpdate={this.handleUpdate.bind(this)}
-                        onEnded={this.handleEnded.bind(this)}
-                        onLoadStart={this.handleLoadStart.bind(this)}
-                        onError={this.handleError.bind(this)}
-                    >
-                        <source src={output.url} />
-                    </video>
-                }
+                <video
+                    className={`scale_${videoScale}`}
+                    ref={(video) => this.video = video}
+                    onDurationChange={this.handleUpdate.bind(this)}
+                    onLoadedMetadata={this.handleLoadedMetadata.bind(this)}
+                    onProgress={this.handleUpdate.bind(this)}
+                    onTimeUpdate={this.handleUpdate.bind(this)}
+                    onEnded={this.handleEnded.bind(this)}
+                    onLoadStart={this.handleLoadStart.bind(this)}
+                    onError={this.handleError.bind(this)}
+                ></video>
             </div>
         )
     }

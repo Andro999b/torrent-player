@@ -137,9 +137,29 @@ html {
 
 .player__file-list {
     overflow-y: auto;
-    width: 320px;
+    width: 480px;
     position: absolute;
     right: 0;
     bottom: 68px;
     top: 0;
+}
+
+.hide-on-mobile {
+    display: none;
+}
+
+.hide-on-desktop {
+    display: none;
+}
+
+@media (min-width: 576px) {
+    .hide-on-mobile {
+        display: inline-block;
+    }
+}
+
+@media (max-width: 576px) {
+    .hide-on-desktop {
+        display: inline-block;
+    }
 }

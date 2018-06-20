@@ -1,4 +1,5 @@
 const express = require('express')
+const cors = require('cors')
 const bodyParser = require('body-parser')
 const torrentsApi = require('./torrents')
 const trackersApi = require('./trackers')
@@ -7,9 +8,10 @@ const proxyMedia = require('./proxyMedia')
 const path = require('path')
 const { WEB_PORT } = require('../config')
 
-const app = express()
-
 module.exports = function () {
+    const app = express()
+
+    app.use(cors())
     app.use(express.static(path.join('client', 'dist')))
 
     app.use(bodyParser.json())
@@ -20,19 +22,26 @@ module.exports = function () {
 
     // eslint-disable-next-line no-unused-vars
     app.use((err, req, res, next) => {
-        console.error(err.stack)
+        if (typeof err === 'string') {
+            console.error(err)
 
-        try {
-            res.status(err.code || 500)
-            res.json({ error: err.message || 'Something gones worng' })
-        } catch (err) {
             res.status(500)
-            res.json({ error: 'Something gones worng' })
+            res.json({ error: err})
+        } else {
+            console.error(err.stack)
+
+            try {
+                res.status(err.code || 500)
+                res.json({ error: err.message || 'Something gones worng' })
+            } catch (err) {
+                res.status(500)
+                res.json({ error: 'Something gones worng' })
+            }
         }
     })
 
     // eslint-disable-next-line no-console
-    const server = app.listen(WEB_PORT, () => console.log(`WEB Server started at port ${WEB_PORT}`))
+    app.listen(WEB_PORT, () => console.log(`WEB Server started at port ${WEB_PORT}`))
 
-    server.on('connection', socket => socket.setKeepAlive(true))
+    return app;
 }

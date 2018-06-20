@@ -18,16 +18,16 @@ router.get('/:trackerName/search', (req, res, next) => {
     }
 
     trackers.search(trackerName, query, page)
-        .then(r => res.json(r))
+        .then((r) => res.json(r))
         .catch(next)
 })
 
-router.get('/:trackerName/torrents/:torrentId', (req, res, next) => {
+router.get('/:trackerName/items/:resultId', (req, res, next) => {
     const trackerName = req.params.trackerName
-    const torrentId = req.params.torrentId
+    const resultId = req.params.resultId
 
-    trackers.getTorrentInfo(trackerName, torrentId)
-        .then(r => res.json(r))
+    trackers.getInfo(trackerName, resultId)
+        .then((r) => res.json(r))
         .catch(next)
 })
 

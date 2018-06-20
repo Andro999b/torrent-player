@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root xmlns="urn:schemas-upnp-org:device-1-0" xmlns:dlna="urn:schemas-dlna-org:device-1-0" configId="<%=configId%>">
+	<specVersion>
+		<major>1</major>
+		<minor>0</minor>
+	</specVersion>
+	<device>
+	    <!-- REQUIRED: MUST be <= 64 chars, not counting the version suffix and separating colon -->
+		<deviceType><%=deviceType || ''%></deviceType>
+		<!-- REQUIRED: SHOULD be < 64 characters -->
+		<friendlyName><%=friendlyName || ''%></friendlyName>
+		<!-- REQUIRED: SHOULD be < 64 characters -->
+		<manufacturer><%=manufacturer || ''%></manufacturer>
+		<!-- OPTIONAL -->
+		<% if(manufacturerURL){ %>
+		<manufacturerURL><%=manufacturerURL || ''%></manufacturerURL>
+		<% } %>
+		<!-- RECOMMENDED: SHOULD be < 128 characters -->
+		<modelDescription><%=modelDescription || ''%></modelDescription>
+		<!-- REQUIRED: SHOULD be < 32 characters -->
+		<modelName><%=modelName%></modelName>
+		<!-- RECOMMENDED: SHOULD be < 32 characters -->
+		<% if(modelNumber){ %>
+		<modelNumber><%=modelNumber || ''%></modelNumber>
+		<% } %>
+		<!-- OPTIONAL -->
+		<% if(modelURL){ %>
+		<modelURL><%=modelURL || ''%></modelURL>
+		<% } %>
+		<!-- RECOMMENDED: SHOULD be < 64 characters -->
+		<% if(serialNumber){ %>
+		<serialNumber><%=serialNumber || ''%></serialNumber>
+		<% } %>
+		<!-- REQUIRED: -->
+		<UDN><%=UDN || ''%></UDN>
+		<!-- OPTIONAL: Universal Product Code. 12-digit -->
+		<% if(UPC){ %>
+		<UPC><%=UPC || ''%></UPC>
+		<% } %>
+		<% if(icons && icons.length>0){ %>
+		<iconList>
+		<% for(var i in icons){ %>
+			<icon>
+			    <!-- REQUIRED: Icon MIME type -->
+				<mimetype><%=icons[i].mimetype || ''%></mimetype>
+				<!-- REQUIRED: Horizontal dimension of icon in pixels. -->
+				<width><%=icons[i].width || ''%></width>
+				<!-- REQUIRED: Vertical dimension of icon in pixels. -->
+				<height><%=icons[i].height || ''%></height>
+				<!-- REQUIRED: Number of color bits per pixel. -->
+				<depth><%=icons[i].depth || ''%></depth>
+				<!-- REQUIRED. Pointer to icon image. MUST be relative to the URL at which the device description is located -->
+				<url><%=icons[i].url || ''%></url>
+			</icon>
+		<% } %>
+		</iconList>
+		<% } %>
+		<% if(Object.keys(services).length>0){ %>
+		<serviceList>
+		    <% for(var i in services){ %>
+			<service>
+			    <!-- Required. UPnP service type. MUST NOT contain a hash character -->
+				<serviceType><%=services[i].serviceType || ''%></serviceType>
+				<!-- REQUIRED. Service identifier. MUST be unique within this device description. MUST be <= 64 characters -->
+				<serviceId><%=services[i].serviceId || ''%></serviceId>
+				<!-- REQUIRED. URL for service description. MUST be relative to the URL at which the device description is located -->
+				<SCPDURL><%=services[i].SCPDURL || ''%></SCPDURL>
+				<!-- REQUIRED. URL for control. MUST be relative to the URL at which the device description is located -->
+				<controlURL><%=services[i].controlURL || ''%></controlURL>
+				<!-- REQUIRED. URL for eventing. MUST be relative to the URL at which the device description is located -->
+				<eventSubURL><%=services[i].eventSubURL || ''%></eventSubURL>
+			</service>
+			<% } %>
+		</serviceList>
+		<% } %>
+		<!-- RECOMMENDED: URL to presentation for device. MUST be relative to the URL at which the device description is located-->
+		<% if(presentationURL){ %>
+		<presentationURL><%=presentationURL || ''%></presentationURL>
+		<% } %>
+	</device>
+</root> 

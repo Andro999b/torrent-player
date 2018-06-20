@@ -1,25 +1,20 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import Dialog, { DialogTitle, DialogContent, DialogContentText, DialogActions } from 'material-ui/Dialog'
-import Button from 'material-ui/Button'
+import {
+    Button,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogContentText,
+    DialogActions
+} from '@material-ui/core'
 
 class DeleteTorrentDialog extends Component {
     constructor(props, context) {
         super(props, context)
-        
-        this.state = {
-            torrentName: ''
-        }
-    }
-    
-    componentWillReceiveProps(nextProps) { //prepare data for render content
-        if(nextProps.torrent) {
-            this.setState({torrentName: nextProps.torrent.name})
-        }
     }
 
     render() {
-        const { torrentName } = this.state
         const { torrent, onAccept, onReject } = this.props
 
         return (
@@ -27,7 +22,7 @@ class DeleteTorrentDialog extends Component {
                 <DialogTitle>Delete torrent?</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        Do you want to delete torrent {torrentName} and all data?
+                        Do you want to delete torrent {torrent && torrent.name} and all data?
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>

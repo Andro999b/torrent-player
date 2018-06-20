@@ -1,8 +1,10 @@
-import { observable, action } from 'mobx'
+import { action, observable } from 'mobx'
+import request from 'superagent'
+import { getTorrentFileContentLink, getTorrentHLSLink, isPlayable } from '../utils'
 import notificationStore from './notifications-store'
 import playerStore from './player-store'
-import request from 'superagent'
-import { isPlayable, getTorrentFileContentLink, getTorrentFileTranscodeLink } from '../utils'
+
+const testMedia = document.createElement('video')
 
 class TransitionStore {
     @observable screen = 'search'
@@ -18,22 +20,22 @@ class TransitionStore {
 
     @action.bound downloadAndPlay(torrentInfo, fileName) {
         this.downloadTorrent(torrentInfo)
-            .then((torrent) => this.playTorrent(torrent, fileName))
+            .then((torrent) => this.playMedia(torrent, fileName))
     }
 
     @action.bound downloadAndCast(torrentInfo, fileName) {
         this.downloadTorrent(torrentInfo)
-            .then((torrent) => this.playTorrent(torrent, fileName))
+            .then((torrent) => this.playMedia(torrent, fileName))
     }
 
-    @action.bound playTorrent(torrent, fileName) {
+    @action.bound playMedia(torrent, fileName) {
         this.screen = 'player'
-        playerStore.play(this.parseTorrentFiles(torrent), fileName)
+        playerStore.play(this.parseTorrentFiles(torrent), fileName, torrent)
     }
 
-    @action.bound castTorrent(torrent, fileName) {
-        this.screen = 'player'
-        playerStore.play(this.parseTorrentFiles(torrent), fileName)
+    @action.bound castMedia(torrent, fileName) { // eslint-disable-line
+        //this.screen = 'player'
+        //playerStore.play(this.parseTorrentFiles(torrent), fileName)
     }
 
     @action.bound downloadTorrent(torrentInfo) {
@@ -52,12 +54,20 @@ class TransitionStore {
 
     parseTorrentFiles(torrent) {
         return torrent.files
-            .map((file, fileIndex) => ({
-                name: file.name,
-                source: {
-                    url: getTorrentFileTranscodeLink(torrent.infoHash, fileIndex)
-                } 
-            }))
+            .map((file, fileIndex) => {
+                let url, hls = false
+                if(testMedia.canPlayType(file.mimeType) !== ''){
+                    url = getTorrentFileContentLink(torrent.infoHash, fileIndex)
+                } else {
+                    hls = true
+                    url = getTorrentHLSLink(torrent.infoHash, fileIndex)
+                }
+                
+                return {
+                    name: file.name,
+                    source: { url, hls }
+                }
+            })
             .filter((file) => isPlayable(file.name))
     }
 }

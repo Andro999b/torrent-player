@@ -1,81 +1,72 @@
 const path = require('path')
 const ffmpeg = require('fluent-ffmpeg')
-const metadataService = require('./metadata')
-const CycleBuffer = require('../utils/CycleBuffer')
-const { TORRENTS_DIR } = require('../config')
-const getEncodingSettings = require('./encoderSettings')
-const debug = console.log//require('debug')('transcode')
+const metadataService = require('../metadata')
+const CycleBuffer = require('../../utils/CycleBuffer')
+const { TORRENTS_DIR, TRANSCODER_IDLE_TIMEOUT } = require('../../config')
+const debug = console.error //require('debug')('transcode')
 
 class Transcoder {
     constructor() {
-        this.lastStart = 0
+        this._lastStart = 0
         this._isRunning = false
     }
 
-    spawn(torrent, file, start) {
+    spawn(torrent, file, start, duration) {
         if (!this.command
             || this.torrentHash != torrent.infoHash
             || this.filePath != file.path
-            || this.lastStart != start) {
+            || this._lastStart != start) {
             if (this.command) {
                 this.kill()
             }
-
+            
             this.torrentHash = torrent.infoHash
             this.filePath = file.path
-            this.lastStart = start
-            this.transcoderInput = file.progress == 1 ? path.join(TORRENTS_DIR, this.filePath) : file.createReadStream()
+            this._lastStart = start
 
             return metadataService
                 .getMetdadata(file)
                 .then((metadata) => {
                     return new Promise((resolve, reject) => {
-                        debug(`Start transcoding ${this.torrentHash} ${this.filePath}, tile pos ${start}`)
-                        const { videoBitrate, audioBitrate, videoSize } = getEncodingSettings(metadata)
-                        
+                        if(this.command) resolve() //fix concurrect problem
+
+                        debug(`Start transcoding ${this.torrentHash} ${this.filePath}, tile start from ${start}, duration ${duration}`)
 
                         this.metadata = metadata
                         this._isRunning = true
-                       
+
                         const buffer = new CycleBuffer({ capacity: 1024 * 20 })
                         buffer.on('continueWritting', () => this.continue())
                         buffer.on('stopWritting', () => this.stop())
                         buffer.on('full', () => this.kill())
 
                         this.buffer = buffer
-
-                        this.command = ffmpeg(this.transcoderInput)
+                        this.command = ffmpeg(file.progress >= 1 ? path.join(TORRENTS_DIR, this.filePath) : file.createReadStream())
                             .seekInput(start)
                             .videoCodec('libx264')
-                            .videoBitrate(videoBitrate * 1024)
-                            .size(videoSize)
-                            .autopad()
                             .audioCodec('aac')
-                            .audioBitrate(audioBitrate * 1024)
-                            .audioChannels(2)
                             .addOption('-preset ultrafast')
-                            .addOption('-level 31')
-                            .addOption('-crf 22')
                             .addOption('-tune zerolatency')
                             .addOutputOption('-copyts')
                             .fps(25)
                             .format('mpegts')
-                            .on('error', (err) => {
-                                this.command = null
+                            .once('error', (err) => {
                                 console.error('Cannot process video: ' + err.message) // eslint-disable-line
                                 reject(err)
                             })
-                            // .on('progress', (progress) => {
-                            //     if (progress.currentFps < 50 && progress.currentFps > 0) {
-                            //         debug('low perfomance', progress)
-                            //     }
-                            // })
-                            .on('start', resolve)
+                            .once('start', resolve)
+
+                        if (duration)
+                            this.command.duration(duration)
 
                         this.transcoderStream = this.command.stream()
                             .on('data', (chunk) => buffer.write(chunk))
-                            .on('error', () => buffer.final())
-                            .on('end', () => buffer.final())
+                            .once('error', () => buffer.final())
+                            .once('end', () => {
+                                debug(`Finish transcoding ${this.torrentHash} ${this.filePath}, tile start from ${start}, duration ${duration}`)
+                                debug(`Bytes writed to buffer ${buffer.bytesWrited}`)
+                                buffer.final()
+                            })
                     })
                 })
         }
@@ -92,7 +83,6 @@ class Transcoder {
                 console.error(e)
                 this.transcoderStream.pause()
                 this.command.renice(-5)
-                // this.kill() //fallback for windows
             }
         }
     }
@@ -110,11 +100,25 @@ class Transcoder {
         }
     }
 
-    transcode(torrent, file, startByte = 0) {
-        return this.spawn(torrent, file, startByte).then(() => {
+    transcode(torrent, file, start = 0, duration = 0) {
+        if(!this.idleTimeoutId) clearImmediate(this.idleTimeoutId)
+
+        return this.spawn(torrent, file, start, duration).then(() => {
             const { buffer, metadata } = this
             return { buffer, metadata }
         })
+    }
+
+    notifyIdle() {
+        if(!this.idleTimeoutId) {
+            this.idleTimeoutId = setTimeout(
+                () => {
+                    this.kill(),
+                    this.idleTimeoutId = null
+                }, 
+                TRANSCODER_IDLE_TIMEOUT
+            )
+        }
     }
 
     kill() {
@@ -125,30 +129,9 @@ class Transcoder {
             this.buffer = null
             this.transcoderStream = null
             this._isRunning = false
+            if(!this.idleTimeoutId) clearImmediate(this.idleTimeoutId)
         }
     }
 }
 
-
-const transcoders = {}
-
-module.exports = {
-    stopTranscoding(torrent) {
-        Object.keys(transcoders).forEach((key) => {
-            const transcoder = transcoders[key]
-            if (transcoder.torrentHash == torrent.infoHash) {
-                transcoder.kill()
-            }
-        })
-    },
-    getTranscoder(clientId) {
-        let transcoder = transcoders[clientId]
-        if (!transcoder) {
-            transcoder = new Transcoder()
-            transcoders[clientId] = transcoder
-            return transcoder
-        }
-
-        return transcoder
-    }
-}
+module.exports = Transcoder

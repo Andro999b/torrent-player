@@ -1,4 +1,5 @@
 import request from 'superagent'
+import playableExtensions from '../../resources/video-extensions.json'
 
 export function fetchOnce() {
     let req
@@ -10,8 +11,6 @@ export function fetchOnce() {
     }
 }
 
-const playableExtensions = ['ogv', 'mp4', 'webm', 'avi']
-
 export function isPlayable(fileName) {
     return playableExtensions.findIndex((ext) => {
         return fileName.endsWith(`.${ext}`)
@@ -22,8 +21,8 @@ export function getTorrentFileContentLink(hashInfo, fileIndex) {
     return '/api/torrents/' + hashInfo + '/files/' + fileIndex
 }
 
-export function getTorrentFileTranscodeLink(hashInfo, fileIndex) {
-    return '/api/torrents/' + hashInfo + '/files/' + fileIndex + '/transcode'
+export function getTorrentHLSLink(hashInfo, fileIndex) {
+    return '/api/torrents/' + hashInfo + '/files/' + fileIndex + '/hls'
 }
 
 export function invokeAll() {

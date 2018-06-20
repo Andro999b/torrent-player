@@ -1,4 +1,3 @@
-const uuid = require('uuid')
 const mime = require('mime-types')
 const ip = require('ip')
 const metadataService = require('../service/metadata')
@@ -39,7 +38,7 @@ function commonResource(infoHash, id, upnpClass, file) {
     })
 }
 
-function videoResource(infoHash, id, upnpClass, file) {
+function videoResource(infoHash, id, upnpClass, file, clientId) {
     const { name, path } = file
 
     return metadataService.getMetdadata(file).then((metadata) => {
@@ -74,7 +73,7 @@ function videoResource(infoHash, id, upnpClass, file) {
                         'size': -1,
                         'duration': formatedDuration
                     },
-                    _content: `http://${ip.address()}:${WEB_PORT}/api/torrents/${infoHash}/files/${id}/transcoded?clientId=${uuid()}`
+                    _content: `http://${ip.address()}:${WEB_PORT}/api/torrents/${infoHash}/files/${id}/transcoded?clientId=${clientId}`
                 }
             ]
         }
@@ -82,11 +81,11 @@ function videoResource(infoHash, id, upnpClass, file) {
 }
 
 
-function getMediaResource(infoHash, fileIndex, file) {
+function getMediaResource(infoHash, fileIndex, file, clientId) {
     const upnpClass = getItemClass(file)
     switch (upnpClass) {
         case 'object.item.videoItem':
-            return videoResource(infoHash, fileIndex, upnpClass, file)
+            return videoResource(infoHash, fileIndex, upnpClass, file, clientId)
         case 'object.item.audioItem':
         default:
             return commonResource(infoHash, fileIndex, upnpClass, file)

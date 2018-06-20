@@ -1,10 +1,14 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import Grid from 'material-ui/Grid'
 import TorrentListItem from '../components/TorrentListItem'
 import DeleteTorrentDialog from '../components/DeleteTorrentDialog'
-import Typography from 'material-ui/Typography'
-import { CircularProgress } from 'material-ui/Progress'
+
+import {
+    Grid,
+    Typography,
+    CircularProgress
+} from '@material-ui/core'
+
 import { observer, inject } from 'mobx-react'
 
 @inject('torrentsStore') @observer
@@ -46,9 +50,9 @@ class TorrentsView extends Component {
         const { torrentToDelete } = this.state
 
         return (
-            <div>
+            <div className="torrents-list">
                 {!loading && torrents.length == 0 && <Typography align="center" variant="display1">No active torrents</Typography>}
-                <Grid container spacing={16} className="torrents-list">
+                <Grid container spacing={16}>
                     {loading && <div className="loading-center"><CircularProgress /></div>}
                     {!loading && torrents.map((torrent) =>
                         <Grid item xs={12} key={torrent.infoHash}>

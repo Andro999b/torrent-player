@@ -1,16 +1,25 @@
 import React, { Component, Fragment } from 'react'
 import PropTypes from 'prop-types'
-import ExpansionPanel, { ExpansionPanelDetails, ExpansionPanelSummary, ExpansionPanelActions } from 'material-ui/ExpansionPanel'
-import { CircularProgress } from 'material-ui/Progress'
-import ExpandIcon from 'material-ui-icons/ExpandMore'
+
+import {
+    ExpansionPanel,
+    ExpansionPanelDetails,
+    ExpansionPanelSummary,
+    ExpansionPanelActions,
+    CircularProgress,
+    Button,
+    Typography
+} from '@material-ui/core'
+
+import DownloadIcon from '@material-ui/icons/FileDownload'
+import ExpandIcon from '@material-ui/icons/ExpandMore'
+
 import SearchResultsItemDetails from './SearchResultsItemDetails'
-import Typography from 'material-ui/Typography'
-import Button from 'material-ui/Button'
-import DownloadIcon from 'material-ui-icons/FileDownload'
+
 import { observer, inject } from 'mobx-react'
 
-import red from 'material-ui/colors/red'
-import green from 'material-ui/colors/green'
+import red from '@material-ui/core/colors/red'
+import green from '@material-ui/core/colors/green'
 
 
 @inject(({ transitionStore: { download } }) => ({
@@ -41,16 +50,16 @@ class SearchResultsItem extends Component {
         const { item, onDownload } = this.props
         const { showDetails } = this.state
 
-        const title = 
+        const title =
             <div
                 style={{ wordBreak: 'break-all' }}>
                 {item.name}
             </div>
 
-        const subheader = 
+        const subheader =
             <div>
-                {item.size && <span>Size: {item.size}&nbsp;</span>}
-                {item.seeds > 0 && <span style={{ color: green[500] }}>Seeds: {item.seeds}&nbsp;</span>}
+                {item.size && <span style={{ paddingRight: 4 }}>Size: {item.size}</span>}
+                {item.seeds > 0 && <span style={{ color: green[500], paddingRight: 4 }}>Seeds: {item.seeds}</span>}
                 {item.leechs > 0 && <span style={{ color: red[700] }}>Leechs: {item.leechs}</span>}
             </div>
 
@@ -75,8 +84,10 @@ class SearchResultsItem extends Component {
         return (
             <ExpansionPanel expanded={showDetails} onChange={this.handleToggleDetails.bind(this)}>
                 <ExpansionPanelSummary expandIcon={<ExpandIcon />} classes={{ content: 'expand-header' }}>
-                    <Typography variant='title' className='expand-header__row'>{title}</Typography>
-                    <Typography variant='subheading' className='expand-header__row'>{subheader}</Typography>
+                    <div>
+                        <Typography variant='title' className='expand-header__row'>{title}</Typography>
+                        <Typography variant='subheading' className='expand-header__row'>{subheader}</Typography>
+                    </div>
                 </ExpansionPanelSummary>
                 {content}
             </ExpansionPanel>

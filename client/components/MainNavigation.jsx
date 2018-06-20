@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
-import BottomNavigation, { BottomNavigationAction } from 'material-ui/BottomNavigation'
-import SearchIcon from 'material-ui-icons/Search'
-import TorrentsIcon from 'material-ui-icons/List'
-import PlayerIcon from 'material-ui-icons/MusicVideo'
+import { BottomNavigation, BottomNavigationAction } from '@material-ui/core'
+import SearchIcon from '@material-ui/icons/Search'
+import TorrentsIcon from '@material-ui/icons/List'
+import PlayerIcon from '@material-ui/icons/MusicVideo'
 
 class MainNavigation extends Component {
     render() {

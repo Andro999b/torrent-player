@@ -1,14 +1,9 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
-import Snackbar from 'material-ui/Snackbar'
-import Slide from 'material-ui/transitions/Slide'
+import { Snackbar, Slide } from '@material-ui/core'
 
 import { observer, inject } from 'mobx-react'
-
-function TransitionUp(props) {
-    return <Slide direction="up" {...props} />
-}
 
 @inject('notificationStore') @observer
 class Notification extends Component {
@@ -26,11 +21,9 @@ class Notification extends Component {
 
         return (
             <Snackbar
-                autoHideDuration={5000}
+                autoHideDuration={2000}
                 open={open}
                 onClose={this.handleClose}
-                onRequestClose={this.handleClose}
-                transition={TransitionUp}
                 message={message}
             />
         )

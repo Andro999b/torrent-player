@@ -1,4 +1,10 @@
 {
-    "presets": ["react-app"],
-    "plugins": ["transform-decorators-legacy", "transform-class-properties"]
-  }
+  "presets": [
+    "env",
+    "react",
+    "stage-2"
+  ],
+  "plugins": [
+    "transform-decorators-legacy"
+  ]
+}

@@ -2,10 +2,10 @@ import { observable, action } from 'mobx'
 import { fetchOnce } from '../utils'
 import request from 'superagent'
 import notificationStore from './notifications-store'
+import { SEARCH_RPVODERS } from '../contants'
 
 const fetchSuggestions = fetchOnce()
-const searchProviders = ['tfile']
-const searchProvidersFetch = searchProviders.reduce((acc, provider) => {
+const searchProvidersFetch = SEARCH_RPVODERS.reduce((acc, provider) => {
     acc[provider] = fetchOnce()
     return acc
 }, {})
@@ -31,7 +31,7 @@ class SearchReusltItem {
         this.loadingDetails = true
 
         request
-            .get(`/api/trackers/${this.provider}/torrents/${this.torrent}`)
+            .get(`/api/trackers/${this.provider}/items/${this.id}`)
             .then((res) => {
                 this.details = res.body
                 this.loadingDetails = false
@@ -48,8 +48,13 @@ class SearchStore {
     @observable suggestions = []
     @observable searchResults = []
     @observable loading = false
+    @observable searchProviders = SEARCH_RPVODERS.concat([])
 
     waitingSuggestions = true
+
+    @action selectProviders(providers) {
+        this.searchProviders = providers
+    }
 
     @action suggest(searchQuery) {
         if (searchQuery) {
@@ -71,7 +76,7 @@ class SearchStore {
         this.searchResults = []
         this.loading = true
 
-        const fetches = searchProviders.map((provider) => {
+        const fetches = this.searchProviders.map((provider) => {
             const fetch = searchProvidersFetch[provider]
             return fetch(`/api/trackers/${provider}/search`)
                 .query({ q: searchQuery })

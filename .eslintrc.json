@@ -6,10 +6,7 @@
         "es6": true,
         "node": true
     },
-    "extends": [
-        "eslint:recommended",
-        "plugin:react/recommended"
-    ],
+    "extends": ["eslint:recommended", "plugin:react/recommended"],
     "parserOptions": {
         "ecmaVersion": 7,
         "ecmaFeatures": {
@@ -19,26 +16,13 @@
         },
         "sourceType": "module"
     },
-    "plugins": [
-        "react"
-    ],
+    "plugins": ["react"],
     "rules": {
-        "indent": [
-            "error",
-            4,
-            {"SwitchCase": 1}
-        ],
-        "quotes": [
-            "warn",
-            "single"
-        ],
-        "semi": [
-            "warn",
-            "never"
-        ],
-        "no-console": [
-            "warn", 
-            { "allow": ["warn", "error"] }
-        ]
+        "indent": ["error", 4, { "SwitchCase": 1 }],
+        "quotes": ["warn", "single"],
+        "semi": ["warn", "never"],
+        "no-console": ["warn", { "allow": ["warn", "error"] }],
+        "brace-style": ["warn"],
+        "arrow-parens": ["warn"]
     }
 }

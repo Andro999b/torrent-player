@@ -1,10 +1,22 @@
 import React, { Component } from 'react'
 import Root from './Root'
-import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles'
+import JssProvider from 'react-jss/lib/JssProvider'
+import { create } from 'jss'
+import { 
+    MuiThemeProvider, 
+    createMuiTheme,
+    createGenerateClassName, 
+    jssPreset 
+} from '@material-ui/core/styles'
 // import DevTools from 'mobx-react-devtools'
 
 import stores from './store'
 import { Provider } from 'mobx-react'
+
+const generateClassName = createGenerateClassName()
+const jss = create(jssPreset())
+// We define a custom insertion point that JSS will look for injecting the styles in the DOM.
+jss.options.insertionPoint = 'jss-insertion-point'
 
 const theme = createMuiTheme({
     palette: {
@@ -16,11 +28,13 @@ class App extends Component {
     render() {
         return (
             <div>
-                <MuiThemeProvider theme={theme}>
-                    <Provider {...stores}>
-                        <Root />
-                    </Provider>
-                </MuiThemeProvider>
+                <JssProvider jss={jss} generateClassName={generateClassName}>
+                    <MuiThemeProvider theme={theme}>
+                        <Provider {...stores}>
+                            <Root />
+                        </Provider>
+                    </MuiThemeProvider>
+                </JssProvider>
                 {/* <DevTools /> */}
             </div>
         )

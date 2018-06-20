@@ -1,30 +1,46 @@
-import { observable, autorun, action } from 'mobx'
+import { observable, action } from 'mobx'
 
 
 class OutputDevice {
+    @observable files = []
+    @observable currentFileIndex = 0
     @observable currentTime = 0
     @observable duration = 0
     @observable buffered = 0
     @observable isPlaying = false
 
-    isSeekable() { return true }
-    isLocal() { return true }
+    isSeekable() {
+        return true
+    }
+    isLocal() {
+        return true
+    }
 
     /* eslint-disable no-unused-vars */
     setSource(source) { }
     pause() { }
     play(currentTime) { }
     seek(currentTime) { }
-    connect(onDisconnect) {}
+    connect(onDisconnect) { }
     disconnect() { }
     /* eslint-enable */
+
+    setFiles(files) {
+        this.files = files
+    }
+
+    selectFile(fileIndex) {
+        this.currentFileIndex = fileIndex
+        this.setSource(this.files[this.currentFileIndex].source)
+    }
 }
 
 class LocalOutput extends OutputDevice {
     @observable volume = 1
-    @observable isMuted = true
+    @observable isMuted = false
     @observable isFullscreen = false
     @observable url = null
+    @observable hls = false
     @observable seekTime = null
 
     @action setVolume(volume) {
@@ -32,15 +48,16 @@ class LocalOutput extends OutputDevice {
     }
 
     @action setSource(source) {
-        if(source.url != this.url) {
+        if (source.url != this.url) {
             this.url = source.url
+            this.hls = source.hls
             this.currentTime = 0
         }
     }
 
     @action play(currentTime) {
         this.isPlaying = true
-        if(currentTime != undefined) {
+        if (currentTime != undefined) {
             this.currentTime = currentTime
         }
     }
@@ -72,33 +89,30 @@ class LocalOutput extends OutputDevice {
 //     isLocal() { return false }
 // }
 
-class LastPosition {
-    @observable files = []
-    @observable currentIndex = 0
-    currentTime = 0
-}
-
 class PlayerStore {
-    @observable output = new LocalOutput()
-    @observable lastPosition = new LastPosition()
+    @observable output = null
+    torrent = null
 
-    constructor() {
-        autorun(() => {
+    @action loadOutput(output) {
+        const prevOutput = this.output
+        if (prevOutput) {
+            prevOutput.disconnect()
+        }
 
-        }, { delay: 1000 })
-
-        //resotre state
+        this.output = output
     }
 
-    @action setOutput(output) {
+    @action switchOutput(output) {
         const prevOutput = this.output
 
         this.output = output
 
-        const { files, fileIndex } = this.lastPosition
-        this.output.setUrl(files[fileIndex].url)
+        const { files, fileIndex } = this.prevOutput
 
-        //respore prev output stat
+        this.output.setFiles(files)
+        this.output.selectFile(fileIndex)
+
+        //response prev output stat
         if (prevOutput) {
             if (prevOutput.isPlaying) {
                 output.play(prevOutput.position)
@@ -108,33 +122,46 @@ class PlayerStore {
         output.connect()
     }
 
-    @action play(files, fileName) {
-        this.lastPosition.files = files
-        
-        let fileIndex = files.findIndex((file) => file.name == fileName)
-        if(fileIndex == -1) fileName = 0
+    @action play(files, fileName, torrent) {
+        if(files.length === 0) return
 
-        this.switchFile(fileIndex)
+        if(!this.output)
+            this.output = new LocalOutput()
+
+        this.torrent = torrent
+        this.output.setFiles(files)
+
+        let fileIndex = files.findIndex((file) => file.name == fileName)
+        if (fileIndex == -1) fileName = 0
+
+        this.output.selectFile(fileIndex)
         this.output.play()
     }
 
     @action.bound switchFile(fileIndex) {
-        const { files } = this.lastPosition
-        
-        if(fileIndex < 0 || fileIndex >= files.length)
+        const { files } = this.output
+
+        if (fileIndex < 0 || fileIndex >= files.length)
             return
 
-        this.lastPosition.currentIndex = fileIndex
-        this.output.setSource(files[fileIndex].source)
+        this.output.selectFile(fileIndex)
         this.output.play()
     }
 
     @action.bound prevFile() {
-        this.switchFile(this.lastPosition.currentIndex-1)
+        this.switchFile(this.output.currentFileIndex - 1)
     }
 
     @action.bound nextFile() {
-        this.switchFile(this.lastPosition.currentIndex+1)
+        this.switchFile(this.output.currentFileIndex + 1)
+    }
+
+    @action stopPlayng() {
+        
+    }
+
+    @action stopPlayningTorrent(torrent) {
+
     }
 }
 
