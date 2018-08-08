@@ -92,6 +92,8 @@ html {
     bottom: 0;
     left: 0;
     right: 0;
+    padding-bottom: 3px;
+    opacity: 0.8;
 }
 
 .player__screen {
@@ -104,7 +106,7 @@ html {
     top: 0;
     left: 0;
     right: 0;
-    bottom: 68px;
+    bottom: 55px;
     background: black;
 
     video.scale_hor {
@@ -137,11 +139,26 @@ html {
 
 .player__file-list {
     overflow-y: auto;
-    width: 480px;
+    width: 100%;
     position: absolute;
     right: 0;
-    bottom: 68px;
+    bottom: 55px;
     top: 0;
+    opacity: 0.8;
+
+    @media (min-width: 576px) {
+        width: 576px;
+    }
+}
+
+.player__title {
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    padding: 5px;
 }
 
 .hide-on-mobile {

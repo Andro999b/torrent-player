@@ -12,7 +12,8 @@ class Provider {
                 slectors: {},
                 pagenatorSelector: '',
                 userAgent: 'Mozilla/5.0 Gecko/20100101 Firefox/59.0',
-                detailsScope: 'body'
+                detailsScope: 'body',
+                filterDescription: []
             },
             config
         )
@@ -26,6 +27,21 @@ class Provider {
             },
             this.config.detailsSelectors
         )
+
+        this.filterDescription = [
+            'Перевод',
+            'Субтитры',
+            'Формат',
+            'Страна',
+            'Режиссер',
+            'Жанр',
+            'Продолжительность',
+            'Год выпуска',
+            'В ролях',
+            'Описание',
+            'Видео',
+            'Аудио',
+        ].concat(this.config.filterDescription)
     }
 
     getName() {
@@ -94,7 +110,11 @@ class Provider {
     }
 
     _postProcessResult(results) {
-        results.forEach((result) => result.infoUrl = this.getInfoUrl(result.id))
+        results.forEach((result) => {
+            result.infoUrl = this.getInfoUrl(result.id)
+            if(result.seeds) result.seeds = parseInt(result.seeds)
+            if(result.leechs) result.leechs = parseInt(result.leechs)
+        })
         return results
     }
 

@@ -22,12 +22,12 @@ import filesize from 'file-size'
 class TorrentListItemFile extends Component {
 
     constructor(props, context) {
-        super(props, context);
+        super(props, context)
         this.state = { anchorEl: null }
     }
     
 
-    handleDownload() {
+    handleDownload = () => {
         const { torrent, fileIndex } = this.props
         const downloadUrl = getTorrentFileContentLink(torrent.infoHash, fileIndex)
 
@@ -35,11 +35,11 @@ class TorrentListItemFile extends Component {
     }
 
 
-    handleOpenMenu(event) {
+    handleOpenMenu = (event) => {
         this.setState({ anchorEl: event.currentTarget })
     }
 
-    handleCloseMenu() {
+    handleCloseMenu = () => {
         this.setState({ anchorEl: null })
     }
 
@@ -51,27 +51,27 @@ class TorrentListItemFile extends Component {
         const progress = file.progress > 1 ? '100%' : Math.ceil(Math.min(file.progress, 1) * 100) + '%'
 
         const text = <div style={{ wordBreak: 'break-all' }}>
-            {file.name}&nbsp;
+            {file.path}&nbsp;
             <span style={{ color: grey[600] }}>
                 {filesize(file.length).human()}&nbsp;{progress}
             </span>
         </div>
 
         return (
-            <ListItem key={fileIndex} button={playable} onClick={() => onPlayFile(torrent, file.name)}>
+            <ListItem key={fileIndex} button={playable} onClick={() => onPlayFile(torrent, fileIndex)}>
                 <ListItemIcon className="hide-on-mobile">
                     {playable ? <PlayableIcon /> : <NotPlayableIcon />}
                 </ListItemIcon>
                 <ListItemText primary={text} style={{ paddingLeft: 0 }} />
                 <ListItemSecondaryAction>
-                    <IconButton onClick={this.handleOpenMenu.bind(this)}>
+                    <IconButton onClick={this.handleOpenMenu}>
                         <MoreIcon />
                     </IconButton>
-                    <Menu anchorEl={anchorEl} open={anchorEl != null} onClose={this.handleCloseMenu.bind(this)}>
-                        {playable && <MenuItem onClick={() => onCastFile(torrent, file.name)}>
+                    <Menu anchorEl={anchorEl} open={anchorEl != null} onClose={this.handleCloseMenu}>
+                        {playable && <MenuItem onClick={() => onCastFile(torrent, fileIndex)}>
                             Cast
                         </MenuItem>}
-                        <MenuItem onClick={this.handleDownload.bind(this)}>
+                        <MenuItem onClick={this.handleDownload}>
                             Download
                         </MenuItem>
                     </Menu>

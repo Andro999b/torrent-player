@@ -1,8 +1,13 @@
 import { action, observable } from 'mobx'
 import request from 'superagent'
-import { getTorrentFileContentLink, getTorrentHLSLink, isPlayable } from '../utils'
+import { 
+    getTorrentFileContentLink, 
+    getTorrentHLSLink, 
+    getTorrentHLSKeepAliveLink, 
+    isPlayable 
+} from '../utils'
 import notificationStore from './notifications-store'
-import playerStore from './player-store'
+import playerStore, { LocalDevice } from './player-store'
 
 const testMedia = document.createElement('video')
 
@@ -18,31 +23,31 @@ class TransitionStore {
             .then(() => this.screen = 'torrents')
     }
 
-    @action.bound downloadAndPlay(torrentInfo, fileName) {
+    @action.bound downloadAndPlay(torrentInfo, fileIndex) {
         this.downloadTorrent(torrentInfo)
-            .then((torrent) => this.playMedia(torrent, fileName))
+            .then((torrent) => this.playMedia(torrent, fileIndex))
     }
 
-    @action.bound downloadAndCast(torrentInfo, fileName) {
+    @action.bound downloadAndCast(torrentInfo, fileIndex) {
         this.downloadTorrent(torrentInfo)
-            .then((torrent) => this.playMedia(torrent, fileName))
+            .then((torrent) => this.playMedia(torrent, fileIndex))
     }
 
-    @action.bound playMedia(torrent, fileName) {
+    @action.bound playMedia(torrent, fileIndex) {
         this.screen = 'player'
-        playerStore.play(this.parseTorrentFiles(torrent), fileName, torrent)
+        const { playlist, startIndex } = this.parseTorrentInfo(torrent, fileIndex)
+        playerStore.openPlaylist(new LocalDevice(), playlist, startIndex, torrent)
     }
 
     @action.bound castMedia(torrent, fileName) { // eslint-disable-line
         //this.screen = 'player'
-        //playerStore.play(this.parseTorrentFiles(torrent), fileName)
+        //playerStore.openPlaylist(this.parseTorrentFiles(torrent), fileName)
     }
 
     @action.bound downloadTorrent(torrentInfo) {
+        const { magnetUrl, torrentUrl } = torrentInfo
         return request
-            .post('/api/torrents', {
-                magnetUrl: torrentInfo.magnetUrl
-            })
+            .post('/api/torrents', { magnetUrl, torrentUrl })
             .then((res) => {
                 notificationStore.showMessage(`Starting download torrent ${torrentInfo.name}`)
                 return res.body
@@ -52,23 +57,41 @@ class TransitionStore {
             })
     }
 
-    parseTorrentFiles(torrent) {
-        return torrent.files
+    parseTorrentInfo(torrent, fileIndex) {
+        const files = torrent.files
             .map((file, fileIndex) => {
-                let url, hls = false
-                if(testMedia.canPlayType(file.mimeType) !== ''){
+                let url, hls = false, keepAliveUrl = null
+                if (testMedia.canPlayType(file.mimeType) !== '') {
                     url = getTorrentFileContentLink(torrent.infoHash, fileIndex)
                 } else {
                     hls = true
                     url = getTorrentHLSLink(torrent.infoHash, fileIndex)
+                    keepAliveUrl = getTorrentHLSKeepAliveLink(torrent.infoHash, fileIndex)
                 }
-                
+
                 return {
                     name: file.name,
-                    source: { url, hls }
+                    path: file.path,
+                    source: { url, hls, keepAliveUrl }
                 }
             })
             .filter((file) => isPlayable(file.name))
+
+        const file = torrent.files[fileIndex]
+        let startIndex = 0
+        
+        if(file) {
+            startIndex = files.findIndex((item) => item.path == file.path)
+            if(startIndex < 0) startIndex = 0
+        }
+
+        return {
+            playlist: {
+                name: torrent.name,
+                files
+            },
+            startIndex
+        }
     }
 }
 

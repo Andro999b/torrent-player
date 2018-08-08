@@ -1,17 +1,21 @@
 import { observable, action } from 'mobx'
+import request from 'superagent'
 
 
-class OutputDevice {
-    @observable files = []
+class Device {
+    @observable playlist = []
     @observable currentFileIndex = 0
     @observable currentTime = 0
     @observable duration = 0
     @observable buffered = 0
     @observable isPlaying = false
+    @observable isLoading = false
+    @observable error = null
 
     isSeekable() {
         return true
     }
+
     isLocal() {
         return true
     }
@@ -25,23 +29,43 @@ class OutputDevice {
     disconnect() { }
     /* eslint-enable */
 
-    setFiles(files) {
-        this.files = files
+    @action setPlaylist(playlist) {
+        this.playlist = playlist
     }
 
-    selectFile(fileIndex) {
+    @action selectFile(fileIndex) {
+        const { files } = this.playlist
         this.currentFileIndex = fileIndex
-        this.setSource(this.files[this.currentFileIndex].source)
+        this.setSource(files[this.currentFileIndex].source)
+    }
+
+    @action setLoading(loading) {
+        this.isLoading = loading
+    }
+
+    @action setError(error) {
+        this.error = error
     }
 }
 
-class LocalOutput extends OutputDevice {
+export class LocalDevice extends Device {
     @observable volume = 1
     @observable isMuted = false
-    @observable isFullscreen = false
     @observable url = null
+    keepAliveUrl = null
     @observable hls = false
     @observable seekTime = null
+
+    keepAliveInterval = 0
+
+    constructor() {
+        super()
+        this.keepAliveInterval= setInterval(() => {
+            if(this.keepAliveUrl) {
+                request.get(this.keepAliveUrl).end()// TODO more oblios way to do this
+            }
+        }, 5000) // each 5 sec call server keep alive
+    }
 
     @action setVolume(volume) {
         this.volume = volume
@@ -51,7 +75,10 @@ class LocalOutput extends OutputDevice {
         if (source.url != this.url) {
             this.url = source.url
             this.hls = source.hls
+            this.keepAliveUrl = source.keepAliveUrl
             this.currentTime = 0
+            this.duration = 0
+            this.buffered = 0
         }
     }
 
@@ -80,88 +107,83 @@ class LocalOutput extends OutputDevice {
         this.isMuted = !this.isMuted
     }
 
-    @action toggleFullsceen() {
-        this.isFullscreen = !this.isFullscreen
+    disconnect() {
+        clearInterval(this.keepAliveInterval)
     }
 }
 
-// class RemoteOutput extends OutputDevice {
-//     isLocal() { return false }
-// }
-
 class PlayerStore {
-    @observable output = null
+    @observable device = null
     torrent = null
 
-    @action loadOutput(output) {
-        const prevOutput = this.output
-        if (prevOutput) {
-            prevOutput.disconnect()
+    @action loadDevice(device) {
+        const prevDevice = this.device
+        if (prevDevice) {
+            prevDevice.disconnect()
         }
 
-        this.output = output
+        this.device = device
     }
 
-    @action switchOutput(output) {
-        const prevOutput = this.output
+    @action switchDevice(device) {
+        const prevDevice = this.device
 
-        this.output = output
+        this.device = device
 
-        const { files, fileIndex } = this.prevOutput
+        const { playlist, fileIndex } = this.prevDevice
 
-        this.output.setFiles(files)
-        this.output.selectFile(fileIndex)
+        this.device.setPlaylist(playlist)
+        this.device.selectFile(fileIndex)
 
-        //response prev output stat
-        if (prevOutput) {
-            if (prevOutput.isPlaying) {
-                output.play(prevOutput.position)
+        //response prev device stat
+        if (prevDevice) {
+            if (prevDevice.isPlaying) {
+                device.play(prevDevice.position)
             }
-            prevOutput.disconnect()
+            prevDevice.disconnect()
         }
-        output.connect()
+        device.connect()
     }
 
-    @action play(files, fileName, torrent) {
-        if(files.length === 0) return
-
-        if(!this.output)
-            this.output = new LocalOutput()
+    @action openPlaylist(device, playlist, fileIndex, torrent) {
+        if(playlist.files.length === 0) return
 
         this.torrent = torrent
-        this.output.setFiles(files)
-
-        let fileIndex = files.findIndex((file) => file.name == fileName)
-        if (fileIndex == -1) fileName = 0
-
-        this.output.selectFile(fileIndex)
-        this.output.play()
+        this.device = device
+        this.device.setPlaylist(playlist)
+        this.device.selectFile(fileIndex)
+        this.device.play()
     }
 
     @action.bound switchFile(fileIndex) {
-        const { files } = this.output
+        const { playlist: { files } } = this.device
 
         if (fileIndex < 0 || fileIndex >= files.length)
             return
 
-        this.output.selectFile(fileIndex)
-        this.output.play()
+        this.device.selectFile(fileIndex)
+        this.device.play()
     }
 
     @action.bound prevFile() {
-        this.switchFile(this.output.currentFileIndex - 1)
+        this.switchFile(this.device.currentFileIndex - 1)
     }
 
     @action.bound nextFile() {
-        this.switchFile(this.output.currentFileIndex + 1)
+        this.switchFile(this.device.currentFileIndex + 1)
     }
 
-    @action stopPlayng() {
-        
+    @action closePlaylist() {
+        if(this.device) {
+            this.device.disconnect()
+        }
+        this.device = null
     }
 
-    @action stopPlayningTorrent(torrent) {
-
+    @action closeTorrent(torrent) {
+        if(this.torrent && this.torrent.infoHash === torrent.infoHash) {
+            this.closePlaylist()
+        }
     }
 }
 

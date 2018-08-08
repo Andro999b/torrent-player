@@ -1,20 +1,20 @@
 const path = require('path')
 const promisify = require('util').promisify
 const ffprobe = promisify(require('fluent-ffmpeg').ffprobe)
-const { TORRENTS_DIR } = require('../config')
-// const debug = require('debug')('metadata')
+const { TORRENTS_DATA_DIR } = require('../config')
 
 const cache = {}
 
 module.exports = {
     getMetdadata(file) {
-        if(cache.hasOwnProperty(file.path)) {
-            return Promise.resolve(cache[file.path])
+        const fullPath = path.join(TORRENTS_DATA_DIR, file.path)
+        if(cache.hasOwnProperty(fullPath)) {
+            return Promise.resolve(cache[fullPath])
         }
 
-        return ffprobe(path.join(TORRENTS_DIR, file.path))
+        return ffprobe(file.createReadStream())
             .then((metadata) => {
-                cache[file.path] = metadata
+                cache[fullPath] = metadata
                 return metadata
             })
     },

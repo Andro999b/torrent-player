@@ -1,15 +1,12 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
-import { Snackbar, Slide } from '@material-ui/core'
+import { Snackbar } from '@material-ui/core'
 
 import { observer, inject } from 'mobx-react'
 
 @inject('notificationStore') @observer
 class Notification extends Component {
-    constructor(props, context) {
-        super(props, context)
-    }
 
     handleClose = () => {
         this.props.notificationStore.hideMessage()

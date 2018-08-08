@@ -57,38 +57,40 @@ class SearchBar extends Component {
         this.onInput = debounce(this.handleInput.bind(this), 200)
     }
 
-    handleInput({ value }) {
+    handleInput = ({ value }) => {
         this.props.onInput(value)
     }
 
-    handleChange(e, { newValue }) {
+    handleChange = (e, { newValue }) => {
         this.setState({ searchQuery: newValue })
     }
 
-    handleClean() {
+    handleClean = () => {
         const searchQuery = ''
         this.props.onInput(searchQuery)
         this.setState({ searchQuery })
     }
 
-    handleKeyDown(e) {
+    handleCleanSuggestions = () => {
+        this.props.onInput('')
+    }
+
+    handleKeyDown = (e) => {
         if (e.key == 'Enter') {
             this.handleSubmit(this.state.searchQuery)
         }
     }
 
-    handleSubmit(searchQuery) {
-        this.props.onInput('')
+    handleSubmit = (searchQuery) => {
         this.props.onSubmit(searchQuery)
-        this.setState({ searchQuery: '' })
         this.lastSearchQuery = searchQuery
     }
 
-    handleOpenSettings(event) {
+    handleOpenSettings = (event) => {
         this.setState({ settingsAnchorEl: event.currentTarget })
     }
 
-    handleCloseSettings() {
+    handleCloseSettings = () => {
         this.setState({ settingsAnchorEl: null })
     }
 
@@ -96,7 +98,7 @@ class SearchBar extends Component {
         const { searchProviders, onSelectProviders } = this.props
 
         const index = searchProviders.indexOf(provider)
-        if(index != -1) {
+        if (index != -1) {
             onSelectProviders(searchProviders.filter((v, i) => i != index))
         } else {
             onSelectProviders(searchProviders.concat([provider]))
@@ -110,11 +112,8 @@ class SearchBar extends Component {
                 open={settingsAnchorEl != null}
                 onClose={this.handleCloseSettings.bind(this)}>
                 {SEARCH_RPVODERS.map((provider) => (
-                    <MenuItem key={provider}>
-                        <Checkbox
-                            checked={searchProviders.indexOf(provider) != -1}
-                            onClick={() => this.toggleProvider(provider)}
-                        />
+                    <MenuItem key={provider} onClick={() => this.toggleProvider(provider)}>
+                        <Checkbox disableRipple checked={searchProviders.indexOf(provider) != -1} />
                         <ListItemText primary={SEARCH_RPVODERS_NAME[provider]} />
                     </MenuItem>
                 ))}
@@ -130,8 +129,8 @@ class SearchBar extends Component {
                 <Autosuggest
                     renderInputComponent={renderInput}
                     suggestions={toJS(suggestions)}
-                    onSuggestionsFetchRequested={this.handleInput.bind(this)}
-                    onSuggestionsClearRequested={this.handleClean.bind(this)}
+                    onSuggestionsFetchRequested={this.handleInput}
+                    onSuggestionsClearRequested={this.handleCleanSuggestions}
                     onSuggestionSelected={(e, { suggestion }) =>
                         this.handleSubmit(suggestion)
                     }
@@ -144,8 +143,8 @@ class SearchBar extends Component {
                         autoFocus: true,
                         placeholder: 'Type for search',
                         value: searchQuery,
-                        onKeyDown: this.handleKeyDown.bind(this),
-                        onChange: this.handleChange.bind(this),
+                        onKeyDown: this.handleKeyDown,
+                        onChange: this.handleChange,
                         startAdornment: (
                             <InputAdornment>
                                 <SearchIcon />
@@ -154,14 +153,14 @@ class SearchBar extends Component {
                         endAdornment: (
                             <InputAdornment>
                                 <IconButton
-                                    onClick={this.handleClean.bind(this)}
+                                    onClick={this.handleClean}
                                 >
                                     <ClearIcon />
                                 </IconButton>
-                                <IconButton>
-                                    <MoreIcon onClick={this.handleOpenSettings.bind(this)} />
-                                    {this.renderSettings()}
+                                <IconButton onClick={this.handleOpenSettings} >
+                                    <MoreIcon />
                                 </IconButton>
+                                {this.renderSettings()}
                             </InputAdornment>
                         )
                     }}

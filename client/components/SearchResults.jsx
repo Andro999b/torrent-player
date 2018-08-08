@@ -20,7 +20,7 @@ class SearchResults extends Component {
         }
     }
 
-    loadMoreItems(page) {
+    loadMoreItems = (page) => {
         const results = this.props.results
         const end = (page + 1) * PAGE_SIZE
         const hasMore = end < results.length
@@ -39,7 +39,7 @@ class SearchResults extends Component {
                 {items.length == 0 && <Typography align="center" variant="display1">Nothing to display</Typography>}
                 <InfiniteScroll
                     pageStart={0}
-                    loadMore={this.loadMoreItems.bind(this)}
+                    loadMore={this.loadMoreItems}
                     hasMore={hasMore}
                     useWindow={false}
                 >

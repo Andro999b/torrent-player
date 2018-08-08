@@ -1,5 +1,6 @@
 const { Readable } = require('stream')
 const { EventEmitter } = require('events')
+const debug = console.log
 
 class CycleBuffer extends EventEmitter {
     constructor(options) {
@@ -75,6 +76,7 @@ class CycleBuffer extends EventEmitter {
     }
 
     final() {
+        debug('End writing')
         this.writeFinished = true
     }
 
@@ -82,6 +84,7 @@ class CycleBuffer extends EventEmitter {
         const filledSpace = this.writedSpace() - this.readedSpace()
 
         if (filledSpace > this.stopWatermark) {
+            debug('Reading stopWritting') 
             this.emit('stopWritting')
         } else if (filledSpace < this.continueWatermark) {
             this.emit('continueWritting')
@@ -130,7 +133,6 @@ class CycleBufferReader extends Readable {
 
             //break reading if limit reached 
             if (this.limit && readedBytes >= this.limit) {
-                this.push(null)
                 return
             }
 
@@ -141,8 +143,9 @@ class CycleBufferReader extends Readable {
                     return
                 }
             } else {
-                if (!this.push(chunk))
+                if (!this.push(chunk)){
                     return
+                }
 
                 readedBytes += chunk.length
             }

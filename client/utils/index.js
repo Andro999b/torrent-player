@@ -25,9 +25,49 @@ export function getTorrentHLSLink(hashInfo, fileIndex) {
     return '/api/torrents/' + hashInfo + '/files/' + fileIndex + '/hls'
 }
 
+export function getTorrentHLSKeepAliveLink(hashInfo, fileIndex) {
+    return '/api/torrents/' + hashInfo + '/files/' + fileIndex + '/hls/keepAlive'
+}
+
 export function invokeAll() {
     const invockes = Array.from(arguments)
     return function () {
         invockes.forEach((invoke) => invoke.call())
     }
+}
+
+export function isTablet() {
+    if(window.matchMedia) { 
+        const isMobile = window.matchMedia('only screen and (max-width: 768px)')
+        return isMobile.matches
+    }
+
+    return false
+}
+
+export function isMobile() {
+    if(window.matchMedia) { 
+        const isMobile = window.matchMedia('only screen and (max-width: 570px)')
+        return isMobile.matches
+    }
+
+    return false
+}
+
+export function diff(oldObject, newObject) {
+    const result = {}
+    Object.keys(newObject).forEach((key) => {
+        if(newObject[key] != oldObject[key])
+            result[key] = newObject[key]
+    })
+    return result
+}
+
+export function pick(obj, fiels) {
+    const result = {}
+    fiels.forEach((key) => {
+        if(obj.hasOwnProperty(key))
+            result[key] = obj[key]
+    })
+    return result
 }

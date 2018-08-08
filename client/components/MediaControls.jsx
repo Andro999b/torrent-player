@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react'
 import { VideoSeekSlider } from 'react-video-seek-slider'
 import '../../node_modules/react-video-seek-slider/lib/ui-video-seek-slider.css'
 import PropTypes from 'prop-types'
-import { Paper, IconButton } from '@material-ui/core'
+import { Paper, IconButton, Slide } from '@material-ui/core'
 import {
     PlayArrow as PlayIcon,
     Pause as PauseIcon,
@@ -22,77 +22,81 @@ import { observer } from 'mobx-react'
 @observer
 class MediaControls extends Component {
     render() {
-        const { onPlaylistToggle, output, onPrev, onNext } = this.props
+        const { onPlaylistToggle, onFullScreenToggle, fullScreen, device, onPrev, onNext } = this.props
 
-        const local = output.isLocal()
+        const local = device.isLocal()
         const volumeControls = local ?
             <Fragment>
-                <IconButton onClick={() => output.toggleMute()}>
-                    {output.isMuted && <VolumeOffIcon />}
-                    {!output.isMuted && <VolumeOnIcon />}
+                <IconButton onClick={() => device.toggleMute()}>
+                    {device.isMuted && <VolumeOffIcon />}
+                    {!device.isMuted && <VolumeOnIcon />}
                 </IconButton>
             </Fragment> : null
 
 
         return (
-            <Paper elevation={0} square className="player-controls">
-                {
-                    output.isSeekable() &&
-                    <VideoSeekSlider
-                        max={output.duration}
-                        currentTime={output.currentTime}
-                        progress={output.buffered}
-                        onChange={(time) => output.seek(time)}
-                        offset={0}
-                        secondsPrefix="00:00:"
-                        minutesPrefix="00:"
-                    />
-                }
-                <div className="player-controls__panel">
-                    <div className="player-controls__panel-section">
-                        <IconButton onClick={onPrev}>
-                            <PreviousIcon />
-                        </IconButton>
-                        {!output.isPlaying &&
-                            <IconButton onClick={() => output.play()}>
-                                <PlayIcon />
+            <Slide direction="up" in mountOnEnter unmountOnExit>
+                <Paper elevation={0} square className="player-controls">
+                    {
+                        device.isSeekable() &&
+                        <VideoSeekSlider
+                            max={device.duration}
+                            currentTime={device.currentTime}
+                            progress={device.buffered}
+                            onChange={(time) => device.seek(time)}
+                            offset={0}
+                            secondsPrefix="00:00:"
+                            minutesPrefix="00:"
+                        />
+                    }
+                    <div className="player-controls__panel">
+                        <div className="player-controls__panel-section">
+                            <IconButton onClick={onPrev}>
+                                <PreviousIcon />
                             </IconButton>
-                        }
-                        {output.isPlaying &&
-                            <IconButton onClick={() => output.pause()}>
-                                <PauseIcon />
+                            {!device.isPlaying &&
+                                <IconButton onClick={() => device.play()}>
+                                    <PlayIcon />
+                                </IconButton>
+                            }
+                            {device.isPlaying &&
+                                <IconButton onClick={() => device.pause()}>
+                                    <PauseIcon />
+                                </IconButton>
+                            }
+                            <IconButton onClick={onNext}>
+                                <NextIcon />
                             </IconButton>
-                        }
-                        <IconButton onClick={onNext}>
-                            <NextIcon />
-                        </IconButton>
-                        {volumeControls}
+                            {volumeControls}
+                        </div>
+                        <div className="player-controls__panel-section">
+                            {local &&
+                                <IconButton onClick={() => onFullScreenToggle()}>
+                                    {!fullScreen && <FullscreenIcon />}
+                                    {fullScreen && <FullscreenExitIcon />}
+                                </IconButton>
+                            }
+                            <IconButton>
+                                <CastIcon />
+                            </IconButton>
+                            <IconButton onClick={() => onPlaylistToggle()}>
+                                <ListIcon />
+                            </IconButton>
+                        </div>
                     </div>
-                    <div className="player-controls__panel-section">
-                        {local &&
-                            <IconButton onClick={() => output.toggleFullsceen()}>
-                                {!output.isFullscreen && <FullscreenIcon />}
-                                {output.isFullscreen && <FullscreenExitIcon />}
-                            </IconButton>
-                        }
-                        <IconButton>
-                            <CastIcon />
-                        </IconButton>
-                        <IconButton onClick={() => onPlaylistToggle()}>
-                            <ListIcon />
-                        </IconButton>
-                    </div>
-                </div>
-            </Paper>
+                </Paper>
+            </Slide>
         )
     }
 }
 
 MediaControls.propTypes = {
-    output: PropTypes.object.isRequired,
+    device: PropTypes.object.isRequired,
     onPlaylistToggle: PropTypes.func.isRequired,
+    onFullScreenToggle: PropTypes.func.isRequired,
     onPrev: PropTypes.func.isRequired,
     onNext: PropTypes.func.isRequired,
+    fullScreen: PropTypes.bool,
 }
 
 export default MediaControls

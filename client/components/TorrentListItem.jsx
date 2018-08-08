@@ -35,7 +35,7 @@ class TorrentListItem extends Component {
         }
     }
 
-    handleToggleDetails() {
+    handleToggleDetails = () => {
         this.setState(({ showDetails }) => ({ showDetails: !showDetails }))
     }
 
@@ -68,7 +68,7 @@ class TorrentListItem extends Component {
         )
 
         return (
-            <ExpansionPanel expanded={showDetails} onChange={this.handleToggleDetails.bind(this)}>
+            <ExpansionPanel expanded={showDetails} onChange={this.handleToggleDetails}>
                 <ExpansionPanelSummary expandIcon={<ExpandIcon />} classes={{ content: 'expand-header' }}>
                     <div>
                         <Typography variant='title' className='expand-header__row'>{title}</Typography>

@@ -50,21 +50,6 @@ module.exports = class TfileProvider extends Provider {
                 }
             }
         })
-
-        this.filterDescription = [
-            'Перевод',
-            'Субтитры',
-            'Формат',
-            'Страна',
-            'Режиссер',
-            'Жанр',
-            'Продолжительность',
-            'Год выпуска',
-            'В ролях',
-            'Описание',
-            'Видео',
-            'Аудио'
-        ]
     }
 
     getName() {

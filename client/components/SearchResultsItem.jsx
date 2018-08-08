@@ -35,7 +35,7 @@ class SearchResultsItem extends Component {
         }
     }
 
-    handleToggleDetails() {
+    handleToggleDetails = () => {
         const { item } = this.props
 
         if (item.needLoadDetails())
@@ -82,7 +82,7 @@ class SearchResultsItem extends Component {
             )
 
         return (
-            <ExpansionPanel expanded={showDetails} onChange={this.handleToggleDetails.bind(this)}>
+            <ExpansionPanel expanded={showDetails} onChange={this.handleToggleDetails}>
                 <ExpansionPanelSummary expandIcon={<ExpandIcon />} classes={{ content: 'expand-header' }}>
                     <div>
                         <Typography variant='title' className='expand-header__row'>{title}</Typography>

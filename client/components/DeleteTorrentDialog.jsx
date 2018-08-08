@@ -10,10 +10,6 @@ import {
 } from '@material-ui/core'
 
 class DeleteTorrentDialog extends Component {
-    constructor(props, context) {
-        super(props, context)
-    }
-
     render() {
         const { torrent, onAccept, onReject } = this.props
 

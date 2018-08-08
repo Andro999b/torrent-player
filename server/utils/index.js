@@ -35,7 +35,7 @@ function formatDLNADuration(duration) {
 
 function getLastFileLine(fileName) {
     return fs.exists(fileName).then((exists) => {
-        if(!exists) return null
+        if (!exists) return null
 
         let inStream = fs.createReadStream(fileName)
         let outStream = new Stream
@@ -91,6 +91,35 @@ function parseRange(str) {
     return ranges
 }
 
+function waitForFile(path, timeout) {
+    const CHECK_INTERVAL = 1000
+    return new Promise((resolve, reject) => {
+        let lastCheckTs = new Date().getTime()
+        const checkFile = () => {
+            timeout -= (new Date().getTime() - lastCheckTs)
+            if (timeout < 0) {
+                reject()
+                return
+            }
+
+            fs.exists(path)
+                .then((exits) => {
+                    if (exits) {
+                        resolve()
+                    } else {
+                        setTimeout(checkFile, CHECK_INTERVAL)
+                    }
+                })
+                .catch(reject)
+        }
+        checkFile()
+    })
+}
+
+function touch(path) {
+    fs.open(path, 'w').then(fs.close)
+}
+
 module.exports = {
     isVideo(fileName) {
         return hasOneOfExtensions(videExtensions, fileName)
@@ -100,5 +129,7 @@ module.exports = {
     },
     parseRange,
     formatDLNADuration,
-    getLastFileLine
+    getLastFileLine,
+    waitForFile,
+    touch
 }

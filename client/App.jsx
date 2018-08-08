@@ -1,3 +1,5 @@
+import './styles.scss'
+import { hot } from 'react-hot-loader'
 import React, { Component } from 'react'
 import Root from './Root'
 import JssProvider from 'react-jss/lib/JssProvider'
@@ -8,6 +10,7 @@ import {
     createGenerateClassName, 
     jssPreset 
 } from '@material-ui/core/styles'
+import './store/remote-control'
 // import DevTools from 'mobx-react-devtools'
 
 import stores from './store'
@@ -20,7 +23,7 @@ jss.options.insertionPoint = 'jss-insertion-point'
 
 const theme = createMuiTheme({
     palette: {
-
+        //TODO: customuize colors?
     }
 })
 
@@ -41,4 +44,4 @@ class App extends Component {
     }
 }
 
-export default App
+export default hot(module)(App)

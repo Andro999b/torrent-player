@@ -1,15 +1,10 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
-import {
-    CircularProgress,
-    Typography
-} from '@material-ui/core'
-
 import ReactResizeDetector from 'react-resize-detector'
 import { reaction } from 'mobx'
 import { observer } from 'mobx-react'
-import { invokeAll } from '../utils'
+import { invokeAll, isTablet } from '../utils'
 import Hls from 'hls.js'
 
 @observer
@@ -18,29 +13,36 @@ class VideoScrean extends Component {
         super(props, context)
 
         this.state = {
-            startLoading: true,
-            failed: false,
             videoScale: 'hor'
         }
+
+        this.handleClick = this.handleClick
+        this.handleKeyUp = this.handleKeyUp
     }
 
-    handleLoadStart() {
-        this.setState({ startLoading: true, failed: false })
+    handleLoadStart = () => {
+        const { device } = this.props
+        device.setLoading(true)
+        device.setError(null)
     }
 
-    handleError() {
-        this.setState({ failed: true, startLoading: false })
+    handleError = () => {
+        const { device } = this.props
+        device.setError('Could not play media')
+        device.setLoading(false)
     }
 
-    handleLoadedMetadata() {
+    handleLoadedMetadata = () => {
+        const { device } = this.props
+
         this.handleUpdate()
-        this.setState({
-            startLoading: false,
-            videoScale: this.getVideoScale()
-        })
+        this.setState({ videoScale: this.getVideoScale() })
+        
+        device.setError(null)
+        device.setLoading(false)
     }
 
-    handleResize() {
+    handleResize = () => {
         if (this.video) {
             this.setState({
                 videoScale: this.getVideoScale()
@@ -58,39 +60,45 @@ class VideoScrean extends Component {
         return 'hor'
     }
 
-    handleUpdate() {
-        const { output } = this.props
+    handleUpdate = () => {
+        const { device } = this.props
         const { video: { buffered, duration, currentTime } } = this
 
-        output.onUpdate({
+        device.onUpdate({
             duration,
             buffered: buffered.length > 0 ? buffered.end(buffered.length - 1) : 0,
             currentTime
         })
     }
 
-    handleEnded() {
-        const { output, onEnded } = this.props
+    handleEnded = () => {
+        const { device, onEnded } = this.props
 
-        output.pause()
+        device.pause()
         onEnded()
     }
 
-    handleClick() {
-        const { props: { output } } = this
+    handleClick = () => {
+        const { props: { device } } = this
 
-        if (output.isPlaying) {
-            output.pause()
+        if (device.isPlaying) {
+            device.pause()
         } else {
-            output.play()
+            device.play()
+        }
+    }
+
+    handleKeyUp = (e) => {
+        if(e.which == 32) { //spacebar
+            this.handleClick()
         }
     }
 
     componentDidMount() {
         if (this.video) {
-            this.dispose = invokeAll(
+            this.disposeReactions = invokeAll(
                 reaction(
-                    () => this.props.output.isPlaying,
+                    () => this.props.device.isPlaying,
                     (isPlaying) => {
                         if (isPlaying) {
                             this.video.play()
@@ -100,64 +108,92 @@ class VideoScrean extends Component {
                     }
                 ),
                 reaction(
-                    () => this.props.output.seekTime,
+                    () => this.props.device.seekTime,
                     (seekTime) => {
                         this.video.currentTime = seekTime
                     }
                 ),
                 reaction(
-                    () => this.props.output.isMuted,
+                    () => this.props.device.isMuted,
                     (isMuted) => {
                         this.video.muted = isMuted
                     }
                 ),
                 reaction(
-                    () => this.props.output.url,
+                    () => this.props.device.url,
                     () => this.initVideo()
                 )
             )
         }
         this.initVideo()
+        this.attachListeners()
     }
 
     componentWillUnmount() {
-        if (this.dispose) this.dispose()
+        if (this.disposeReactions) {
+            this.disposeReactions()
+        }
+
+        this.disposeHls()
+        this.deattachListenrs()
     }
 
-    initVideo() {
-        const { video, props: { output } } = this
-
+    disposeHls() {
         if(this.hls) {
             const { hls } = this
             hls.stopLoad()
             hls.detachMedia()
         }
+    }
+
+    initVideo() {
+        const { video, props: { device } } = this
+
+        this.disposeHls()
 
         const restoreVideoState = () => {
-            video.currentTime = output.currentTime
-            video.muted = output.isMuted
-            if (output.isPlaying) {
+            video.currentTime = device.currentTime
+            video.muted = device.isMuted
+            if (device.isPlaying) {
                 video.play()
             } else {
                 video.pause()
             }
         }
 
-        if (output.hls && Hls.isSupported()) {
-            const hls = new Hls()
-            hls.loadSource(output.url)
+        if (device.hls && Hls.isSupported()) {
+            const hls = new Hls({
+                startPosition: device.currentTime
+            })
+            hls.loadSource(device.url)
             hls.attachMedia(video)
             hls.on(Hls.Events.MANIFEST_PARSED, () => restoreVideoState())
+            hls.on(Hls.Events.ERROR, (e) => {
+                console.error('Hls playback error', e)
+                //this.handleError()
+            })
 
             this.hls = hls
         } else {
-            video.src = output.url
+            video.src = device.url
             restoreVideoState()
         }
     }
 
+    attachListeners() {
+        window.addEventListener('keyup', this.handleKeyUp)
+        if(!isTablet()) {
+            this.video.addEventListener('click', this.handleClick)
+        }
+    }
+
+    deattachListenrs() {
+        window.removeEventListener('keyup', this.handleKeyUp)
+        this.video.removeEventListener('click', this.handleClick)
+    }
+
     render() {
-        const { startLoading, failed, videoScale } = this.state
+        const { videoScale } = this.state
 
         return (
             <div className="player__player-screen" ref={(el) => this.container = el}>
@@ -165,20 +201,18 @@ class VideoScrean extends Component {
                     skipOnMount
                     handleWidth
                     handleHeight
-                    onResize={this.handleResize.bind(this)}
+                    onResize={this.handleResize}
                 />
-                {failed && <Typography align="center" variant="display1">Can`t play media source</Typography>}
-                {startLoading && <div className="loading-center"><CircularProgress /></div>}
                 <video
                     className={`scale_${videoScale}`}
                     ref={(video) => this.video = video}
-                    onDurationChange={this.handleUpdate.bind(this)}
-                    onLoadedMetadata={this.handleLoadedMetadata.bind(this)}
-                    onProgress={this.handleUpdate.bind(this)}
-                    onTimeUpdate={this.handleUpdate.bind(this)}
-                    onEnded={this.handleEnded.bind(this)}
-                    onLoadStart={this.handleLoadStart.bind(this)}
-                    onError={this.handleError.bind(this)}
+                    onDurationChange={this.handleUpdate}
+                    onLoadedMetadata={this.handleLoadedMetadata}
+                    onProgress={this.handleUpdate}
+                    onTimeUpdate={this.handleUpdate}
+                    onEnded={this.handleEnded}
+                    onLoadStart={this.handleLoadStart}
+                    onError={this.handleError}
                 ></video>
             </div>
         )
@@ -186,7 +220,7 @@ class VideoScrean extends Component {
 }
 
 VideoScrean.propTypes = {
-    output: PropTypes.object.isRequired,
+    device: PropTypes.object.isRequired,
     onEnded: PropTypes.func
 }
 

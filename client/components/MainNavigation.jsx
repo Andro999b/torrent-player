@@ -5,14 +5,16 @@ import { BottomNavigation, BottomNavigationAction } from '@material-ui/core'
 import SearchIcon from '@material-ui/icons/Search'
 import TorrentsIcon from '@material-ui/icons/List'
 import PlayerIcon from '@material-ui/icons/MusicVideo'
+import { isMobile } from '../utils'
 
 class MainNavigation extends Component {
     render() {
         const { screen, goToScreen } = this.props
+        const showLabels = !isMobile()
 
         return (
             <BottomNavigation
-                showLabels className="main-navigation"
+                showLabels={showLabels} className="main-navigation"
                 value={screen}
                 onChange={(e, screen) => goToScreen(screen)}
             >

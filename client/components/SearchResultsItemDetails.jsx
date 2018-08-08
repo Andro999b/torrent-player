@@ -25,19 +25,19 @@ import { inject } from 'mobx-react'
 }))
 class SearchResultsItemDetails extends Component {
 
-    renderFile(file, fileIndex) {
+    renderFile = (file, fileIndex) => {
         const { details, onPlayFile, onCastFile } = this.props
         const playable = isPlayable(file.name)
 
         return (
-            <ListItem key={fileIndex} button={playable} onClick={() => onPlayFile(details, file.name)}>
+            <ListItem key={fileIndex} button={playable} onClick={() => onPlayFile(details, fileIndex)}>
                 <ListItemIcon className="hide-on-mobile">
                     {playable ? <PlayableIcon /> : <NotPlayableIcon />}
                 </ListItemIcon>
                 <ListItemText primary={<div style={{ wordBreak: 'break-all' }}>{file.name}</div>} style={{ paddingLeft: 0 }} />
                 {playable &&
                     <ListItemSecondaryAction>
-                        <IconButton onClick={() => onCastFile(details, file.name)}>
+                        <IconButton onClick={() => onCastFile(details, fileIndex)}>
                             <CastIcon />
                         </IconButton>
                     </ListItemSecondaryAction>
@@ -66,7 +66,7 @@ class SearchResultsItemDetails extends Component {
                     </Grid>
                     <Grid item sm={12} md={4}>
                         <List className="files-list">
-                            {details.files.map(this.renderFile.bind(this))}
+                            {details.files.map(this.renderFile)}
                         </List>
                     </Grid>
                 </Grid>

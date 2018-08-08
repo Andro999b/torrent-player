@@ -20,7 +20,14 @@ class RutorProvider extends Provider {
             detailsSelectors: {
                 image: { selector: '>tbody>tr:first-child>td>img', transform: ($el) => $el.attr('src') },
                 description: '>tbody>tr:first-child>td'
-            }
+            },
+            filterDescription: [
+                'Качество',
+                'Бюджет',
+                'Премьера',
+                'Доп.инфо',
+                'Также роли дублировали'
+            ]
         })
     }
 
@@ -39,7 +46,7 @@ class RutorProvider extends Provider {
     }
 
     _postProcessResultDetails(details, resultsId) {
-        const { config: { baseUrl } } = this
+        const { config: { baseUrl }, filterDescription } = this
 
         const rawDescription = details.description.replace(/[\n\r]+/g, '\n').trim()
         let parts = rawDescription.split('\n').slice(0, -1)
@@ -59,7 +66,7 @@ class RutorProvider extends Provider {
                     }
 
                     if (
-                        //filterDescription.indexOf(name) != -1 &&
+                        filterDescription.indexOf(name) != -1 &&
                         usedNames.indexOf(name) == -1
                     ) {
                         usedNames.push(name)

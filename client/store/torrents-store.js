@@ -2,6 +2,7 @@ import { observable, action } from 'mobx'
 import request from 'superagent'
 
 import notificationStore from './notifications-store'
+import playerStore from './player-store'
 
 class TorrentsStore {
     @observable torrents = []
@@ -36,6 +37,7 @@ class TorrentsStore {
             .then(() => {
                 this.updateTorrents()
                 notificationStore.showMessage(`Torrent ${torrent.name} was removed`)
+                playerStore.closeTorrent(torrent)
             })
             .catch((err) => {
                 console.error(err)

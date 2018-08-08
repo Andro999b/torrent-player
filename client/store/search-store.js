@@ -94,7 +94,7 @@ class SearchStore {
                     results.forEach((item) => searchResults.push(new SearchReusltItem(item)))
                 }
             })
-            this.searchResults = searchResults
+            this.searchResults = searchResults.sort((a, b) => b.seeds - a.seeds)
             this.loading = false
         })
     }

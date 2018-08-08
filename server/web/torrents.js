@@ -7,7 +7,7 @@ const ResponseError = require('../utils/ResponseError')
 const { isVideo, parseRange, formatDLNADuration } = require('../utils')
 const mimeLookup = require('mime-types').lookup
 const { pick } = require('lodash')
-const { TORRENTS_DIR } = require('../config')
+const { TORRENTS_DATA_DIR } = require('../config')
 
 const router = express.Router()
 
@@ -16,10 +16,10 @@ router.get('/', (req, res) => {
 })
 
 router.post('/', (req, res, next) => {
-    if (!req.body.magnetUrl)
-        throw new ResponseError('magnetUrl reuired')
+    if (!req.body.magnetUrl && !req.body.torrentUrl)
+        throw new ResponseError('magnetUrl or torrentUrl reuired')
 
-    torrentsService.addTorrent(req.body.magnetUrl)
+    torrentsService.addTorrent(req.body.magnetUrl, req.body.torrentUrl)
         .then((torrent) => res.json(mapTorrent(torrent)))
         .catch(next)
 })
@@ -78,7 +78,6 @@ router.get('/:torrentId/files/:fileId/transcoded', (req, res, next) => {
             }
 
             res.writeHead(200, headers)
-            res.once('finish', () => transcoder.notifyIdle())
 
             // Write the headers to the socket
             //res.socket.write(res._header)
@@ -93,7 +92,8 @@ router.get('/:torrentId/files/:fileId/transcoded', (req, res, next) => {
 router.get('/:torrentId/files/:fileId/hls', (req, res, next) => {
     const { torrent, fileId } = getTorrentAndFile(req)
 
-    transcodeService.getHLSTranscoder(torrent, fileId)
+    transcodeService
+        .getHLSTranscoder(torrent, fileId)
         .transcode(req.query.hasOwnProperty('force'))
         .then((transcoder) =>
             transcoder.readM3U8()
@@ -103,6 +103,16 @@ router.get('/:torrentId/files/:fileId/hls', (req, res, next) => {
             res.end(file)
         })
         .catch(next)
+})
+
+router.get('/:torrentId/files/:fileId/hls/keepAlive', (req, res) => {
+    const { torrent, fileId } = getTorrentAndFile(req)
+
+    transcodeService
+        .getHLSTranscoder(torrent, fileId)
+        .keepAlive()
+
+    res.end()
 })
 
 router.get('/:torrentId/files/:fileId/hls/:segment', (req, res) => {
@@ -135,15 +145,15 @@ function writeFileRange(file, req, res) {
 
     var ranges = req.range(file.length)
 
-    if(ranges === -1)
+    if (ranges === -1)
         throw new ResponseError('Malformed range', 400)
 
-    if(ranges === -2)
+    if (ranges === -2)
         throw new ResponseError('Unsatisfiable ranges', 416)
 
     if (ranges && ranges.type === 'bytes') {
         // parse ranges
-        
+
         if (ranges.length > 1) {
             throw new ResponseError('Multiple ranges not supported', 416)
         }
@@ -152,7 +162,7 @@ function writeFileRange(file, req, res) {
         var end = ranges[0].end
 
         res.writeHead(206, {
-            'Content-Length' : (end - start) + 1,
+            'Content-Length': (end - start) + 1,
             'Content-Range': 'bytes ' + start + '-' + end + '/' + file.length,
         })
 
@@ -165,12 +175,13 @@ function writeFileRange(file, req, res) {
 }
 
 function createFileStream(file, opts) {
-    if(file.progress >= 1) {
-        return fs.createReadStream(path.join(TORRENTS_DIR, file.path), opts)
+    //file.progress nevere return correct value :/
+    if (file.progress >= 0.99) {
+        return fs.createReadStream(path.join(TORRENTS_DATA_DIR, file.path), opts)
     }
     return file.createReadStream(opts)
 }
- 
+
 function mapTorrent(torrent) {
     const filterdTorrent = pick(torrent, [
         'infoHash',
