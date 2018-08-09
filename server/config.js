@@ -7,10 +7,10 @@ module.exports = {
     TRANSCODER_IDLE_TIMEOUT: 60 * 1000,
     HLS_FRAGMENT_DURATION: 10,
     /*
-        timeout 5 times longer that time needted to play 1 fragment. 
+        timeout 2 times longer that time needted to play 1 fragment. 
         if during this time client not request any fragment we can pause transcoding
      */
-    HLS_TRANSCODER_IDLE_TIMEOUT: 10 * 1000 * 5,
+    HLS_TRANSCODER_IDLE_TIMEOUT: 10 * 1000 * 2,
     ROOT_DIR: path.join(os.homedir(), 'webtorrents'),
     HLS_DIRECTORY: path.join(os.homedir(), 'webtorrents', 'hls'),
     TORRENTS_DIR: path.join(os.homedir(), 'webtorrents', 'torrents'),

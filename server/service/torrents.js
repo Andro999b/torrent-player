@@ -1,15 +1,18 @@
 const WebTorrent = require('webtorrent')
 const path = require('path')
 const fs = require('fs-extra')
-const promisify = require('util').promisify
+const { promisify } = require('util')
 const rimraf = promisify(require('rimraf'))
 const pstats = promisify(fs.stat)
 const punlink = promisify(fs.unlink)
+const request = require('superagent')
+const { pick } = require('lodash')
+const mimeLookup = require('mime-types').lookup
+const database = require('./database')
 const { stopTranscoding } = require('./transcode')
 const { TORRENTS_DIR, TORRENTS_DATA_DIR } = require('../config')
 const debug = require('debug')('torrents')
-const request = require('superagent')
-const database = require('./database')
+
 
 const torrentClient = WebTorrent()
 
@@ -21,6 +24,47 @@ function deselectAll(torrent) {
     torrent.deselect(0, torrent.pieces.length - 1)
 }
 
+function waitCompletion(torrent) {
+    torrent.once('done', () => {
+        const paths = torrent.files.map((file) => file.path)
+        database.setTorrentFileCompleted(torrent.infoHash, paths)
+    })
+}
+
+function mapTorrent(torrent) {
+    const filterdTorrent = pick(torrent, [
+        'infoHash',
+        'name',
+        'timeRemaining',
+        'received',
+        'downloaded',
+        'uploaded',
+        'downloadSpeed',
+        'uploadSpeed',
+        'ratio',
+        'numPeers',
+        'path',
+        'files'
+    ])
+
+    const filtredFiles = filterdTorrent.files
+        .map((file) => pick(file, [
+            'name',
+            'path',
+            'length',
+            'downloaded',
+            'progress'
+        ]))
+
+    filtredFiles.forEach((file) => {
+        file.mimeType = mimeLookup(file.name)
+    })
+
+    filterdTorrent.files = filtredFiles
+
+    return filterdTorrent
+}
+
 module.exports = {
     restoreTorrents() {
         //restore torrents
@@ -30,7 +74,11 @@ module.exports = {
                 const seedTorrentFile = path.join(TORRENTS_DIR, file)
                 if (fs.statSync(seedTorrentFile).isFile()) {
                     const seedTorrent = fs.readFileSync(seedTorrentFile)
-                    torrentClient.add(seedTorrent, { path: TORRENTS_DATA_DIR }, deselectAll)
+                    torrentClient.add(seedTorrent, { path: TORRENTS_DATA_DIR }, (torrent) => {
+                        debug(`${torrent.name} verified`)
+                        deselectAll(torrent)
+                        waitCompletion(torrent)
+                    })
                     debug(`Torrent resumed: ${seedTorrentFile}`)
                 }
             }
@@ -40,6 +88,8 @@ module.exports = {
         return new Promise((resolve, reject) => {
             const storeTorrent = (torrent) => {
                 deselectAll(torrent)
+                waitCompletion(torrent)
+
                 const filePath = torrentFileName(torrent)
                 fs.writeFile(filePath, torrent.torrentFile, (err) => {
                     if (err) {
@@ -77,8 +127,7 @@ module.exports = {
                 }
             }
 
-        })
-
+        }).then((torrent) => mapTorrent(torrent))
     },
     removeTorrent(torrentId, removeData = true) {
         const torrent = torrentClient.get(torrentId)
@@ -112,18 +161,19 @@ module.exports = {
         return Promise.resolve()
     },
     getTorrent(torrentId) {
-        return torrentClient.get(torrentId)
+        const torrent = torrentClient.get(torrentId)
+        return torrent ? mapTorrent(torrent) : null
     },
     getTorrents() {
-        return torrentClient.torrents
+        return torrentClient.torrents.map(mapTorrent)
     },
     checkIfTorrentFileReady(file) {
         const torrentId = file._torrent.infoHash
-        if(database.getTorrentFileCompleteStatus(torrentId, file.path)) {
+        if (database.getTorrentFileCompleteStatus(torrentId, file.path)) {
             return true
         }
 
-        if(file.progress > 0.99) {
+        if (file.progress > 0.99) {
             database.setTorrentFileCompleted(torrentId, file.path)
             return true
         }

@@ -3,7 +3,8 @@ const ffmpeg = require('fluent-ffmpeg')
 const metadataService = require('../metadata')
 const CycleBuffer = require('../../utils/CycleBuffer')
 const { TORRENTS_DATA_DIR } = require('../../config')
-const debug = console.log//require('debug')('transcode')
+const torrentService = require('../torrents')
+const debug = require('debug')('transcode')
 
 class Transcoder {
     constructor() {
@@ -43,8 +44,12 @@ class Transcoder {
                 buffer.on('full', () => this.kill())
 
                 this.buffer = buffer
-                //file.progress nevere return correct value :/
-                this.command = ffmpeg(file.progress >= 0.99 ? path.join(TORRENTS_DATA_DIR, this.filePath) : file.createReadStream())
+
+                const source = torrentService.checkIfTorrentFileReady(file) ?
+                    path.join(TORRENTS_DATA_DIR, file.path) :
+                    file.createReadStream()
+
+                this.command = ffmpeg(source)
                     .seekInput(start)
                     .videoCodec('libx264')
                     .audioCodec('aac')

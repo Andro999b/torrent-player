@@ -4,15 +4,14 @@ const rmrf = promisify(require('rimraf'))
 const fs = require('fs-extra')
 const ffmpeg = require('fluent-ffmpeg')
 const m3u8 = require('m3u8-parser')
-const { touch } = require('../../utils')
-
+const torrentService = require('../torrents')
 const {
     HLS_DIRECTORY,
     HLS_TRANSCODER_IDLE_TIMEOUT,
     HLS_FRAGMENT_DURATION,
     TORRENTS_DATA_DIR
 } = require('../../config')
-const { waitForFile } = require('../../utils')
+const { waitForFile, touch } = require('../../utils')
 const debug = require('debug')('transcode-hls')
 
 class HLSTranscoder {
@@ -58,8 +57,11 @@ class HLSTranscoder {
         await new Promise((resolve, reject) => {
             debug(`Start transcoding ${this.torrentHash} ${file.path}`)
 
-            //file.progress nevere return correct value :/
-            this.command = ffmpeg(file.progress >= 0.95 ? path.join(TORRENTS_DATA_DIR, file.path) : file.createReadStream())
+            const source = torrentService.checkIfTorrentFileReady(file) ?
+                path.join(TORRENTS_DATA_DIR, file.path) :
+                file.createReadStream()
+                
+            this.command = ffmpeg(source)
                 .videoCodec('libx264')
                 .audioCodec('aac')
                 .seekInput(start_time)

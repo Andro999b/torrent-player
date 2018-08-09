@@ -6,13 +6,12 @@ const transcodeService = require('../service/transcode')
 const ResponseError = require('../utils/ResponseError')
 const { isVideo, parseRange, formatDLNADuration } = require('../utils')
 const mimeLookup = require('mime-types').lookup
-const { pick } = require('lodash')
 const { TORRENTS_DATA_DIR } = require('../config')
 
 const router = express.Router()
 
 router.get('/', (req, res) => {
-    res.json(torrentsService.getTorrents().map(mapTorrent))
+    res.json(torrentsService.getTorrents())
 })
 
 router.post('/', (req, res, next) => {
@@ -20,12 +19,11 @@ router.post('/', (req, res, next) => {
         throw new ResponseError('magnetUrl or torrentUrl reuired')
 
     torrentsService.addTorrent(req.body.magnetUrl, req.body.torrentUrl)
-        .then((torrent) => res.json(mapTorrent(torrent)))
         .catch(next)
 })
 
 router.get('/:id', (req, res) => {
-    res.json(mapTorrent(torrentsService.getTorrent(req.params.id)))
+    res.json(torrentsService.getTorrent(req.params.id))
 })
 
 router.delete('/:id', (req, res, next) => {
@@ -175,45 +173,10 @@ function writeFileRange(file, req, res) {
 }
 
 function createFileStream(file, opts) {
-    //file.progress nevere return correct value :/
-    if (file.progress >= 0.99) {
+    if (torrentsService.checkIfTorrentFileReady(file)) {
         return fs.createReadStream(path.join(TORRENTS_DATA_DIR, file.path), opts)
     }
     return file.createReadStream(opts)
-}
-
-function mapTorrent(torrent) {
-    const filterdTorrent = pick(torrent, [
-        'infoHash',
-        'name',
-        'timeRemaining',
-        'received',
-        'downloaded',
-        'uploaded',
-        'downloadSpeed',
-        'uploadSpeed',
-        'ratio',
-        'numPeers',
-        'path',
-        'files'
-    ])
-
-    const filtredFiles = filterdTorrent.files
-        .map((file) => pick(file, [
-            'name',
-            'path',
-            'length',
-            'downloaded',
-            'progress'
-        ]))
-
-    filtredFiles.forEach((file) => {
-        file.mimeType = mimeLookup(file.name)
-    })
-
-    filterdTorrent.files = filtredFiles
-
-    return filterdTorrent
 }
 
 module.exports = router
