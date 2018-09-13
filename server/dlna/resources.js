@@ -1,24 +1,24 @@
 const mime = require('mime-types')
 const ip = require('ip')
-const { isVideo, isAudio } = require('../utils')
+const { isVideo, isAudio, isPsSupported } = require('../utils')
 const { WEB_PORT } = require('../config')
 
-function getItemClass(item) {
-    if (isVideo(item.path))
+function getItemClass(fsEntry) {
+    if (isVideo(fsEntry.title))
         return 'object.item.videoItem'
-    if (isAudio(item.path))
+    if (isAudio(fsEntry.title))
         return 'object.item.audioItem'
     return 'object.item'
 }
 
-function commonResource(infoHash, id, upnpClass, file) {
-    const { title, path } = file
+function commonResource({ infoHash, upnpClass, fsEntry }) {
+    const { title, fileIndex, file, id, parentId } = fsEntry
 
-    return Promise.resolve({
+    return {
         _name: 'item',
         _attrs: {
-            id: `${infoHash}:${id}`,
-            parentID: `${infoHash}`,
+            id: `${id}`,
+            parentID: `${parentId}`,
             restricted: '1'
         },
         _content: [
@@ -27,62 +27,66 @@ function commonResource(infoHash, id, upnpClass, file) {
             {
                 _name: 'res',
                 _attrs: {
-                    'protocolInfo': `http-get:*:${mime.lookup(path)}:*`,
+                    'protocolInfo': `http-get:*:${mime.lookup(title)}:*`,
                     'xmlns:dlna': 'urn:schemas-dlna-org:metadata-1-0/',
                     'size': file.length
                 },
-                _content: `http://${ip.address()}:${WEB_PORT}/api/torrents/${infoHash}/files/${id}`
+                _content: `http://${ip.address()}:${WEB_PORT}/api/torrents/${infoHash}/files/${fileIndex}`
             }
         ]
-    })
+    }
 }
 
-function videoResource(infoHash, id, upnpClass, file, clientId) {
-    const { path } = file
+function videoResource({ infoHash, upnpClass, fsEntry, clientId }) {
+    const { title, fileIndex, parentId, id } = fsEntry
 
-    return Promise.resolve({
+    const content = [
+        { 'dc:title': title },
+        { 'upnp:class': upnpClass }
+    ]
+
+    if(clientId != 'ps' && isPsSupported(title)) {
+        content.push({
+            _name: 'res',
+            _attrs: {
+                'protocolInfo': `http-get:*:${mime.lookup(title)}`,
+                'xmlns:dlna': 'urn:schemas-dlna-org:metadata-1-0/',
+                size: '-1'
+            },
+            _content: `http://${ip.address()}:${WEB_PORT}/api/torrents/${infoHash}/files/${fileIndex}`
+        })
+    }
+
+    content.push({
+        _name: 'res',
+        _attrs: {
+            'protocolInfo': 'http-get:*:video/mpegts:DLNA.ORG_PN=MPEG_TS_SD_EU_ISO;DLNA.ORG_OP=10',
+            'xmlns:dlna': 'urn:schemas-dlna-org:metadata-1-0/',
+            'size': -1
+        },
+        _content: `http://${ip.address()}:${WEB_PORT}/api/torrents/${infoHash}/files/${fileIndex}/transcoded?clientId=${clientId}`
+    })
+
+    return {
         _name: 'item',
         _attrs: {
-            id: `${infoHash}:${id}`,
-            parentID: `${infoHash}`,
+            id: `${id}`,
+            parentID: `${parentId}`,
             restricted: '1'
         },
-        _content: [
-            { 'dc:title': path },
-            { 'upnp:class': upnpClass },
-            {
-                _name: 'res',
-                _attrs: {
-                    'protocolInfo': `http-get:*:${mime.lookup(path)}`,
-                    'xmlns:dlna': 'urn:schemas-dlna-org:metadata-1-0/',
-                    size: '-1',
-                    //'duration': formatedDuration
-                },
-                _content: `http://${ip.address()}:${WEB_PORT}/api/torrents/${infoHash}/files/${id}`
-            },
-            {
-                _name: 'res',
-                _attrs: {
-                    'protocolInfo': 'http-get:*:video/mpegts:DLNA.ORG_PN=MPEG_TS_SD_EU_ISO;DLNA.ORG_OP=10',
-                    'xmlns:dlna': 'urn:schemas-dlna-org:metadata-1-0/',
-                    'size': -1,
-                    //'duration': formatedDuration
-                },
-                _content: `http://${ip.address()}:${WEB_PORT}/api/torrents/${infoHash}/files/${id}/transcoded?clientId=${clientId}`
-            }
-        ]
-    })
+        _content: content
+    }
 }
 
 
-function getMediaResource(infoHash, fileIndex, file, clientId) {
-    const upnpClass = getItemClass(file)
+function getMediaResource(params) {
+    const upnpClass = getItemClass(params.fsEntry)
     switch (upnpClass) {
         case 'object.item.videoItem':
-            return videoResource(infoHash, fileIndex, upnpClass, file, clientId)
+            return videoResource({...params, upnpClass})
         case 'object.item.audioItem':
         default:
-            return commonResource(infoHash, fileIndex, upnpClass, file)
+            return commonResource({...params, upnpClass})
     }
 }
 

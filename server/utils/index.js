@@ -5,6 +5,7 @@ const sprintf = require('sprintf-js').sprintf
 const ResponseError = require('./ResponseError')
 const videExtensions = require('../../resources/video-extensions.json')
 const audioExtensions = require('../../resources/audio-extensions.json')
+const psMediaExtensions = require('../../resources/ps-media-extensions.json')
 
 function hasOneOfExtensions(extensions, fileName) {
     return extensions.findIndex((ext) => {
@@ -126,6 +127,9 @@ module.exports = {
     },
     isAudio(fileName) {
         return hasOneOfExtensions(audioExtensions, fileName)
+    },
+    isPsSupported(fileName) {
+        return hasOneOfExtensions(psMediaExtensions, fileName)
     },
     parseRange,
     formatDLNADuration,

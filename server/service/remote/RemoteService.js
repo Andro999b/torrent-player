@@ -1,8 +1,9 @@
 const { EventEmitter } = require('events')
-const { pick } = require('lodash')
+const pick = require('lodash.pick')
 const RemoteDevice = require('./RemoteDevice')
 const RemoteControl = require('./RemoteControl')
 const BiMap = require('bidirectional-map')
+const debug = require('debug')('remote')
 
 class RemoteService extends EventEmitter {
     constructor() {
@@ -19,7 +20,9 @@ class RemoteService extends EventEmitter {
 
         this.devices[device.id] = device
         this._attachDeviceListeners(device)
-        this.emit(RemoteService.Events.DeviceList)
+        this._invalidateDeviceList()
+
+        debug(`New device added ${device.id}`)
     }
 
     // eslint-disable-next-line
@@ -29,11 +32,13 @@ class RemoteService extends EventEmitter {
         if (device) {
             this._removeDeviceListener(device)
             delete this.devices[deviceId]
-            this.emit(RemoteService.Events.DeviceList)
+            this._invalidateDeviceList()
 
             //TODO: notify controll of dissconection
             this._doWithControlConnection(device.id, (control) => control.disconnect())
             this.connections.deleteValue(device.id)
+
+            debug(`Device removed ${deviceId}`)
         }
     }
 
@@ -43,6 +48,8 @@ class RemoteService extends EventEmitter {
 
         this.controls[control.id] = control
         this._attachControlListeners(control)
+
+        debug(`New control added ${control.id}`)
     }
 
     removeControl(controlId) {
@@ -53,29 +60,63 @@ class RemoteService extends EventEmitter {
             delete this.controls[controlId]
             this.connections.delete(controlId)
         }
+
+        debug(`Control removed ${controlId}`)
     }
 
     getDevicesDescriptions() {
-        return Object.values(this.devices).map((device) =>
-            pick(device, ['id', 'state', 'name'])
-        )
+        return Object.values(this.devices)
+            .filter((device) => device.avaliable && !this.connections.hasValue(device.id))
+            .map((device) =>
+                pick(device, ['id', 'state', 'name'])
+            )
     }
 
     connect(controlId, deviceId) {
+        const control = this.controls[controlId]
+        const device = this.devices[deviceId]
+
+        if (!device)
+            throw new Error('Device not exists')
+
+        if (!control)
+            throw new Error('Control not exists')
+
+        if (this.connections.hasValue(deviceId))
+            throw new Error('Device already connected')
+
         this.connections.set(controlId, deviceId)
+        this._invalidateDeviceList()
+
+        control.connected(device.state)
+
+        debug(`New connection control: ${controlId} device: ${deviceId}`)
     }
 
-    disconnect(controlId) {
-        this.connections.delete(controlId)
+    disconnect(controlId, deviceId) {
+        if (deviceId) {
+            const connectedDeviceId = this.connections.get(controlId)
+            if (connectedDeviceId == deviceId) {
+                this.connections.delete(controlId)
+                this._invalidateDeviceList()
+
+                this.controls[controlId].disconnect()
+
+                debug(`Connection removed: ${controlId} device: ${deviceId}`)
+            }
+        }
     }
 
     //device section
     _attachDeviceListeners(device) {
         device.on(RemoteDevice.Events.Sync, this._handleDeviceSync(device))
+        device.on(RemoteDevice.Events.Clear, this._handleDeviceClear(device))
+        device.on(RemoteDevice.Events.UpdateList, this._invalidateDeviceList)
     }
 
     _removeDeviceListener(device) {
         device.removeAllListeners(RemoteDevice.Events.Sync)
+        device.removeAllListeners(RemoteDevice.Events.UpdateList)
     }
 
     _doWithControlConnection(deviceId, fun) {
@@ -92,12 +133,21 @@ class RemoteService extends EventEmitter {
         return (state) => {
             this._doWithControlConnection(device.id, (control) => {
                 control.syncState(state)
+                debug(`Sync state from device ${device.id} to control ${control.id}`)
+            })
+        }
+    }
+
+    _handleDeviceClear(device) {
+        return () => {
+            this._doWithControlConnection(device.id, (control) => {
+                this.disconnect(control.id, device.id)
             })
         }
     }
 
     _attachControlListeners(control) {
-        control.on(RemoteControl.Events.Action, this._handleControllAction)
+        control.on(RemoteControl.Events.Action, this._handleControllAction(control))
     }
 
     _removeControlListeners(control) {
@@ -116,28 +166,15 @@ class RemoteService extends EventEmitter {
 
     _handleControllAction(control) {
         return (event) => {
-            this._doWithControlConnection(control.id, (device) => {
-                switch (event.action) {
-                    case RemoteControl.Actions.Play:
-                        device.play(event.payload)
-                        break
-                    case RemoteControl.Actions.Pause:
-                        device.pause()
-                        break
-                    case RemoteControl.Actions.Seek:
-                        device.seek(event.payload)
-                        break
-                    case RemoteControl.Actions.OpenPlaylist: {
-                        const { playlist, fileIndex} = event.payload
-                        device.openPlaylist(playlist, fileIndex)
-                        break
-                    }
-                    case RemoteControl.Actions.ClosePlaylist:
-                        device.ClosePlaylist()
-                        break
-                }
+            this._doWithDeviceConnection(control.id, (device) => {
+                device.doAction(event.action, event.payload)
+                debug(`Send action ${event.action} from control ${control.id} to device ${device.id}`)
             })
         }
+    }
+
+    _invalidateDeviceList() {
+        this.emit(RemoteService.Events.DeviceList)
     }
 }
 

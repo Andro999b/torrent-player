@@ -1,5 +1,7 @@
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import PropTypes from 'prop-types'
+import groupBy from 'lodash.groupby'
+import memoize from 'memoize-one'
 
 import {
     Typography,
@@ -9,7 +11,8 @@ import {
     ListItemSecondaryAction,
     ListItemText,
     IconButton,
-    Grid
+    Grid,
+    Collapse
 } from '@material-ui/core'
 
 import { isPlayable } from '../utils'
@@ -21,23 +24,69 @@ import { inject } from 'mobx-react'
 
 @inject(({ transitionStore }) => ({
     onPlayFile: transitionStore.downloadAndPlay,
-    onCastFile: transitionStore.downloadAndCast
+    onCastFile: transitionStore.openCastDialog
 }))
 class SearchResultsItemDetails extends Component {
+    constructor(props, context) {
+        super(props, context)
+
+        this.state = {
+            currentDirectory: null
+        }
+    }
+
+    getDirectories = memoize(
+        (files) => groupBy(files, (file) => file.path)
+    )
+
+    switchCurrentDirectory(directory) {
+        this.setState(({ currentDirectory }) => (
+            { currentDirectory: currentDirectory == directory ? null: directory }
+        ))
+    }
+
+    renderDirectories(directories) {
+        const directoriesNames = Object.keys(directories).sort()
+        const { currentDirectory } = this.state
+
+        return (
+            <List style={{width: '100%'}}>
+                {directoriesNames.map((directory) => {
+                    const expanded = currentDirectory == directory
+                    return (
+                        <Fragment key={directory}>
+                            <ListItem button
+                                onClick={() => this.switchCurrentDirectory(directory)} 
+                                key={directory}>
+                                <ListItemText primary={directory}/>
+                            </ListItem>
+                            <Collapse in={expanded} timeout="auto" unmountOnExit>
+                                {expanded && this.renderFiles(directories[directory])}
+                            </Collapse>                           
+                        </Fragment>
+                    )
+                })}
+            </List>
+        )
+    }
+
+    renderFiles(files) {
+        return files.map(this.renderFile)
+    }
 
     renderFile = (file, fileIndex) => {
         const { details, onPlayFile, onCastFile } = this.props
         const playable = isPlayable(file.name)
 
         return (
-            <ListItem key={fileIndex} button={playable} onClick={() => onPlayFile(details, fileIndex)}>
+            <ListItem key={fileIndex} button={playable} onClick={() => onPlayFile(details, file)}>
                 <ListItemIcon className="hide-on-mobile">
                     {playable ? <PlayableIcon /> : <NotPlayableIcon />}
                 </ListItemIcon>
                 <ListItemText primary={<div style={{ wordBreak: 'break-all' }}>{file.name}</div>} style={{ paddingLeft: 0 }} />
                 {playable &&
                     <ListItemSecondaryAction>
-                        <IconButton onClick={() => onCastFile(details, fileIndex)}>
+                        <IconButton onClick={() => onCastFile(details, file)}>
                             <CastIcon />
                         </IconButton>
                     </ListItemSecondaryAction>
@@ -49,6 +98,13 @@ class SearchResultsItemDetails extends Component {
     render() {
         const { details } = this.props
         if (!details) return null
+
+        const { files } = details
+        const directories = this.getDirectories(files)
+
+        const content = Object.keys(directories).length > 1 ?
+            this.renderDirectories(directories) :
+            this.renderFiles(files)
 
         return (
             <div>
@@ -66,7 +122,7 @@ class SearchResultsItemDetails extends Component {
                     </Grid>
                     <Grid item sm={12} md={4}>
                         <List className="files-list">
-                            {details.files.map(this.renderFile)}
+                            {content}
                         </List>
                     </Grid>
                 </Grid>

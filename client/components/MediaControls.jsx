@@ -10,7 +10,6 @@ import {
     SkipNext as NextIcon,
     VolumeUp as VolumeOnIcon,
     VolumeOff as VolumeOffIcon,
-    Cast as CastIcon,
     List as ListIcon,
     Fullscreen as FullscreenIcon,
     FullscreenExit as FullscreenExitIcon
@@ -18,21 +17,19 @@ import {
 
 import { observer } from 'mobx-react'
 
-
 @observer
 class MediaControls extends Component {
     render() {
-        const { onPlaylistToggle, onFullScreenToggle, fullScreen, device, onPrev, onNext } = this.props
+        const {
+            onPlaylistToggle,
+            onFullScreenToggle,
+            fullScreen,
+            device,
+            onPrev,
+            onNext
+        } = this.props
 
         const local = device.isLocal()
-        const volumeControls = local ?
-            <Fragment>
-                <IconButton onClick={() => device.toggleMute()}>
-                    {device.isMuted && <VolumeOffIcon />}
-                    {!device.isMuted && <VolumeOnIcon />}
-                </IconButton>
-            </Fragment> : null
-
 
         return (
             <Slide direction="up" in mountOnEnter unmountOnExit>
@@ -67,7 +64,12 @@ class MediaControls extends Component {
                             <IconButton onClick={onNext}>
                                 <NextIcon />
                             </IconButton>
-                            {volumeControls}
+                            <Fragment>
+                                <IconButton onClick={() => device.toggleMute()}>
+                                    {device.isMuted && <VolumeOffIcon />}
+                                    {!device.isMuted && <VolumeOnIcon />}
+                                </IconButton>
+                            </Fragment>
                         </div>
                         <div className="player-controls__panel-section">
                             {local &&
@@ -76,9 +78,6 @@ class MediaControls extends Component {
                                     {fullScreen && <FullscreenExitIcon />}
                                 </IconButton>
                             }
-                            <IconButton>
-                                <CastIcon />
-                            </IconButton>
                             <IconButton onClick={() => onPlaylistToggle()}>
                                 <ListIcon />
                             </IconButton>
@@ -93,7 +92,7 @@ class MediaControls extends Component {
 MediaControls.propTypes = {
     device: PropTypes.object.isRequired,
     onPlaylistToggle: PropTypes.func.isRequired,
-    onFullScreenToggle: PropTypes.func.isRequired,
+    onFullScreenToggle: PropTypes.func,
     onPrev: PropTypes.func.isRequired,
     onNext: PropTypes.func.isRequired,
     fullScreen: PropTypes.bool,

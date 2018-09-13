@@ -4,6 +4,7 @@ const { toXML } = require('jstoxml')
 const torrentsService = require('../service/torrents')
 const { DLNA_PORT } = require('../config')
 const getMediaResource = require('./resources')
+const getTorrentFs = require('./torrentFs')
 const debug = require('debug')('dlna')
 
 function getClientId(req) {
@@ -19,20 +20,21 @@ function browseContent(inputs, req) {
     if (inputs.ObjectID == '0') {
         return browseTorrentsList(inputs)
     } else {
-        return browseTorrentFiles(inputs, req)
+        return browseTorrentFs(inputs, req)
     }
 }
 
-function browseTorrentsList(inputs) { // eslint-disable-line no-unused-vars
+function browseTorrentsList(inputs) { 
     const begin = parseInt(inputs.StartingIndex)
     const end = begin + parseInt(inputs.RequestedCount)
     const torrents = torrentsService.getTorrents()
-    const sliced = torrents.slice(begin, end)
+    const sliced = end > begin ? torrents.slice(begin, end) : torrents
 
     const didl = toDIDLXml(
         sliced
             .map((tor) => ({
                 id: tor.infoHash,
+                parentId: '0',
                 title: tor.name,
                 count: tor.files.length
             }))
@@ -47,39 +49,64 @@ function browseTorrentsList(inputs) { // eslint-disable-line no-unused-vars
     }
 }
 
-function browseTorrentFiles(inputs, req) {
-    const id = inputs.ObjectID
-    const torrent = torrentsService.getTorrent(id)
+function browseTorrentFs(inputs, req) {
+    const parts = inputs.ObjectID.split(':')
+    const infoHash = parts[0]
+    const torrent = torrentsService.getTorrent(infoHash)
+    const torrentFs = getTorrentFs(torrent)
+    const parentEntry = torrentFs.getById(inputs.ObjectID)
 
     const begin = parseInt(inputs.StartingIndex)
     const end = begin + parseInt(inputs.RequestedCount)
-    const sliced = torrent.files.slice(begin, end)
+    const sliced = end > begin ? parentEntry.children.slice(begin, end) : parentEntry.children
 
-    return Promise.all(
-        sliced.map((file, index) => getMediaResource(torrent.infoHash, index, file, getClientId(req))))
-        .then((didls) => ({
-            Result: toDIDLXml(didls),
-            NumberReturned: didls.length,
-            TotalMatches: torrent.files.length,
-            UpdateID: 0
-        }))
+    const didl = sliced.map((fsEntry) => 
+        fsEntry.type == 'file' ? 
+            getMediaResource({fsEntry, infoHash, clientId: getClientId(req)}):
+            toDIDLContainer(fsEntry)
+    )
+
+    return {
+        Result: toDIDLXml(didl),
+        NumberReturned: didl.length,
+        TotalMatches: torrent.files.length,
+        UpdateID: 0
+    }
 }
 
-function browseMetadata(inputs) { 
-    const id = inputs.ObjectID
-    const parts = id.split(':')
-    const infoHash = parts[0]
-    const fileIndex = parts[1]
-
-    const file = torrentsService.getTorrent(infoHash).files[fileIndex]
-
-    return getMediaResource(infoHash, fileIndex, file)
-        .then((didl) => ({
-            Result: toDIDLXml([didl]),
+function browseMetadata(inputs, req) { 
+    if(inputs.ObjectID == '0') {
+        return {
+            Result: toDIDLXml([toDIDLContainer({
+                id: '0',
+                parentId: '0',
+                title: 'Torrents',
+                count: torrentsService.getTorrents().length
+            })]),
             NumberReturned: 1,
             TotalMatches: 1,
-            UpdateID: 0
-        }))
+            UpdateID: 0 
+        }
+    }
+
+    const parts = inputs.ObjectID.split(':')
+    const infoHash = parts[0]
+
+    const torrent = torrentsService.getTorrent(infoHash)
+    const torrentFs = getTorrentFs(torrent)
+    const fsEntry = torrentFs.getById(inputs.ObjectID)
+
+    
+    const didl = fsEntry.type == 'file' ? 
+        getMediaResource({fsEntry, infoHash, clientId: getClientId(req)}):
+        toDIDLContainer(fsEntry)
+
+    return {
+        Result: toDIDLXml([didl]),
+        NumberReturned: 1,
+        TotalMatches: 1,
+        UpdateID: 0
+    }
 }
 
 function toDIDLContainer(item) {
@@ -87,7 +114,7 @@ function toDIDLContainer(item) {
         _name: 'container',
         _attrs: {
             id: `${item.id}`,
-            parentID: '0',
+            parentID: `${item.parentId}`,
             childCount: `${item.count}`,
             restricted: '1'
         },
@@ -153,8 +180,7 @@ module.exports = function () {
                     throw e
                 }
             },
-            GetSortCapabilities() { // eslint-disable-line no-unused-vars
-                //console.log('GetSortCapabilities', inputs)
+            GetSortCapabilities() { 
                 return { SortCaps: '' }
             }
         },

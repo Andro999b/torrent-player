@@ -11,7 +11,7 @@ import {
     Typography
 } from '@material-ui/core'
 
-import DownloadIcon from '@material-ui/icons/FileDownload'
+import DownloadIcon from '@material-ui/icons/CloudDownloadOutlined'
 import ExpandIcon from '@material-ui/icons/ExpandMore'
 
 import SearchResultsItemDetails from './SearchResultsItemDetails'
@@ -68,7 +68,7 @@ class SearchResultsItem extends Component {
             (
                 item.loadingError ?
                     <Typography color='error'>{item.loadingError}</Typography> :
-                    <Fragment>
+                    <div>
                         <ExpansionPanelDetails>
                             <SearchResultsItemDetails details={item.details} />
                         </ExpansionPanelDetails>
@@ -78,7 +78,7 @@ class SearchResultsItem extends Component {
                                 <DownloadIcon />
                             </Button>
                         </ExpansionPanelActions>
-                    </Fragment>
+                    </div>
             )
 
         return (

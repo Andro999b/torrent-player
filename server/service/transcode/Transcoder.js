@@ -3,8 +3,8 @@ const ffmpeg = require('fluent-ffmpeg')
 const metadataService = require('../metadata')
 const CycleBuffer = require('../../utils/CycleBuffer')
 const { TORRENTS_DATA_DIR } = require('../../config')
-const torrentService = require('../torrents')
 const debug = require('debug')('transcode')
+const checkIfTorrentFileReady = require('../torrents/checkIfTorrentFileReady')
 
 class Transcoder {
     constructor() {
@@ -45,7 +45,7 @@ class Transcoder {
 
                 this.buffer = buffer
 
-                const source = torrentService.checkIfTorrentFileReady(file) ?
+                const source = checkIfTorrentFileReady(file) ?
                     path.join(TORRENTS_DATA_DIR, file.path) :
                     file.createReadStream()
 
@@ -66,7 +66,10 @@ class Transcoder {
                             reject(err)
                         }
                     })
-                    .once('start', resolve)
+                    .once('start', (commandLine) => {
+                        debug(`FFMpeg command: ${commandLine}`)
+                        resolve()
+                    })
 
                 if (duration)
                     this.command.duration(duration)
@@ -74,7 +77,7 @@ class Transcoder {
                 this.transcoderStream = this.command.stream()
                     .on('data', (chunk) => buffer.write(chunk))
                     .once('error', (error) => {
-                        console.error(`Transcodinf stream closed with error: ${error.message}`)
+                        console.error(`Transcoding stream closed with error: ${error.message}`)
                         buffer.final()
                     })
                     .once('end', () => {

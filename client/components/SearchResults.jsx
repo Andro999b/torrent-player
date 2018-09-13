@@ -53,7 +53,7 @@ class SearchResults extends Component {
 }
 
 SearchResults.propTypes = {
-    results: PropTypes.object.isRequired
+    results: PropTypes.array.isRequired
 }
 
 export default SearchResults

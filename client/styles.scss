@@ -23,6 +23,14 @@ html {
     bottom: 56px;
 }
 
+.screan-content_full {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
 .search-view {
     padding: 10px;
     height: 100%;
@@ -79,6 +87,14 @@ html {
 
 .expandOpen {
     transform: rotate(180deg);
+}
+
+.center {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .files-list {

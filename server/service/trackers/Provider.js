@@ -134,10 +134,17 @@ class Provider {
                     return
                 }
 
-                details.files = parsedTorrent.files.map((file) => ({
-                    name: file.name,
-                    length: file.length
-                }))
+                details.files = parsedTorrent.files.map((file, fileIndex) => {
+                    const lastSeparator = file.path .lastIndexOf('/')
+                    const path = lastSeparator > -1 ? file.path.substring(0, lastSeparator) : ''
+
+                    return {
+                        path,
+                        name: file.name,
+                        id: fileIndex,
+                        length: file.length
+                    }
+                })
 
                 resolve(details)
             })

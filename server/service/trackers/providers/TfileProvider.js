@@ -58,7 +58,7 @@ module.exports = class TfileProvider extends Provider {
 
     getSearchUrl(query, page) {
         const { searchUrl, pageSize } = this.config
-        return `${searchUrl}?q=${query}'&start=${pageSize * (page - 1)}`
+        return `${searchUrl}?q=${query}&с=2&start=${pageSize * (page - 1)}`
     }
 
     getInfoUrl(resultsId) {

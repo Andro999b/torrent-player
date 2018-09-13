@@ -7,7 +7,13 @@ class RemoteDevice extends EventEmitter {
         super()
         this.state = {}
         this.id = uuid()
+        this.avaliable = true
         this.name = `Video Screan ${RemoteDevice.counter++}`
+    }
+
+    setAvailability(avaliable) {
+        this.avaliable = avaliable
+        this.emit(RemoteDevice.Events.UpdateList)
     }
 
     updateState(state) {
@@ -20,21 +26,18 @@ class RemoteDevice extends EventEmitter {
     clearState() {
         this.state = {}
         this.emit(RemoteDevice.Events.Sync, this.state)
+        this.emit(RemoteDevice.Events.Clear)
     }
 
-    /* eslint-disable */
-    pause() { }
-    play(currentTime) { }
-    seek(currentTime) { }
-
-    openPlaylist(playlist, fileIndex) { }
-    closePlaylist() { }
-    /* eslint-enable */
+    // eslint-disable-next-line
+    doAction(action, payload){}
 }
 
 RemoteDevice.counter = 0
 RemoteDevice.Events = {
-    Sync: 'sync'
+    Sync: 'sync',
+    Clear: 'clear',
+    UpdateList: 'updateList'
 }
 
 module.exports = RemoteDevice

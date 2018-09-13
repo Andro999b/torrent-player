@@ -1,9 +1,8 @@
 import { observable, action } from 'mobx'
 import request from 'superagent'
 
-
-class Device {
-    @observable playlist = []
+export class Device {
+    @observable playlist = { name: '', files: [] }
     @observable currentFileIndex = 0
     @observable currentTime = 0
     @observable duration = 0
@@ -11,6 +10,8 @@ class Device {
     @observable isPlaying = false
     @observable isLoading = false
     @observable error = null
+    @observable volume = 1
+    @observable isMuted = false
 
     isSeekable() {
         return true
@@ -25,32 +26,15 @@ class Device {
     pause() { }
     play(currentTime) { }
     seek(currentTime) { }
-    connect(onDisconnect) { }
+    connect() { }
     disconnect() { }
+    setVolume(volume) {}
+    selectFile(fileIndex) {}
+    setPlaylist(playlist, fileIndex) {} 
     /* eslint-enable */
-
-    @action setPlaylist(playlist) {
-        this.playlist = playlist
-    }
-
-    @action selectFile(fileIndex) {
-        const { files } = this.playlist
-        this.currentFileIndex = fileIndex
-        this.setSource(files[this.currentFileIndex].source)
-    }
-
-    @action setLoading(loading) {
-        this.isLoading = loading
-    }
-
-    @action setError(error) {
-        this.error = error
-    }
 }
 
 export class LocalDevice extends Device {
-    @observable volume = 1
-    @observable isMuted = false
     @observable url = null
     keepAliveUrl = null
     @observable hls = false
@@ -65,10 +49,6 @@ export class LocalDevice extends Device {
                 request.get(this.keepAliveUrl).end()// TODO more oblios way to do this
             }
         }, 5000) // each 5 sec call server keep alive
-    }
-
-    @action setVolume(volume) {
-        this.volume = volume
     }
 
     @action setSource(source) {
@@ -103,6 +83,29 @@ export class LocalDevice extends Device {
         this.currentTime = currentTime
     }
 
+    @action setPlaylist(playlist, fileIndex) {
+        this.playlist = playlist
+        this.selectFile(fileIndex)
+    }
+
+    @action selectFile(fileIndex) {
+        const { files } = this.playlist
+        this.currentFileIndex = fileIndex
+        this.setSource(files[this.currentFileIndex].source)
+    }
+
+    @action setLoading(loading) {
+        this.isLoading = loading
+    }
+
+    @action setError(error) {
+        this.error = error
+    }
+
+    @action setVolume(volume) {
+        this.volume = volume
+    }
+
     @action toggleMute() {
         this.isMuted = !this.isMuted
     }
@@ -123,6 +126,7 @@ class PlayerStore {
         }
 
         this.device = device
+        this.device.connect()
     }
 
     @action switchDevice(device) {
@@ -132,8 +136,7 @@ class PlayerStore {
 
         const { playlist, fileIndex } = this.prevDevice
 
-        this.device.setPlaylist(playlist)
-        this.device.selectFile(fileIndex)
+        this.device.setPlaylist(playlist, fileIndex)
 
         //response prev device stat
         if (prevDevice) {
@@ -149,9 +152,13 @@ class PlayerStore {
         if(playlist.files.length === 0) return
 
         this.torrent = torrent
+
+        const prevDevice = this.device
+        if(prevDevice) prevDevice.disconnect()
+
         this.device = device
-        this.device.setPlaylist(playlist)
-        this.device.selectFile(fileIndex)
+        this.device.connect()
+        this.device.setPlaylist(playlist, fileIndex)
         this.device.play()
     }
 

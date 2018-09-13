@@ -163,7 +163,10 @@ class VideoScrean extends Component {
 
         if (device.hls && Hls.isSupported()) {
             const hls = new Hls({
-                startPosition: device.currentTime
+                startPosition: device.currentTime,
+                xhrSetup: function(xhr) {
+                    xhr.timeout = 0
+                }
             })
             hls.loadSource(device.url)
             hls.attachMedia(video)

@@ -4,7 +4,7 @@ const rmrf = promisify(require('rimraf'))
 const fs = require('fs-extra')
 const ffmpeg = require('fluent-ffmpeg')
 const m3u8 = require('m3u8-parser')
-const torrentService = require('../torrents')
+const checkIfTorrentFileReady = require('../torrents/checkIfTorrentFileReady')
 const {
     HLS_DIRECTORY,
     HLS_TRANSCODER_IDLE_TIMEOUT,
@@ -12,7 +12,7 @@ const {
     TORRENTS_DATA_DIR
 } = require('../../config')
 const { waitForFile, touch } = require('../../utils')
-const debug = require('debug')('transcode-hls')
+const debug = console.log//require('debug')('transcode-hls')
 
 class HLSTranscoder {
     constructor(torrent, fileIndex) {
@@ -57,7 +57,7 @@ class HLSTranscoder {
         await new Promise((resolve, reject) => {
             debug(`Start transcoding ${this.torrentHash} ${file.path}`)
 
-            const source = torrentService.checkIfTorrentFileReady(file) ?
+            const source = checkIfTorrentFileReady(file) ?
                 path.join(TORRENTS_DATA_DIR, file.path) :
                 file.createReadStream()
                 
@@ -65,7 +65,6 @@ class HLSTranscoder {
                 .videoCodec('libx264')
                 .audioCodec('aac')
                 .seekInput(start_time)
-                .addOutputOption('-g 25')
                 .addOutputOption('-max_muxing_queue_size 400')
                 .addOutputOption('-preset ultrafast')
                 .addOutputOption('-tune zerolatency')
@@ -77,7 +76,6 @@ class HLSTranscoder {
                 .addOutputOption('-hls_segment_filename 1')
                 .addOutputOption(`-hls_base_url ${hlsBaseUrl}`)
                 .addOutputOption(`-hls_segment_filename ${outputDirectory}/segment_%03d.ts`)
-                .fps(25)
                 .format('hls')
                 .once('error', (err, stdout, stderr) => {
                     this._needToStartTranscoding = true
@@ -85,14 +83,17 @@ class HLSTranscoder {
                     console.error('Cannot process video: ' + err.message, stderr) // eslint-disable-line
                     reject(err)
                 })
-                .once('start', () => {
+                .once('start', (commandLine) => {
+                    debug(`FFMpeg command: ${commandLine}`)
+
                     this.resetIdle()
                     this._isRunning = true
 
-                    waitForFile(this.m3uPath, 60 * 1000)
+                    waitForFile(this.m3uPath, 60 * 1000 * 5)
                         .then(resolve)
                         .catch(() => {
-                            debug(`Hls file ${this.m3uPath} hasnt bean created during 1 minuet`)
+                            reject('Hls file hasnt bean created')
+                            debug(`Hls file ${this.m3uPath} hasnt bean created`)
                         })
                 })
                 .once('end', () => {

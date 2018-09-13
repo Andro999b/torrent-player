@@ -24,7 +24,7 @@ class TorrentsView extends Component {
 
     componentDidMount() {
         this.props.torrentsStore.startUpdate()
-        //this.props.torrentsStore.updateTorrents()
+        // this.props.torrentsStore.updateTorrents()
     }
 
     componentWillUnmount() {

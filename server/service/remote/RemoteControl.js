@@ -8,6 +8,11 @@ class RemoteControl extends EventEmitter {
     }
 
     // eslint-disable-next-line
+    connected(state) {
+    
+    }
+
+    // eslint-disable-next-line
     syncState(state) {
 
     }
@@ -18,13 +23,14 @@ class RemoteControl extends EventEmitter {
 }
 
 RemoteControl.Events = {
-    Action: 'action' 
+    Action: 'action'
 }
 
 RemoteControl.Actions = {
     Play: 'play',
     Pause: 'pause',
     Seek: 'seek',
+    SelectFile: 'selectFile',
     OpenPlaylist: 'openPlaylist',
     ClosePlaylist: 'closePlaylist' 
 }

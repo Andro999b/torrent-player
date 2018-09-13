@@ -1,17 +1,19 @@
 const express = require('express')
 const fs = require('fs')
 const path = require('path')
+const pick = require('lodash.pick')
+const mimeLookup = require('mime-types').lookup
 const torrentsService = require('../service/torrents')
+const checkIfTorrentFileReady = require('../service/torrents/checkIfTorrentFileReady')
 const transcodeService = require('../service/transcode')
 const ResponseError = require('../utils/ResponseError')
 const { isVideo, parseRange, formatDLNADuration } = require('../utils')
-const mimeLookup = require('mime-types').lookup
 const { TORRENTS_DATA_DIR } = require('../config')
 
 const router = express.Router()
 
 router.get('/', (req, res) => {
-    res.json(torrentsService.getTorrents())
+    res.json(torrentsService.getTorrents().map(mapTorrent))
 })
 
 router.post('/', (req, res, next) => {
@@ -19,11 +21,16 @@ router.post('/', (req, res, next) => {
         throw new ResponseError('magnetUrl or torrentUrl reuired')
 
     torrentsService.addTorrent(req.body.magnetUrl, req.body.torrentUrl)
+        .then((torrent) => res.json(mapTorrent(torrent)))
         .catch(next)
 })
 
 router.get('/:id', (req, res) => {
-    res.json(torrentsService.getTorrent(req.params.id))
+    const torrent = torrentsService.getTorrent(req.params.id)
+    if(torrent)
+        res.json(mapTorrent(torrent))
+    else
+        throw new ResponseError('Torrent not found', 404)
 })
 
 router.delete('/:id', (req, res, next) => {
@@ -42,8 +49,8 @@ router.get('/:torrentId/files/:fileId/transcoded', (req, res, next) => {
     const { torrent, file } = getTorrentAndFile(req)
     const { clientId } = req.query
 
-    if (!clientId) throw new ResponseError('clientId required', 404)
-    if (!isVideo(file.path)) throw new ResponseError('Not video file', 404)
+    if (!clientId) throw new ResponseError('clientId required', 400)
+    if (!isVideo(file.path)) throw new ResponseError('Not video file', 400)
 
     let start = 0, duration = 0
     const dlnaTimeSeek = req.header('TimeSeekRange.dlna.org')
@@ -110,7 +117,7 @@ router.get('/:torrentId/files/:fileId/hls/keepAlive', (req, res) => {
         .getHLSTranscoder(torrent, fileId)
         .keepAlive()
 
-    res.end()
+    res.json('OK')
 })
 
 router.get('/:torrentId/files/:fileId/hls/:segment', (req, res) => {
@@ -173,10 +180,50 @@ function writeFileRange(file, req, res) {
 }
 
 function createFileStream(file, opts) {
-    if (torrentsService.checkIfTorrentFileReady(file)) {
+    if (checkIfTorrentFileReady(file)) {
         return fs.createReadStream(path.join(TORRENTS_DATA_DIR, file.path), opts)
     }
     return file.createReadStream(opts)
+}
+
+function mapTorrent(torrent) {
+    const filterdTorrent = pick(torrent, [
+        'infoHash',
+        'name',
+        'timeRemaining',
+        'received',
+        'downloaded',
+        'uploaded',
+        'downloadSpeed',
+        'uploadSpeed',
+        'ratio',
+        'numPeers',
+        'path',
+        'files'
+    ])
+
+    const filtredFiles = filterdTorrent.files
+        .map((file) => pick(file, [
+            'name',
+            'path',
+            'length',
+            'downloaded',
+            'progress'
+        ]))
+
+    filtredFiles.forEach((file, fileIndex) => {
+        //cut file name
+        const lastSeparator = file.path .lastIndexOf('/')
+
+        file.id = fileIndex
+        file.path = lastSeparator > -1 ? file.path.substring(0, lastSeparator) : ''
+        file.mimeType = mimeLookup(file.name)
+        file.torrentInfoHash = torrent.infoHash
+    })
+
+    filterdTorrent.files = filtredFiles
+
+    return filterdTorrent
 }
 
 module.exports = router

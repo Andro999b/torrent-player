@@ -28,8 +28,8 @@ class TorrentListItemFile extends Component {
     
 
     handleDownload = () => {
-        const { torrent, fileIndex } = this.props
-        const downloadUrl = getTorrentFileContentLink(torrent.infoHash, fileIndex)
+        const { torrent, file } = this.props
+        const downloadUrl = getTorrentFileContentLink(torrent.infoHash, file.id)
 
         window.open(downloadUrl, '_blank')
     }
@@ -48,17 +48,18 @@ class TorrentListItemFile extends Component {
         const { anchorEl } = this.state
 
         const playable = isPlayable(file.name)
-        const progress = file.progress > 1 ? '100%' : Math.ceil(Math.min(file.progress, 1) * 100) + '%'
+        const isReady = file.progress > 0.99
+        const progress = isReady ? '100%' : Math.ceil(Math.min(file.progress, 1) * 100) + '%'
 
         const text = <div style={{ wordBreak: 'break-all' }}>
-            {file.path}&nbsp;
+            {file.name}&nbsp;
             <span style={{ color: grey[600] }}>
                 {filesize(file.length).human()}&nbsp;{progress}
             </span>
         </div>
 
         return (
-            <ListItem key={fileIndex} button={playable} onClick={() => onPlayFile(torrent, fileIndex)}>
+            <ListItem key={fileIndex} button={playable} onClick={() => onPlayFile(torrent, file)}>
                 <ListItemIcon className="hide-on-mobile">
                     {playable ? <PlayableIcon /> : <NotPlayableIcon />}
                 </ListItemIcon>
@@ -68,12 +69,12 @@ class TorrentListItemFile extends Component {
                         <MoreIcon />
                     </IconButton>
                     <Menu anchorEl={anchorEl} open={anchorEl != null} onClose={this.handleCloseMenu}>
-                        {playable && <MenuItem onClick={() => onCastFile(torrent, fileIndex)}>
+                        {playable && <MenuItem onClick={() => onCastFile(torrent, file)}>
                             Cast
                         </MenuItem>}
-                        <MenuItem onClick={this.handleDownload}>
+                        { isReady && <MenuItem onClick={this.handleDownload}>
                             Download
-                        </MenuItem>
+                        </MenuItem>}
                     </Menu>
                 </ListItemSecondaryAction>
             </ListItem>

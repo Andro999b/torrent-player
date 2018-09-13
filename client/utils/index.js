@@ -32,7 +32,9 @@ export function getTorrentHLSKeepAliveLink(hashInfo, fileIndex) {
 export function invokeAll() {
     const invockes = Array.from(arguments)
     return function () {
-        invockes.forEach((invoke) => invoke.call())
+        invockes.forEach((invoke) => {
+            invoke.call()
+        })
     }
 }
 

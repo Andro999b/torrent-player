@@ -4,7 +4,6 @@ import PropTypes from 'prop-types'
 import { BottomNavigation, BottomNavigationAction } from '@material-ui/core'
 import SearchIcon from '@material-ui/icons/Search'
 import TorrentsIcon from '@material-ui/icons/List'
-import PlayerIcon from '@material-ui/icons/MusicVideo'
 import { isMobile } from '../utils'
 
 class MainNavigation extends Component {
@@ -20,7 +19,6 @@ class MainNavigation extends Component {
             >
                 <BottomNavigationAction value="search" label="Search" icon={<SearchIcon />} />
                 <BottomNavigationAction value="torrents" label="Torrents" icon={<TorrentsIcon />} />
-                <BottomNavigationAction value="player" label="Player" icon={<PlayerIcon />} />
             </BottomNavigation>
         )
     }

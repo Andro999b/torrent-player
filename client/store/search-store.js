@@ -33,8 +33,12 @@ class SearchReusltItem {
         request
             .get(`/api/trackers/${this.provider}/items/${this.id}`)
             .then((res) => {
-                this.details = res.body
+                const details = res.body
+                if(!details.name) details.name = this.name
+
+                this.details = details
                 this.loadingDetails = false
+                
             })
             .catch((err) => {
                 console.error(err)

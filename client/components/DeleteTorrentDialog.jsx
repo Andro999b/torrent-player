@@ -13,12 +13,15 @@ class DeleteTorrentDialog extends Component {
     render() {
         const { torrent, onAccept, onReject } = this.props
 
+        if(torrent)
+            this.name = torrent.name
+
         return (
             <Dialog open={torrent != null} onClose={onReject}>
                 <DialogTitle>Delete torrent?</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        Do you want to delete torrent {torrent && torrent.name} and all data?
+                        Do you want to delete torrent {this.name} and all data?
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>

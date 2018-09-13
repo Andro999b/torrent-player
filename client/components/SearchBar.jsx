@@ -128,6 +128,7 @@ class SearchBar extends Component {
             <Paper className="search-bar">
                 <Autosuggest
                     renderInputComponent={renderInput}
+                    focusInputOnSuggestionClick={false}
                     suggestions={toJS(suggestions)}
                     onSuggestionsFetchRequested={this.handleInput}
                     onSuggestionsClearRequested={this.handleCleanSuggestions}
@@ -171,11 +172,11 @@ class SearchBar extends Component {
 }
 
 SearchBar.propTypes = {
-    searchProviders: PropTypes.object.isRequired,
+    searchProviders: PropTypes.array.isRequired,
     onInput: PropTypes.func.isRequired,
     onSubmit: PropTypes.func.isRequired,
     onSelectProviders: PropTypes.func.isRequired,
-    suggestions: PropTypes.object.isRequired
+    suggestions: PropTypes.array.isRequired
 }
 
 export default SearchBar

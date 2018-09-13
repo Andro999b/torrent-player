@@ -5,7 +5,7 @@ import PropTypes from 'prop-types'
 
 import { Typography } from '@material-ui/core'
 import LocalPlayer from '../components/LocalPlayer'
-import { getCurrentDeviceId } from '../store/remote-control'
+import RemotePlayer from '../components/RemotePlayer'
 
 const playerTheme = (mainTheme) => createMuiTheme({
     palette: {
@@ -23,7 +23,8 @@ const playerTheme = (mainTheme) => createMuiTheme({
     }
 })
 
-@inject('playerStore') @observer
+@inject('playerStore')
+@observer
 class PlayerView extends Component {
 
     render() {
@@ -37,11 +38,12 @@ class PlayerView extends Component {
             <MuiThemeProvider theme={playerTheme}>
                 <div className="player__screen">
                     {!device && <Typography align="center" variant="display1">
-                        Please select file to play
+                        Waiting for video to be ready
                     </Typography>}
                     {device &&
                         <Fragment>
-                            {device.isLocal() && <LocalPlayer {...{ playerStore }} />}
+                            {device.isLocal() && <LocalPlayer />}
+                            {!device.isLocal() && <RemotePlayer />}
                         </Fragment>
                     }
                 </div>
@@ -51,7 +53,8 @@ class PlayerView extends Component {
 }
 
 PlayerView.propTypes = {
-    playerStore: PropTypes.object
+    playerStore: PropTypes.object,
+    deviceName: PropTypes.string
 }
 
 export default PlayerView

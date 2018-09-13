@@ -8,12 +8,13 @@ import PlayerTitle from './PlayerTitle'
 import VideoScrean from './VideoScrean'
 
 import { Typography, CircularProgress } from '@material-ui/core'
-import { observer } from 'mobx-react'
+import { observer, inject } from 'mobx-react'
 
 import { isMobile, isTablet } from '../utils'
 
 const IDLE_TIMEOUT = 3000
 
+@inject('playerStore', 'transitionStore')
 @observer
 class LocalPlayer extends Component {
 
@@ -27,6 +28,11 @@ class LocalPlayer extends Component {
         }
 
         this.handleActivity = this.handleActivity.bind(this)
+    }
+
+    handleCloseVideo = () => {
+        const { transitionStore } = this.props
+        transitionStore.stopPlayMedia()
     }
 
     handleTogglePlayList = () => {
@@ -107,11 +113,11 @@ class LocalPlayer extends Component {
                 <div style={{ visibility: error ? 'hidden' : 'initial' }}>
                     <VideoScrean device={device} onEnded={playerStore.nextFile} />
                 </div>
-                {isLoading && <div className="loading-center"><CircularProgress /></div>}
-                {error && <Typography align="center" variant="display1">{error}</Typography>}
+                {isLoading && <div className="center"><CircularProgress /></div>}
+                {error && <Typography  className="center" variant="display1">{error}</Typography>}
                 {(!idle || !fullScreen) && (
                     <Fragment>
-                        {showTitle && <PlayerTitle title={device.playlist.name} onClose={() => playerStore.closePlaylist()} />}
+                        {showTitle && <PlayerTitle title={device.playlist.name} onClose={this.handleCloseVideo} />}
                         <PlayerFilesList
                             open={playlistOpen}
                             device={device}
@@ -133,7 +139,8 @@ class LocalPlayer extends Component {
 }
 
 LocalPlayer.propTypes = {
-    playerStore: PropTypes.object.isRequired
+    playerStore: PropTypes.object,
+    transitionStore: PropTypes.object
 }
 
 export default LocalPlayer
