@@ -51,9 +51,9 @@ class TorrentsView extends Component {
 
         return (
             <div className="torrents-list">
-                {!loading && torrents.length == 0 && <Typography align="center" variant="display1">No active torrents</Typography>}
+                {!loading && torrents.length == 0 && <Typography className="center" variant="display1">No active torrents</Typography>}
                 <Grid container spacing={16}>
-                    {loading && <div className="loading-center"><CircularProgress /></div>}
+                    {loading && <div className="center"><CircularProgress /></div>}
                     {!loading && torrents.map((torrent) =>
                         <Grid item xs={12} key={torrent.infoHash}>
                             <TorrentListItem torrent={torrent} onDelete={this.handleAskDeleteToprrent.bind(this)} />

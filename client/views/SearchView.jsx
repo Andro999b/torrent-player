@@ -20,7 +20,7 @@ class SearchView extends Component {
                     suggestions={suggestions}
                     searchProviders={searchProviders}
                 />
-                { loading && <div className="loading-center"><CircularProgress/></div> }
+                { loading && <div className="center"><CircularProgress/></div> }
                 { !loading && <SearchResults results={searchResults} /> }
             </div>
         )

@@ -51,14 +51,15 @@ class RemotePlayer extends Component {
                 { showTitle && <PlayerTitle title={device.playlist.name} onClose={this.handleCloseVideo} /> }
                 { !error && (
                     <Fragment>
+                        { !isLoading && <Typography className="center" align="center" variant="display1">
+                            Connected: <br/>
+                            {device.getName()}
+                        </Typography>}
                         <PlayerFilesList
                             open={playlistOpen}
                             device={device}
                             onFileSelected={this.handleSelectFile}
                         />
-                        { !isLoading && <Typography className="center" variant="display1">
-                            Connected to: {device.getName()}
-                        </Typography>}
                         <MediaControls
                             device={device}
                             onNext={() => playerStore.nextFile()}

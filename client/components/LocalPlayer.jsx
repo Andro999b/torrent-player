@@ -114,7 +114,7 @@ class LocalPlayer extends Component {
                     <VideoScrean device={device} onEnded={playerStore.nextFile} />
                 </div>
                 {isLoading && <div className="center"><CircularProgress /></div>}
-                {error && <Typography  className="center" variant="display1">{error}</Typography>}
+                {error && <Typography className="center" variant="display1">{error}</Typography>}
                 {(!idle || !fullScreen) && (
                     <Fragment>
                         {showTitle && <PlayerTitle title={device.playlist.name} onClose={this.handleCloseVideo} />}

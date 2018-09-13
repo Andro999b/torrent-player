@@ -1,7 +1,7 @@
 import { autorun, observable, action } from 'mobx'
 import playerStore, { Device, LocalDevice } from './player-store'
 import transitionStore from './transition-store'
-import { diff, pick } from '../utils'
+import { diff, pick, isMobile } from '../utils'
 import io from 'socket.io-client'
 
 const socket = io({ path: '/rc' })
@@ -158,11 +158,12 @@ function listenDeviceList() {
     socket.on('divicesList', (newDevices) => devices.replace(newDevices))
 }
 
-export function setAvailability(available) {
-    socket.emit('setAvailability', available)
+function setAvailability(available) {
+    if(!isMobile()) // no cas allowed to mible devices
+        socket.emit('setAvailability', available)
 }
 
-export function getRemoteDevice(device) {
+function getRemoteDevice(device) {
     return new RemoteDevice(device)
 }
 
@@ -173,5 +174,7 @@ listenNameUpdate()
 
 export default {
     devices,
-    deviceName
+    deviceName,
+    setAvailability,
+    getRemoteDevice
 }

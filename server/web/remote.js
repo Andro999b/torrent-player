@@ -8,6 +8,7 @@ class SocketRemoteDevice extends RemoteDevice {
     constructor(socket) {
         super()
         this.id = socket.id
+        this.avaliable = false
         this.socket = socket
         this.socket.on(SocketRemoteDevice.Events.SetAvailability, (available) => this.setAvailability(available))
         this.socket.on(SocketRemoteDevice.Events.Sync, (state) => this.updateState(state))

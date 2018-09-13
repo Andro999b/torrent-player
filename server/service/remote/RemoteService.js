@@ -79,6 +79,9 @@ class RemoteService extends EventEmitter {
         if (!device)
             throw new Error('Device not exists')
 
+        if (!device.avaliable)
+            throw new Error('Device unavaliable')
+
         if (!control)
             throw new Error('Control not exists')
 
@@ -111,7 +114,7 @@ class RemoteService extends EventEmitter {
     _attachDeviceListeners(device) {
         device.on(RemoteDevice.Events.Sync, this._handleDeviceSync(device))
         device.on(RemoteDevice.Events.Clear, this._handleDeviceClear(device))
-        device.on(RemoteDevice.Events.UpdateList, this._invalidateDeviceList)
+        device.on(RemoteDevice.Events.UpdateList, this._invalidateDeviceList.bind(this))
     }
 
     _removeDeviceListener(device) {

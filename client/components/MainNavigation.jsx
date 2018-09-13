@@ -2,23 +2,27 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
 import { BottomNavigation, BottomNavigationAction } from '@material-ui/core'
-import SearchIcon from '@material-ui/icons/Search'
-import TorrentsIcon from '@material-ui/icons/List'
+import { 
+    Search as SearchIcon,
+    List as TorrentsIcon,
+    DesktopWindows as CastScreanIcon
+} from '@material-ui/icons'
 import { isMobile } from '../utils'
 
 class MainNavigation extends Component {
     render() {
         const { screen, goToScreen } = this.props
-        const showLabels = !isMobile()
+        const mobile = isMobile()
 
         return (
             <BottomNavigation
-                showLabels={showLabels} className="main-navigation"
+                showLabels={!mobile} className="main-navigation"
                 value={screen}
                 onChange={(e, screen) => goToScreen(screen)}
             >
                 <BottomNavigationAction value="search" label="Search" icon={<SearchIcon />} />
                 <BottomNavigationAction value="torrents" label="Torrents" icon={<TorrentsIcon />} />
+                { !mobile && <BottomNavigationAction value="cast-screan" label="Cast Screan" icon={<CastScreanIcon />} /> }
             </BottomNavigation>
         )
     }

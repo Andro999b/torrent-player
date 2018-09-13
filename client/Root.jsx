@@ -7,6 +7,7 @@ import CastDialog from './components/CastDialog'
 import SearchView from './views/SearchView'
 import TorrentsView from './views/TorrentsView'
 import PlayerView from './views/PlayerView'
+import CastAwaitView from './views/CastAwaitView'
 
 import { observer, inject } from 'mobx-react'
 
@@ -26,6 +27,9 @@ class Root extends Component {
                 break
             case 'torrents':
                 screanView = <TorrentsView/>
+                break
+            case 'cast-screan':
+                screanView = <CastAwaitView/>
                 break
             case 'player':
                 screanView = <PlayerView/>

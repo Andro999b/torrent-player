@@ -23,9 +23,18 @@ const playerTheme = (mainTheme) => createMuiTheme({
     }
 })
 
-@inject('playerStore')
+@inject('playerStore', 'remoteControl')
 @observer
 class PlayerView extends Component {
+    componentDidMount() {
+        const { remoteControl: { setAvailability } } = this.props
+        setAvailability(true)
+    }
+
+    componentWillUnmount() {
+        const { remoteControl: { setAvailability } } = this.props
+        setAvailability(false)
+    }
 
     render() {
         const { playerStore } = this.props
@@ -54,7 +63,7 @@ class PlayerView extends Component {
 
 PlayerView.propTypes = {
     playerStore: PropTypes.object,
-    deviceName: PropTypes.string
+    remoteControl: PropTypes.object
 }
 
 export default PlayerView

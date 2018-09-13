@@ -8,7 +8,7 @@ import {
 } from '../utils'
 import notificationStore from './notifications-store'
 import playerStore, { LocalDevice } from './player-store'
-import { getRemoteDevice } from './remote-control'
+import remoteControl from './remote-control'
 
 const testMedia = document.createElement('video')
 
@@ -49,7 +49,7 @@ class TransitionStore {
 
     @action.bound playMediaOnDevice({ playlist, startIndex, device, torrent }) {
         playerStore.openPlaylist(
-            device ? getRemoteDevice(device) : new LocalDevice(), 
+            device ? remoteControl.getRemoteDevice(device) : new LocalDevice(), 
             playlist, 
             startIndex, 
             torrent
