@@ -5,6 +5,7 @@ const torrentsApi = require('./torrents')
 const trackersApi = require('./trackers')
 const suggestionsApi = require('./suggestions')
 const proxyMedia = require('./proxyMedia')
+const extractVideo = require('./extractVideo')
 const remote = require('./remote')
 const path = require('path')
 const { WEB_PORT } = require('../config')
@@ -20,6 +21,7 @@ module.exports = function () {
     expressServer.use('/api/trackers', trackersApi)
     expressServer.use('/api/suggestions', suggestionsApi)
     expressServer.use('/proxyMedia', proxyMedia)
+    expressServer.use('/extractVideo', extractVideo)
 
     // eslint-disable-next-line no-unused-vars
     expressServer.use((err, req, res, next) => {

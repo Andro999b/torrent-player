@@ -50,7 +50,7 @@ class AnidubProvider extends Provider {
                                     index,
                                     id: index,
                                     name: $node.text(),
-                                    url: `/extractVideo?type=stormtv&url=${urlencode(playerUrl)}`
+                                    url: `/extractVideo?type=stormTv&url=${urlencode(playerUrl)}`
                                 }
                             })
                 }

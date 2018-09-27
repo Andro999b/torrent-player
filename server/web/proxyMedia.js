@@ -6,7 +6,7 @@ const router = express.Router()
 const PROXY_HEADERS = ['Content-Type', 'Content-Length', 'Cache-Control', 'ETag', 'Expires', 'Date', 'Last-Modified']
 
 router.get('/', (req, res, next) => {
-    const url = req.query.url
+    const { url } = req.query
 
     if (!url) {
         throw new ResponseError('url parameter requred')
