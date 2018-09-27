@@ -91,7 +91,7 @@ export class LocalDevice extends Device {
     @action selectFile(fileIndex) {
         const { files } = this.playlist
         this.currentFileIndex = fileIndex
-        this.setSource(files[this.currentFileIndex].source)
+        this.setSource(files[this.currentFileIndex])
     }
 
     @action setLoading(loading) {
@@ -191,6 +191,12 @@ class PlayerStore {
         if(this.torrent && this.torrent.infoHash === torrent.infoHash) {
             this.closePlaylist()
         }
+    }
+
+    getPlayerTitle() {
+        const { playlist: { name, files }, currentFileIndex } = this.device
+
+        return name + (currentFileIndex != -1 ?  ' - ' + files[currentFileIndex].name : '')
     }
 }
 

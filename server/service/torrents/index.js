@@ -4,7 +4,7 @@ const fs = require('fs-extra')
 const { promisify } = require('util')
 const rimraf = promisify(require('rimraf'))
 const parseTorrent = require('parse-torrent')
-const parseRemoteTorrent = promisify(parseTorrent.remote)
+const superagent = require('superagent')
 const database = require('../database')
 const { stopTranscoding } = require('../transcode')
 const { TORRENTS_DIR, TORRENTS_DATA_DIR } = require('../../config')
@@ -62,9 +62,13 @@ module.exports = {
         let parsedTorrent = null
         
         if(torrentUrl) {
-            parsedTorrent = await parseRemoteTorrent(torrentUrl)
+            const res = await superagent
+                .get(torrentUrl)
+                .buffer(true)
+                .parse(superagent.parse.image)
+            parsedTorrent = parseTorrent(res.body)
         } else if (magnetUrl) {
-            parsedTorrent = parsedTorrent(magnetUrl)
+            parsedTorrent = parseTorrent(magnetUrl)
         }
 
         let torrent = torrentClient.get(parsedTorrent.infoHash)

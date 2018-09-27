@@ -13,6 +13,13 @@ function hasOneOfExtensions(extensions, fileName) {
     }) != -1
 }
 
+function parseCodeDuration(codecDuration) {
+    const timeParts = codecDuration.split(':')
+    return parseInt(timeParts[0]) * 3600 + 
+            parseInt(timeParts[1]) * 60 + 
+            parseFloat(timeParts[2])
+}
+
 function formatDLNADuration(duration) {
     let seconds, hours, minutes
 
@@ -133,6 +140,7 @@ module.exports = {
     },
     parseRange,
     formatDLNADuration,
+    parseCodeDuration,
     getLastFileLine,
     waitForFile,
     touch

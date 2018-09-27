@@ -72,9 +72,9 @@ class TorrentListItemFile extends Component {
                         {playable && <MenuItem onClick={() => onCastFile(torrent, file)}>
                             Cast
                         </MenuItem>}
-                        { isReady && <MenuItem onClick={this.handleDownload}>
+                        <MenuItem onClick={this.handleDownload}>
                             Download
-                        </MenuItem>}
+                        </MenuItem>
                     </Menu>
                 </ListItemSecondaryAction>
             </ListItem>

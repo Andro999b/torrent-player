@@ -5,7 +5,17 @@ const superagent = require('superagent')
 require('superagent-charset')(superagent)
 
 class Crawler {
-    constructor(url) {
+    constructor(url, requestGenerator) {
+        this._requestGenerator = requestGenerator || (async (nextUrl) => {
+            const targetUrl = nextUrl != this._url ? 
+                new URL(nextUrl, this._url).toString() :
+                nextUrl
+
+            return superagent
+                .get(targetUrl)
+                .charset()
+                .set(this._headers)
+        })
         this._url = url
     }
 
@@ -34,10 +44,6 @@ class Crawler {
         return this
     }
 
-    _step() {
-
-    }
-
     _extractData($el, config) {
         let transform = ($el) => $el.text().trim()
         let selector = config
@@ -63,17 +69,10 @@ class Crawler {
 
         const results = []
 
-        const rebuildUrl = (nextUrl) => {
-            return new URL(nextUrl, this._url).toString()
-        }
-
         const step = async (currentUrl) => {
-            const res = await superagent
-                .get(currentUrl)
-                .charset()
-                .set(this._headers)
+            const res = await this._requestGenerator(currentUrl)
 
-            const $ = cheerio.load(res.text)
+            const $ = cheerio.load(res.text, { xmlMode: false })
 
             const nextUrl =
                 this._pagenatorSelector &&
@@ -108,7 +107,7 @@ class Crawler {
                 return results.slice(0, this._limit)
             }
 
-            return await step(rebuildUrl(nextUrl))
+            return await step(nextUrl)
         }
 
         return await step(this._url)
@@ -117,7 +116,7 @@ class Crawler {
 
 module.exports = {
     Crawler,
-    get(url) {
-        return new Crawler(url)
+    get(url, requestGenerator) {
+        return new Crawler(url, requestGenerator)
     }
 }

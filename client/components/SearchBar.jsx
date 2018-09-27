@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import Autosuggest from 'react-autosuggest'
-import { SEARCH_RPVODERS, SEARCH_RPVODERS_NAME } from '../contants'
+import { SEARCH_RPVODERS, SEARCH_RPVODERS_NAME } from '../constants'
 
 import {
     Paper,

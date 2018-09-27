@@ -9,11 +9,11 @@ import {
     Menu,
     MenuItem
 } from '@material-ui/core'
-import groupBy from 'lodash.groupby'
 import { grey } from '@material-ui/core/colors'
 import ExpandMore from '@material-ui/icons/ExpandMore'
 import { observer } from 'mobx-react'
 import memoize from 'memoize-one'
+import { fileGroupingFun } from './GroupFiles'
 
 @observer
 class PlayerPlayList extends Component {    
@@ -39,9 +39,12 @@ class PlayerPlayList extends Component {
         this.setState({ selectedGroup, anchorEl: null })
     }
 
-    getGroups = memoize(
-        (files) => groupBy(files, (file) => file.path)
-    )
+    getGroups = memoize(fileGroupingFun)
+    getFileGroup = memoize((fileIndex, groups) =>
+        groups.find((g) =>
+            g.files.find((f) => f.index == fileIndex) != null
+        ) 
+    )   
 
     render() {
         const { selectedGroup, anchorEl } = this.state
@@ -49,19 +52,18 @@ class PlayerPlayList extends Component {
         const { files } = playlist
 
         const groups = this.getGroups(files)
-        const currentGroup = selectedGroup || files[currentFileIndex].path
-        const groupFiles = Object.keys(groups).length > 1 ? groups[currentGroup] : files
+
+        const currentGroup = selectedGroup || this.getFileGroup(currentFileIndex, groups)
+        const groupFiles = groups.length > 1 ? currentGroup.files : files
         const sortedFiles = groupFiles
-            .slice() // becuase of mobx
-            .sort((a, b) => a.name.localeCompare(b.name))
 
         return (
             <Slide direction="left" in={open} mountOnEnter unmountOnExit>
                 <Paper elevation={12} square className="player__file-list">
-                    {Object.keys(groups).length > 1 && <Fragment>
+                    {groups.length > 1 && <Fragment>
                         <List>
                             <ListItem button style={{ background: grey[600] }} onClick={this.handleOpenGroupsMenu}>
-                                <ListItemText primary={currentGroup} />
+                                <ListItemText primary={currentGroup.name} />
                                 <ExpandMore nativeColor="white" />
                             </ListItem>
                         </List>
@@ -69,12 +71,12 @@ class PlayerPlayList extends Component {
                             anchorEl={anchorEl}
                             open={Boolean(anchorEl)}
                             onClose={this.handleCloseGroupsMenu}>
-                            {Object.keys(groups).sort().map((groupName) => (
+                            {groups.map((group) => (
                                 <MenuItem 
-                                    key={groupName} 
-                                    selected={groupName == selectedGroup}
-                                    onClick={() => this.handleSelectGroup(groupName)}>
-                                    {groupName}
+                                    key={group.name} 
+                                    selected={group == selectedGroup}
+                                    onClick={() => this.handleSelectGroup(group)}>
+                                    {group.name}
                                 </MenuItem>
                             ))}
                         </Menu>

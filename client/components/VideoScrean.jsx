@@ -26,7 +26,8 @@ class VideoScrean extends Component {
         device.setError(null)
     }
 
-    handleError = () => {
+    handleError = (e) => {
+        console.error(e.nativeEvent)
         const { device } = this.props
         device.setError('Could not play media')
         device.setLoading(false)
@@ -49,6 +50,17 @@ class VideoScrean extends Component {
             })
         }
     }
+
+    handleWaiting = () => {
+        const { device } = this.props
+        device.setLoading(true)
+    }
+
+    handlePlay= () => {
+        const { device } = this.props
+        device.setLoading(false)
+    }
+
 
     getVideoScale() {
         const originAspect = this.video.videoWidth / this.video.videoHeight
@@ -216,6 +228,8 @@ class VideoScrean extends Component {
                     onEnded={this.handleEnded}
                     onLoadStart={this.handleLoadStart}
                     onError={this.handleError}
+                    onWaiting={this.handleWaiting}
+                    onPlaying={this.handlePlay}
                 ></video>
             </div>
         )

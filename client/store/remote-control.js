@@ -1,8 +1,9 @@
 import { autorun, observable, action } from 'mobx'
 import playerStore, { Device, LocalDevice } from './player-store'
 import transitionStore from './transition-store'
-import { diff, pick, isMobile } from '../utils'
+import { diff, isMobile } from '../utils'
 import io from 'socket.io-client'
+import pick from 'lodash.pick'
 
 const socket = io({ path: '/rc' })
 const devices = observable([])
@@ -138,6 +139,7 @@ function listenIncomeControls() {
                 return
             }
             case 'closePlaylist':
+                transitionStore.goToScreen('cast-screan')
                 playerStore.closePlaylist()
                 return
         }

@@ -16,11 +16,11 @@ function getClientId(req) {
     return uuid()
 }
 
-function browseContent(inputs, req) {
+async function browseContent(inputs, req) {
     if (inputs.ObjectID == '0') {
         return browseTorrentsList(inputs)
     } else {
-        return browseTorrentFs(inputs, req)
+        return await browseTorrentFs(inputs, req)
     }
 }
 
@@ -49,7 +49,7 @@ function browseTorrentsList(inputs) {
     }
 }
 
-function browseTorrentFs(inputs, req) {
+async function browseTorrentFs(inputs, req) {
     const parts = inputs.ObjectID.split(':')
     const infoHash = parts[0]
     const torrent = torrentsService.getTorrent(infoHash)
@@ -60,11 +60,11 @@ function browseTorrentFs(inputs, req) {
     const end = begin + parseInt(inputs.RequestedCount)
     const sliced = end > begin ? parentEntry.children.slice(begin, end) : parentEntry.children
 
-    const didl = sliced.map((fsEntry) => 
+    const didl = await Promise.all(sliced.map(async (fsEntry) => 
         fsEntry.type == 'file' ? 
-            getMediaResource({fsEntry, infoHash, clientId: getClientId(req)}):
+            await getMediaResource({fsEntry, infoHash, clientId: getClientId(req)}):
             toDIDLContainer(fsEntry)
-    )
+    ))
 
     return {
         Result: toDIDLXml(didl),
@@ -74,7 +74,7 @@ function browseTorrentFs(inputs, req) {
     }
 }
 
-function browseMetadata(inputs, req) { 
+async function browseMetadata(inputs, req) { 
     if(inputs.ObjectID == '0') {
         return {
             Result: toDIDLXml([toDIDLContainer({
@@ -98,7 +98,7 @@ function browseMetadata(inputs, req) {
 
     
     const didl = fsEntry.type == 'file' ? 
-        getMediaResource({fsEntry, infoHash, clientId: getClientId(req)}):
+        await getMediaResource({fsEntry, infoHash, clientId: getClientId(req), metadata: true}):
         toDIDLContainer(fsEntry)
 
     return {

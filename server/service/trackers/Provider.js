@@ -1,5 +1,6 @@
 const crawler = require('../../utils/crawler')
 const parseTorrent = require('parse-torrent')
+const superagent = require('superagent')
 const urlencode = require('urlencode')
 
 class Provider {
@@ -65,7 +66,10 @@ class Provider {
         const limit = pageCount * pageSize
 
         return crawler
-            .get(this.getSearchUrl(urlencode(query, encoding), page))
+            .get(
+                this.getSearchUrl(urlencode(query, encoding), page), 
+                this._crawlerRequestGenerator(query, page)
+            )
             .headers({
                 'User-Agent': userAgent
             })
@@ -96,6 +100,7 @@ class Provider {
             .gather() 
             .then((details) => details[0])
             .then((details) => this._postProcessResultDetails(details, resultsId))
+            .then((details) => ({...details, type: this.getType()}))
             .then(this._loadTorrentFileInfo.bind(this))
     }
 
@@ -107,6 +112,10 @@ class Provider {
     // eslint-disable-next-line no-unused-vars
     getInfoUrl(resultsId) {
         throw new Error('Provider not implement getInfoUrl()')
+    }
+
+    getType() {
+        return 'torrent'
     }
 
     _postProcessResult(results) {
@@ -122,19 +131,22 @@ class Provider {
         return details
     }
 
+    _crawlerRequestGenerator(query, page) {} // eslint-disable-line
+
     _loadTorrentFileInfo(details) {
         if(!details.torrentUrl) {
-            return Promise.resolve(details)
+            return details
         }
 
-        return new Promise((resolve, reject) => {
-            parseTorrent.remote(details.torrentUrl, (err, parsedTorrent) => {
-                if (err) {
-                    reject(err)
-                    return
-                }
-
-                details.files = parsedTorrent.files.map((file, fileIndex) => {
+        return superagent
+            .get(details.torrentUrl)
+            .buffer(true)
+            .parse(superagent.parse.image)
+            .then((res) => {
+                return parseTorrent(res.body)
+            })
+            .then((parsedTorrent) => {
+                const files = parsedTorrent.files.map((file, fileIndex) => {
                     const lastSeparator = file.path .lastIndexOf('/')
                     const path = lastSeparator > -1 ? file.path.substring(0, lastSeparator) : ''
 
@@ -146,9 +158,8 @@ class Provider {
                     }
                 })
 
-                resolve(details)
+                return { ...details, files }
             })
-        })
     }
 }
 

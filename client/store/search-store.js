@@ -2,7 +2,8 @@ import { observable, action } from 'mobx'
 import { fetchOnce } from '../utils'
 import request from 'superagent'
 import notificationStore from './notifications-store'
-import { SEARCH_RPVODERS } from '../contants'
+import { SEARCH_RPVODERS } from '../constants'
+import localStore from 'store'
 
 const fetchSuggestions = fetchOnce()
 const searchProvidersFetch = SEARCH_RPVODERS.reduce((acc, provider) => {
@@ -23,6 +24,10 @@ class SearchReusltItem {
         if(this.details || this.loadingDetails || this.loadingError)
             return false
         return true 
+    }
+
+    isTorrent() {
+        return this.details && this.details.type == 'torrent'
     }
 
     @action loadDetails() {
@@ -52,11 +57,12 @@ class SearchStore {
     @observable suggestions = []
     @observable searchResults = []
     @observable loading = false
-    @observable searchProviders = SEARCH_RPVODERS.concat([])
+    @observable searchProviders = localStore.get('searchProviders') || SEARCH_RPVODERS.concat([])
 
     waitingSuggestions = true
 
     @action selectProviders(providers) {
+        localStore.set('searchProviders', providers)
         this.searchProviders = providers
     }
 
@@ -75,6 +81,9 @@ class SearchStore {
     }
 
     @action search(searchQuery) {
+        if(this.searchProviders.length == 0) 
+            return
+
         this.waitingSuggestions = false
         this.suggestions = []
         this.searchResults = []

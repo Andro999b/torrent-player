@@ -110,14 +110,12 @@ class LocalPlayer extends Component {
                 enabled={fullScreen}
                 onChange={this.handleSetFullScreen}
             >
-                <div style={{ visibility: error ? 'hidden' : 'initial' }}>
-                    <VideoScrean device={device} onEnded={playerStore.nextFile} />
-                </div>
+                <VideoScrean device={device} onEnded={playerStore.nextFile} />
                 {isLoading && <div className="center"><CircularProgress /></div>}
                 {error && <Typography className="center" variant="display1">{error}</Typography>}
                 {(!idle || !fullScreen) && (
                     <Fragment>
-                        {showTitle && <PlayerTitle title={device.playlist.name} onClose={this.handleCloseVideo} />}
+                        {showTitle && <PlayerTitle title={playerStore.getPlayerTitle()} onClose={this.handleCloseVideo} />}
                         <PlayerFilesList
                             open={playlistOpen}
                             device={device}

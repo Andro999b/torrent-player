@@ -48,7 +48,7 @@ class RemotePlayer extends Component {
             <Fragment>
                 { isLoading && <div className="center"><CircularProgress /></div> }
                 { error && <Typography className="center" variant="display1">{error}</Typography> }
-                { showTitle && <PlayerTitle title={device.playlist.name} onClose={this.handleCloseVideo} /> }
+                { showTitle && <PlayerTitle title={playerStore.getPlayerTitle()} onClose={this.handleCloseVideo} /> }
                 { !error && (
                     <Fragment>
                         { !isLoading && <Typography className="center" align="center" variant="display1">

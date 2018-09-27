@@ -1,10 +1,11 @@
 const path = require('path')
 const ffmpeg = require('fluent-ffmpeg')
-const metadataService = require('../metadata')
 const CycleBuffer = require('../../utils/CycleBuffer')
 const { TORRENTS_DATA_DIR } = require('../../config')
 const debug = require('debug')('transcode')
 const checkIfTorrentFileReady = require('../torrents/checkIfTorrentFileReady')
+const database = require('../database')
+const { parseCodeDuration } = require('../../utils')
 
 class Transcoder {
     constructor() {
@@ -26,8 +27,6 @@ class Transcoder {
             this.filePath = file.path
             this._lastStart = start
 
-            const metadata = await metadataService.getMetdadata(file)
-
             await new Promise((resolve, reject) => {
                 if (this.command) {//fix concurrect problem
                     return resolve()
@@ -35,7 +34,6 @@ class Transcoder {
 
                 debug(`Start transcoding ${this.torrentHash} ${this.filePath}, tile start from ${start}, duration ${duration}`)
 
-                this.metadata = metadata
                 this._isRunning = true
 
                 const buffer = new CycleBuffer({ capacity: 1024 * 20 })
@@ -63,12 +61,20 @@ class Transcoder {
                     .once('error', (err, stdout, stderr) => {
                         if (err.message.search('SIGKILL') == -1) { //filter SIGKILL
                             console.error('Cannot process video: ' + err.message, stderr) // eslint-disable-line
-                            reject(err)
                         }
+                        reject(err)
+                    })
+                    .once('codecData', (metadata) => {
+                        this.metadata = { ...metadata, duration: parseCodeDuration(metadata.duration)}
+                        database.storeTorrentFileMetadata(
+                            this.torrentHash, 
+                            this.filePath, 
+                            this.metadata
+                        )
+                        resolve()
                     })
                     .once('start', (commandLine) => {
                         debug(`FFMpeg command: ${commandLine}`)
-                        resolve()
                     })
 
                 if (duration)

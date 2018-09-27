@@ -1,6 +1,10 @@
 const providers = [
     new (require('./providers/TfileProvider'))(),
-    new (require('./providers/RutorProvider'))()
+    new (require('./providers/RutorProvider'))(),
+    new (require('./providers/NNMClubProvider'))(),
+    new (require('./providers/AnimeVostProvider'))(),
+    new (require('./providers/AnidubProvider'))(),
+    new (require('./providers/ColdFilmProvider'))()
 ]
 
 module.exports = {

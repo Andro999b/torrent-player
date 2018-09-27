@@ -1,6 +1,7 @@
 const mime = require('mime-types')
 const ip = require('ip')
-const { isVideo, isAudio, isPsSupported } = require('../utils')
+const database = require('../service/database')
+const { isVideo, isAudio, isPsSupported, formatDLNADuration } = require('../utils')
 const { WEB_PORT } = require('../config')
 
 function getItemClass(fsEntry) {
@@ -37,13 +38,19 @@ function commonResource({ infoHash, upnpClass, fsEntry }) {
     }
 }
 
-function videoResource({ infoHash, upnpClass, fsEntry, clientId }) {
-    const { title, fileIndex, parentId, id } = fsEntry
+async function videoResource({ infoHash, upnpClass, fsEntry, clientId }) {
+    const { title, fileIndex, parentId, id, file } = fsEntry
 
     const content = [
         { 'dc:title': title },
         { 'upnp:class': upnpClass }
     ]
+
+    let formatedDuration = null
+    const metadata = database.getTorrentFileMetadata(infoHash, file.path)
+    if(metadata) {
+        formatedDuration = formatDLNADuration(metadata.duration)
+    }
 
     if(clientId != 'ps' && isPsSupported(title)) {
         content.push({
@@ -51,7 +58,8 @@ function videoResource({ infoHash, upnpClass, fsEntry, clientId }) {
             _attrs: {
                 'protocolInfo': `http-get:*:${mime.lookup(title)}`,
                 'xmlns:dlna': 'urn:schemas-dlna-org:metadata-1-0/',
-                size: '-1'
+                'size': -1,
+                'duration': formatedDuration
             },
             _content: `http://${ip.address()}:${WEB_PORT}/api/torrents/${infoHash}/files/${fileIndex}`
         })
@@ -62,7 +70,8 @@ function videoResource({ infoHash, upnpClass, fsEntry, clientId }) {
         _attrs: {
             'protocolInfo': 'http-get:*:video/mpegts:DLNA.ORG_PN=MPEG_TS_SD_EU_ISO;DLNA.ORG_OP=10',
             'xmlns:dlna': 'urn:schemas-dlna-org:metadata-1-0/',
-            'size': -1
+            'size': -1,
+            'duration': formatedDuration
         },
         _content: `http://${ip.address()}:${WEB_PORT}/api/torrents/${infoHash}/files/${fileIndex}/transcoded?clientId=${clientId}`
     })
@@ -79,7 +88,7 @@ function videoResource({ infoHash, upnpClass, fsEntry, clientId }) {
 }
 
 
-function getMediaResource(params) {
+async function getMediaResource(params) {
     const upnpClass = getItemClass(params.fsEntry)
     switch (upnpClass) {
         case 'object.item.videoItem':

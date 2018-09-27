@@ -4,8 +4,9 @@ import {
     getTorrentFileContentLink, 
     getTorrentHLSLink, 
     getTorrentHLSKeepAliveLink, 
-    isPlayable 
+    isPlayable
 } from '../utils'
+import pick from 'lodash.pick'
 import notificationStore from './notifications-store'
 import playerStore, { LocalDevice } from './player-store'
 import remoteControl from './remote-control'
@@ -29,7 +30,7 @@ class TransitionStore {
     @action.bound downloadAndPlay(result, item) {
         this.screen = 'player'
         this.downloadPlaylist(result, item)
-            .then(this.playMediaOnDevice)
+            .then((params) => this.playMediaOnDevice({ ...params, result }))
             .catch(console.error)
     }
 
@@ -37,25 +38,34 @@ class TransitionStore {
     @action.bound downloadAndPlayMediaOnDevice(result, item, device) {
         this.screen = 'player'
         this.downloadPlaylist(result, item)
-            .then((params) => this.playMediaOnDevice({...params, device}))
+            .then((params) => this.playMediaOnDevice({...params, device, result}))
             .catch(console.error)
     }
 
-    @action.bound playMedia(torrent, item) {
-        this.screen = 'player'
-        this.downloadPlaylist(torrent, item)
-            .then((params) => this.playMediaOnDevice({ ...params, torrent }))
+    playTorrentMedia = (result, item) => {
+        this.playMedia({...result, type: 'torrent' }, item)
     }
 
-    @action.bound playMediaOnDevice({ playlist, startIndex, device, torrent }) {
+    @action.bound playMedia(result, item) {
+        this.screen = 'player'
+        this.downloadPlaylist(result, item)
+            .then((params) => this.playMediaOnDevice({ ...params, result }))
+            .catch(console.error)
+    }
+
+    @action.bound playMediaOnDevice({ playlist, startIndex, device, result }) {
         playerStore.openPlaylist(
             device ? remoteControl.getRemoteDevice(device) : new LocalDevice(), 
             playlist, 
             startIndex, 
-            torrent
+            result.type == 'torrent' ? result : null
         )
 
         this.castDialog = null
+    }
+
+    openCastTorrentDialog = (result, item) => {
+        this.openCastDialog({...result, type: 'torrent' }, item)
     }
 
     @action.bound openCastDialog(result, item) {
@@ -67,12 +77,23 @@ class TransitionStore {
     }
 
     downloadPlaylist(result, item) {
-        if(result.magnetUrl || result.torrentUrl) {
-            return this.downloadTorrent(result)
-                .then((torrent) => ({...this.parseTorrent(torrent, item), torrent}))
+        if(result.type == 'directMedia') {
+            return Promise.resolve({
+                startIndex: item.index,
+                playlist: pick(result, 'name', 'files')
+            })
         }
 
-        return Promise.resolve({...this.parseTorrent(result, item), result})
+        if(result.type == 'torrent') {
+            if(result.magnetUrl || result.torrentUrl) {
+                return this.downloadTorrent(result)
+                    .then((torrent) => ({...this.parseTorrent(torrent, item), torrent}))
+            }
+
+            return Promise.resolve({...this.parseTorrent(result, item), result})
+        }
+
+        throw Error('Unsupported result type')
     }
 
     downloadTorrent(result) {
@@ -92,6 +113,7 @@ class TransitionStore {
 
     parseTorrent(torrent, tragetItem) {
         const files = torrent.files
+            .filter((file) => isPlayable(file.name))
             .map((file, fileIndex) => {
                 let url, hls = false, keepAliveUrl = null
                 if (testMedia.canPlayType(file.mimeType) !== '') {
@@ -107,10 +129,11 @@ class TransitionStore {
                     id: file.id,
                     name: file.name,
                     path: file.path,
-                    source: { url, hls, keepAliveUrl }
+                    url,
+                    hls,
+                    keepAliveUrl
                 }
             })
-            .filter((file) => isPlayable(file.name))
 
         let startIndex = 0
         

@@ -1,8 +1,9 @@
-const request = require('superagent')
+const superagent = require('superagent')
 const express = require('express')
 const ResponseError = require('../utils/ResponseError')
 
 const router = express.Router()
+const PROXY_HEADERS = ['Content-Type', 'Content-Length', 'Cache-Control', 'ETag', 'Expires', 'Date', 'Last-Modified']
 
 router.get('/', (req, res, next) => {
     const url = req.query.url
@@ -11,13 +12,14 @@ router.get('/', (req, res, next) => {
         throw new ResponseError('url parameter requred')
     }
 
-    request.get(url)
+    superagent.get(url)
+        .buffer(true)
+        .parse(superagent.parse.image)
         .then((proxyRes) => {
-            Object.keys(proxyRes.header).forEach((headerName) => {
+            PROXY_HEADERS.forEach((headerName) => {
                 const header = proxyRes.header[headerName]
-                res.setHeader(headerName, header)
+                if(header) res.set(headerName, header)
             })
-            res.contentType = proxyRes.contentType
             res.end(proxyRes.body)
         })
         .catch(next)

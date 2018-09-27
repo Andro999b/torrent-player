@@ -11,8 +11,9 @@ const {
     HLS_FRAGMENT_DURATION,
     TORRENTS_DATA_DIR
 } = require('../../config')
-const { waitForFile, touch } = require('../../utils')
-const debug = console.log//require('debug')('transcode-hls')
+const { waitForFile, touch, parseCodeDuration } = require('../../utils')
+const database = require('../database')
+const debug = require('debug')('transcode-hls')
 
 class HLSTranscoder {
     constructor(torrent, fileIndex) {
@@ -78,10 +79,19 @@ class HLSTranscoder {
                 .addOutputOption(`-hls_segment_filename ${outputDirectory}/segment_%03d.ts`)
                 .format('hls')
                 .once('error', (err, stdout, stderr) => {
-                    this._needToStartTranscoding = true
-                    this.command = null
-                    console.error('Cannot process video: ' + err.message, stderr) // eslint-disable-line
+                    if (err.message.search('SIGKILL') == -1) { //filter SIGKILL
+                        this._needToStartTranscoding = true
+                        this.command = null
+                        console.error('Cannot process video: ' + err.message, stderr) // eslint-disable-line
+                    }
                     reject(err)
+                })
+                .once('codecData', (metadata) => {
+                    database.storeTorrentFileMetadata(
+                        this.torrentHash,
+                        this.filePath, 
+                        { ...metadata, duration: parseCodeDuration(metadata.duration)}
+                    )
                 })
                 .once('start', (commandLine) => {
                     debug(`FFMpeg command: ${commandLine}`)

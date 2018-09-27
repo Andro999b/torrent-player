@@ -72,8 +72,8 @@ router.get('/:torrentId/files/:fileId/transcoded', (req, res, next) => {
     const transcoder = transcodeService.getTranscoder(clientId)
     transcoder
         .transcode(torrent, file, start, duration)
-        .then(({ buffer, metadata: { format } }) => {
-            const duration = formatDLNADuration(format.duration)
+        .then(({ buffer, metadata }) => {
+            const duration = formatDLNADuration(metadata.duration)
             const startTime = formatDLNADuration(start)
             const headers = {
                 'Content-Type': 'video/mpegts',
@@ -174,7 +174,9 @@ function writeFileRange(file, req, res) {
         // slicing the stream to partial content
         createFileStream(file, { start, end }).pipe(res)
     } else {
-        res.set('Content-Length', file.length)
+        res.writeHead(200, {
+            'Content-Length': file.length
+        })
         createFileStream(file).pipe(res)
     }
 }

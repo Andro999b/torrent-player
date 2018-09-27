@@ -64,12 +64,3 @@ export function diff(oldObject, newObject) {
     })
     return result
 }
-
-export function pick(obj, fiels) {
-    const result = {}
-    fiels.forEach((key) => {
-        if(obj.hasOwnProperty(key))
-            result[key] = obj[key]
-    })
-    return result
-}

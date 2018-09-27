@@ -53,7 +53,7 @@ class SearchResultsItem extends Component {
         const title =
             <div
                 style={{ wordBreak: 'break-all' }}>
-                {item.name}
+                { (item.details && item.details.name) || item.name }
             </div>
 
         const subheader =
@@ -72,12 +72,12 @@ class SearchResultsItem extends Component {
                         <ExpansionPanelDetails>
                             <SearchResultsItemDetails details={item.details} />
                         </ExpansionPanelDetails>
-                        <ExpansionPanelActions>
+                        {item.isTorrent() && <ExpansionPanelActions>
                             <Button onClick={() => onDownload(item.details)} variant="raised">
                                 Download Torrent
                                 <DownloadIcon />
                             </Button>
-                        </ExpansionPanelActions>
+                        </ExpansionPanelActions>}
                     </div>
             )
 

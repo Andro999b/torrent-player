@@ -7,7 +7,10 @@ const torrentDb = lowdb(new FileSync(path.join(ROOT_DIR, 'torrents.db.json')))
 
 module.exports = {
     getTorrentFileCompleteStatus(torrentId, path) {
-        return torrentDb.get([ torrentId, 'completedFiles', path ]) == true
+        return torrentDb.get([ torrentId, path, 'complete' ]) == true
+    },
+    getTorrentFileMetadata(torrentId, path) {
+        return torrentDb.get([ torrentId, path, 'metadata' ]).value()
     },
     setTorrentFileCompleted(torrentId, paths) {
         if (typeof paths === 'string') {
@@ -16,9 +19,12 @@ module.exports = {
 
         var chain = torrentDb
         paths.forEach((path) =>
-            chain = chain.set([ torrentId, 'completedFiles', path ] , true)
+            chain = chain.set([ torrentId, path, 'complete' ] , true)
         )
         chain.write()
+    },
+    storeTorrentFileMetadata(torrentId, path, metadata) {
+        return torrentDb.set([ torrentId, path, 'metadata' ], metadata).write()
     },
     wipeTorrentData(torrentId) {
         torrentDb.unset(torrentId).write()
