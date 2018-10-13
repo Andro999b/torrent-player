@@ -10,7 +10,7 @@ class RutorProvider extends Provider {
             scope: '#index>table>tbody>tr:matches(.tum,.gai)',
             pageSize: 50,
             selectors: {
-                id: { selector: 'td:nth-child(2)>a.downgif', transform: extratId},
+                id: { selector: 'td:nth-child(2)>a.downgif', transform: extratId },
                 name: 'td:nth-child(2)',
                 size: 'td:nth-last-child(2)',
                 seeds: 'td:nth-last-child(1)>span.green',
@@ -27,7 +27,7 @@ class RutorProvider extends Provider {
                 'Премьера',
                 'Доп.инфо',
                 'Также роли дублировали'
-            ]
+            ]   
         })
     }
 

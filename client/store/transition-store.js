@@ -1,34 +1,37 @@
 import { action, observable } from 'mobx'
 import request from 'superagent'
-import { 
-    getTorrentFileContentLink, 
-    getTorrentHLSLink, 
-    getTorrentHLSKeepAliveLink, 
-    isPlayable
-} from '../utils'
 import pick from 'lodash.pick'
 import notificationStore from './notifications-store'
 import playerStore, { LocalDevice } from './player-store'
 import remoteControl from './remote-control'
 
-const testMedia = document.createElement('video')
-
 class TransitionStore {
     @observable castDialog = null
     @observable screen = 'search'
+    prevScreen = null
 
     @action.bound goToScreen(screen) {
+        if(this.screen == screen) return
+        
+        this.prevScrean = this.screen
         this.screen = screen
     }
 
+    @action.bound goBack() {
+        if(this.prevScrean) {
+            this.screen = this.prevScrean
+            this.prevScrean = null
+        }
+    }
+
     @action.bound download(result) {
-        this.screen = 'torrents'
+        this.goToScreen('torrents')
         this.downloadTorrent(result) 
             .catch(console.error)
     }
 
     @action.bound downloadAndPlay(result, item) {
-        this.screen = 'player'
+        this.goToScreen('player')
         this.downloadPlaylist(result, item)
             .then((params) => this.playMediaOnDevice({ ...params, result }))
             .catch(console.error)
@@ -36,7 +39,7 @@ class TransitionStore {
 
         
     @action.bound downloadAndPlayMediaOnDevice(result, item, device) {
-        this.screen = 'player'
+        this.goToScreen('player')
         this.downloadPlaylist(result, item)
             .then((params) => this.playMediaOnDevice({...params, device, result}))
             .catch(console.error)
@@ -47,7 +50,7 @@ class TransitionStore {
     }
 
     @action.bound playMedia(result, item) {
-        this.screen = 'player'
+        this.goToScreen('player')
         this.downloadPlaylist(result, item)
             .then((params) => this.playMediaOnDevice({ ...params, result }))
             .catch(console.error)
@@ -69,7 +72,24 @@ class TransitionStore {
     }
 
     @action.bound openCastDialog(result, item) {
-        this.castDialog = { result, item }
+        this.castDialog = { 
+            onDeviceSelected: (device) => {
+                this.downloadAndPlayMediaOnDevice(result, item, device)
+            }
+        }
+    }
+
+    showConnectToDeviceDialog() {
+        this.castDialog = {
+            filter: (device) => device.playlistName != null,
+            onDeviceSelected: (device) => this.connectToDevice(device)
+        }
+    }
+
+    @action.bound connectToDevice(device) {
+        playerStore.loadDevice(remoteControl.getRemoteDevice(device))
+        this.castDialog = null
+        this.goToScreen('player')
     }
 
     @action.bound closeCastDailog() {
@@ -86,11 +106,15 @@ class TransitionStore {
 
         if(result.type == 'torrent') {
             if(result.magnetUrl || result.torrentUrl) {
-                return this.downloadTorrent(result)
-                    .then((torrent) => ({...this.parseTorrent(torrent, item), torrent}))
+                return this
+                    .downloadTorrent(result)
+                    .then((torrent) => 
+                        this.downloadTorrentPlaylist(torrent, item)
+                    )
+  
             }
 
-            return Promise.resolve({...this.parseTorrent(result, item), result})
+            return this.downloadTorrentPlaylist(result, item)
         }
 
         throw Error('Unsupported result type')
@@ -111,49 +135,26 @@ class TransitionStore {
             })
     }
 
-    parseTorrent(torrent, tragetItem) {
-        const files = torrent.files
-            .filter((file) => isPlayable(file.name))
-            .map((file, fileIndex) => {
-                let url, hls = false, keepAliveUrl = null
-                if (testMedia.canPlayType(file.mimeType) !== '') {
-                    url = getTorrentFileContentLink(torrent.infoHash, file.id)
-                } else {
-                    hls = true
-                    url = getTorrentHLSLink(torrent.infoHash,  file.id)
-                    keepAliveUrl = getTorrentHLSKeepAliveLink(torrent.infoHash,  file.id)
-                }
-
-                return {
-                    index: fileIndex,
-                    id: file.id,
-                    name: file.name,
-                    path: file.path,
-                    url,
-                    hls,
-                    keepAliveUrl
-                }
-            })
-
-        let startIndex = 0
+    downloadTorrentPlaylist(torrent, tragetItem) {
+        return request
+            .get(`/api/torrents/${torrent.infoHash}/playlist`)
+            .then((res) => {
+                const playlist = res.body
+                const { files } = playlist
+                let startIndex = 0
         
-        if(tragetItem) {
-            startIndex = files.findIndex((item) => item.id == tragetItem.id)
-            if(startIndex < 0) startIndex = 0
-        }
+                if(tragetItem) {
+                    startIndex = files.findIndex((item) => item.id == tragetItem.id)
+                    if(startIndex < 0) startIndex = 0
+                }
 
-        return {
-            playlist: {
-                name: torrent.name,
-                files
-            },
-            startIndex
-        }
+                return { playlist, startIndex, result: torrent }
+            })
     }
 
     @action.bound stopPlayMedia() {
         playerStore.closePlaylist()
-        this.screen = 'torrents'
+        this.goBack()
     }
 }
 

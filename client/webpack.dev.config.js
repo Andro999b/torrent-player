@@ -8,12 +8,13 @@ module.exports = merge(webpackConfig, {
     watch: true,
     devServer: {
         port: 3000,
+        host: '0.0.0.0',
         //hot: true,
         proxy: [{
             context: ['/api', '/proxyMedia', '/extractVideo'],
             target: 'http://localhost:8080'
         }, {
-            context: '/rc',
+            context: '/remote',
             target: 'ws://localhost:8080'
         }]
     },

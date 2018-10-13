@@ -5,7 +5,6 @@ import { diff, isMobile } from '../utils'
 import io from 'socket.io-client'
 import pick from 'lodash.pick'
 
-const socket = io({ path: '/rc' })
 const devices = observable([])
 const deviceName = observable.box('')
 const ALLOWED_STATE_FIELDS = [
@@ -22,8 +21,9 @@ const ALLOWED_STATE_FIELDS = [
 ]
 
 class RemoteDevice extends Device {
-    constructor(device) {
+    constructor(socket, device) {
         super()
+        this.socket = socket
         this.device = device
     }
 
@@ -32,11 +32,14 @@ class RemoteDevice extends Device {
     }
 
     connect() {
-        socket.emit('connectDevice', this.device.id)
+        this.socket.emit('connectDevice', this.device.id)
 
-        socket.on('deviceConnected', this.onConnected)
-        socket.on('deviceDisconnected', this.onDisconnected)
-        socket.on('sync', this.onSync)
+        this.socket.on('deviceConnected', this.onConnected)
+        this.socket.on('deviceDisconnected', this.onDisconnected)
+        this.socket.on('sync', this.onSync)
+        this.socket.on('reconnect', () => {
+            this.socket.emit('connectDevice', this.device.id)
+        })
 
         this.isLoading = true
     }
@@ -46,19 +49,20 @@ class RemoteDevice extends Device {
     }
 
     disconnect() {
-        socket.emit('disconnectDevice', this.device.id)
-        socket.off('deviceConnected')
-        socket.off('deviceDisconnected')
-        socket.off('sync')
+        this.socket.disconnect()
     }
 
-    @action.bound onConnected() {
-        // console.log('remote device connected')
+    @action.bound onConnected(state) {
+        this.onSync(state)
         this.isLoading = false
     }
 
     @action.bound onDisconnected() {
         this.error = 'Device disconnected'
+    }
+
+    resume() {
+        this.sendAction('resume')
     }
 
     pause() {
@@ -97,7 +101,7 @@ class RemoteDevice extends Device {
 
     @action sendAction(action, payload) {
         this.isLoading = true
-        socket.emit('action', { action, payload })
+        this.socket.emit('action', { action, payload })
     }
 
     @action.bound onSync(state) {
@@ -109,7 +113,12 @@ class RemoteDevice extends Device {
     }
 }
 
-function trackState() {
+function getRemoteDevice(device) {
+    const deviceSocket = io('/control', { path: '/remote' })
+    return new RemoteDevice(deviceSocket, device)
+}
+
+function trackState(socket) {
     let prevState = {}
     autorun(() => {
         const { device } = playerStore
@@ -127,7 +136,7 @@ function trackState() {
     }, { delay: 1000 })
 }
 
-function listenIncomeControls() {
+function listenIncomeControls(socket) {
     socket.on('action', ({ action, payload }) => {
         const { device } = playerStore
 
@@ -139,8 +148,7 @@ function listenIncomeControls() {
                 return
             }
             case 'closePlaylist':
-                transitionStore.goToScreen('cast-screan')
-                playerStore.closePlaylist()
+                transitionStore.stopPlayMedia()
                 return
         }
 
@@ -151,28 +159,29 @@ function listenIncomeControls() {
     })
 }
 
-function listenNameUpdate() {
+function listenNameUpdate(socket) {
     socket.on('updateName', (newName) => deviceName.set(newName))
     socket.emit('getName')
 }
 
-function listenDeviceList() {
-    socket.on('divicesList', (newDevices) => devices.replace(newDevices))
+let setAvailability = () => {}
+if(!isMobile()){
+    const deviceSocket = io('/device', { path: '/remote' })
+    trackState(deviceSocket)
+    listenIncomeControls(deviceSocket)
+    listenNameUpdate(deviceSocket)
+    setAvailability = (avaliable) => {
+        deviceSocket.emit('setAvailability', avaliable)
+    }
 }
 
-function setAvailability(available) {
-    if(!isMobile()) // no cas allowed to mible devices
-        socket.emit('setAvailability', available)
+function listenDeviceList(socket) {
+    socket.on('divicesList', (newDevices) => { 
+        devices.replace(newDevices) 
+    })
 }
 
-function getRemoteDevice(device) {
-    return new RemoteDevice(device)
-}
-
-trackState()
-listenIncomeControls()
-listenDeviceList()
-listenNameUpdate()
+listenDeviceList(io({ path: '/remote' }))
 
 export default {
     devices,

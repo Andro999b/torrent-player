@@ -128,6 +128,11 @@ function touch(path) {
     fs.open(path, 'w').then(fs.close)
 }
 
+function fileDirectory(path) {
+    const lastSeparator = path.lastIndexOf('/')
+    return lastSeparator > -1 ? path.substring(0, lastSeparator) : ''
+}
+
 module.exports = {
     isVideo(fileName) {
         return hasOneOfExtensions(videExtensions, fileName)
@@ -143,5 +148,6 @@ module.exports = {
     parseCodeDuration,
     getLastFileLine,
     waitForFile,
-    touch
+    touch,
+    fileDirectory
 }

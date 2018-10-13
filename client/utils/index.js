@@ -18,15 +18,7 @@ export function isPlayable(fileName) {
 }
 
 export function getTorrentFileContentLink(hashInfo, fileIndex) {
-    return '/api/torrents/' + hashInfo + '/files/' + fileIndex
-}
-
-export function getTorrentHLSLink(hashInfo, fileIndex) {
-    return '/api/torrents/' + hashInfo + '/files/' + fileIndex + '/hls'
-}
-
-export function getTorrentHLSKeepAliveLink(hashInfo, fileIndex) {
-    return '/api/torrents/' + hashInfo + '/files/' + fileIndex + '/hls/keepAlive'
+    return `/api/torrents/${hashInfo}/files/${fileIndex}`
 }
 
 export function invokeAll() {

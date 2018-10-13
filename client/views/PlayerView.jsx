@@ -12,36 +12,14 @@ const playerTheme = (mainTheme) => createMuiTheme({
         primary: mainTheme.palette.primary,
         secondary: mainTheme.palette.secondary,
         type: 'dark',
-    },
-    overrides: {
-        MuiIconButton: {
-            root: {
-                width: 32,
-                height: 32
-            }
-        }
     }
 })
 
-@inject('playerStore', 'remoteControl')
+@inject('playerStore')
 @observer
 class PlayerView extends Component {
-    componentDidMount() {
-        const { remoteControl: { setAvailability } } = this.props
-        setAvailability(true)
-    }
-
-    componentWillUnmount() {
-        const { remoteControl: { setAvailability } } = this.props
-        setAvailability(false)
-    }
-
     render() {
-        const { playerStore } = this.props
-
-        if (!playerStore) return null
-
-        const { device } = playerStore
+        const { playerStore: { device } } = this.props
 
         return (
             <MuiThemeProvider theme={playerTheme}>
@@ -62,8 +40,7 @@ class PlayerView extends Component {
 }
 
 PlayerView.propTypes = {
-    playerStore: PropTypes.object,
-    remoteControl: PropTypes.object
+    playerStore: PropTypes.object
 }
 
 export default PlayerView

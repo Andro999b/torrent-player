@@ -52,7 +52,7 @@ class MediaControls extends Component {
                                 <PreviousIcon />
                             </IconButton>
                             {!device.isPlaying &&
-                                <IconButton onClick={() => device.play()}>
+                                <IconButton onClick={() => device.resume()}>
                                     <PlayIcon />
                                 </IconButton>
                             }

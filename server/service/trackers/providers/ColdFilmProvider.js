@@ -2,7 +2,7 @@ const Provider = require('../Provider')
 const urlencode = require('urlencode')
 const $ = require('cheerio')
 
-const nameExtractRrgExp = /([^\/]+)\.torrent/
+const nameExtractRegExp = /([^/]+)\.torrent/
 
 class ColdFilmProvider extends Provider {
     constructor() {
@@ -32,7 +32,7 @@ class ColdFilmProvider extends Provider {
                             return {
                                 type: 'torrent',
                                 torrentUrl: href,
-                                name: href.match(nameExtractRrgExp)[1] || href
+                                name: href.match(nameExtractRegExp)[1] || href
                             }
                         })
                         .filter(({ torrentUrl }) => torrentUrl.endsWith('.torrent'))

@@ -5,7 +5,7 @@ import MediaControls from './MediaControls'
 import PlayerTitle from './PlayerTitle'
 import PlayerFilesList from './PlayerPlayList'
 import { isTablet } from '../utils'
-import { Typography, CircularProgress } from '@material-ui/core'
+import { Typography, CircularProgress, Button } from '@material-ui/core'
 import { observer, inject } from 'mobx-react'
 
 @inject('playerStore', 'transitionStore')
@@ -23,6 +23,12 @@ class RemotePlayer extends Component {
     handleCloseVideo = () => {
         const { transitionStore } = this.props
         transitionStore.stopPlayMedia()
+    }
+
+    handleCloseDevice = () => {
+        const { playerStore: {device}, transitionStore } = this.props
+        device.closePlaylist()
+        transitionStore.goBack()
     }
 
     handleSelectFile = (fileIndex) => {
@@ -53,7 +59,8 @@ class RemotePlayer extends Component {
                     <Fragment>
                         { !isLoading && <Typography className="center" align="center" variant="display1">
                             Connected: <br/>
-                            {device.getName()}
+                            {device.getName()} <br/>
+                            <Button onClick={this.handleCloseDevice}>Close device</Button>
                         </Typography>}
                         <PlayerFilesList
                             open={playlistOpen}

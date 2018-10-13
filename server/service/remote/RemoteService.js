@@ -59,6 +59,7 @@ class RemoteService extends EventEmitter {
             this._removeControlListeners(control)
             delete this.controls[controlId]
             this.connections.delete(controlId)
+            this._invalidateDeviceList()
         }
 
         debug(`Control removed ${controlId}`)
@@ -68,7 +69,7 @@ class RemoteService extends EventEmitter {
         return Object.values(this.devices)
             .filter((device) => device.avaliable && !this.connections.hasValue(device.id))
             .map((device) =>
-                pick(device, ['id', 'state', 'name'])
+                pick(device, ['id', 'state', 'name', 'playlistName'])
             )
     }
 
@@ -177,7 +178,10 @@ class RemoteService extends EventEmitter {
     }
 
     _invalidateDeviceList() {
-        this.emit(RemoteService.Events.DeviceList)
+        clearTimeout(this.updateTimeout)
+        this.updateTimeout = setTimeout(() => {
+            this.emit(RemoteService.Events.DeviceList)
+        }, 200)
     }
 }
 

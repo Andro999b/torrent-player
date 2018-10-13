@@ -11,32 +11,41 @@ import {
 
 @inject(
     ({
-        transitionStore: { castDialog, closeCastDailog, downloadAndPlayMediaOnDevice },
+        transitionStore: { castDialog, closeCastDailog },
         remoteControl: { devices }
-    }) => ({ options: castDialog, closeCastDailog, downloadAndPlayMediaOnDevice, devices })
+    }) => ({ options: castDialog, closeCastDailog, devices })
 )
 @observer
 class CastDialog extends Component {
 
     handleSelectDevice(device) {
-        const { options: { result, item }, downloadAndPlayMediaOnDevice } = this.props
-        downloadAndPlayMediaOnDevice(result, item, device)
+        const { options: { onDeviceSelected } } = this.props
+        onDeviceSelected(device)
     }
 
     render() {
         const { options, devices, closeCastDailog } = this.props
+        const filter = options && options.filter
+        const filtered = 
+            typeof filter == 'function' ? 
+                devices.filter(filter) :
+                devices
 
         return (
             <Dialog open={options != null} onClose={closeCastDailog}>
-                {devices.length == 0 && <DialogTitle>No avaliable devices</DialogTitle>}
-                {devices.length > 0 &&
+                {filtered.length == 0 && <DialogTitle>No avaliable devices</DialogTitle>}
+                {filtered.length > 0 &&
                     <div>
                         <List>
-                            {devices.map((device) =>
+                            {filtered.map((device) =>
                                 <ListItem key={device.name} button
                                     onClick={() => this.handleSelectDevice(device)}
                                 >
-                                    <ListItemText primary={device.name} />
+                                    <ListItemText style={{ wordBreak: 'break-all' }}
+                                        primary={
+                                            device.name + (device.playlistName ? ' - ' + device.playlistName : '')
+                                        } 
+                                    />
                                 </ListItem>
                             )}
                         </List>
@@ -48,10 +57,12 @@ class CastDialog extends Component {
 }
 
 CastDialog.propTypes = {
-    options: PropTypes.object,
+    options: PropTypes.shape({
+        filter: PropTypes.func,
+        onDeviceSelected: PropTypes.func
+    }),
     devices: PropTypes.array,
-    closeCastDailog: PropTypes.func,
-    downloadAndPlayMediaOnDevice: PropTypes.func,
+    closeCastDailog: PropTypes.func
 }
 
 export default CastDialog

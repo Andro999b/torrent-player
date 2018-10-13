@@ -13,14 +13,16 @@ class PlayerTitle extends Component {
                 <IconButton onClick={onClose}>
                     <CloseIcon />
                 </IconButton>
-                <Typography variant="title">{title}</Typography>
+                <Typography variant="title" style={{ wordBreak: 'break-all' }}>
+                    {title}
+                </Typography>
             </div>
         )
     }
 }
 
 PlayerTitle.propTypes = {
-    title: PropTypes.string.isRequired,
+    title: PropTypes.string,
     onClose: PropTypes.func.isRequired
 }
 

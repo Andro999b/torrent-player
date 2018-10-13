@@ -4,7 +4,8 @@ const providers = [
     new (require('./providers/NNMClubProvider'))(),
     new (require('./providers/AnimeVostProvider'))(),
     new (require('./providers/AnidubProvider'))(),
-    new (require('./providers/ColdFilmProvider'))()
+    new (require('./providers/ColdFilmProvider'))(),
+    new (require('./providers/FastTorrentsProvider'))()
 ]
 
 module.exports = {

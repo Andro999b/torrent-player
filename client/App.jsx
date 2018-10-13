@@ -11,7 +11,7 @@ import {
     jssPreset 
 } from '@material-ui/core/styles'
 import './store/remote-control'
-import DevTools from 'mobx-react-devtools'
+// import DevTools from 'mobx-react-devtools'
 
 import stores from './store'
 import { Provider } from 'mobx-react'
@@ -38,7 +38,7 @@ class App extends Component {
                         </Provider>
                     </MuiThemeProvider>
                 </JssProvider>
-                <DevTools />
+                {/* <DevTools /> */}
             </div>
         )
     }

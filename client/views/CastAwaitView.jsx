@@ -22,7 +22,7 @@ class CastAwaitView extends Component {
 
         return (
             <Typography className="center" align="center" variant="display1">
-                Await connection<br/>
+                Awaiting connection<br/>
                 Device name: { toJS(deviceName) }
             </Typography>
         )

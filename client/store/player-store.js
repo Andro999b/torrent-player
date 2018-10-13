@@ -1,5 +1,8 @@
+import remoteControl from './remote-control'
 import { observable, action } from 'mobx'
 import request from 'superagent'
+
+const testMedia = document.createElement('video')
 
 export class Device {
     @observable playlist = { name: '', files: [] }
@@ -23,6 +26,7 @@ export class Device {
 
     /* eslint-disable no-unused-vars */
     setSource(source) { }
+    resume() { }
     pause() { }
     play(currentTime) { }
     seek(currentTime) { }
@@ -46,16 +50,27 @@ export class LocalDevice extends Device {
         super()
         this.keepAliveInterval= setInterval(() => {
             if(this.keepAliveUrl) {
-                request.get(this.keepAliveUrl).end()// TODO more oblios way to do this
+                request.get(this.keepAliveUrl).end()
             }
         }, 5000) // each 5 sec call server keep alive
     }
 
     @action setSource(source) {
         if (source.url != this.url) {
-            this.url = source.url
-            this.hls = source.hls
-            this.keepAliveUrl = source.keepAliveUrl
+            this.hsl = false
+            this.keepAliveUrl = null
+            
+            //determinate best option
+            if(source.mimeType && testMedia.canPlayType(source.mimeType)) {
+                this.url = source.url
+            } else if(source.hlsUrl) {
+                this.url = source.hlsUrl
+                this.keepAliveUrl = source.keepAliveUrl
+                this.hls = true
+            } else {
+                this.url = source.url
+            }
+
             this.currentTime = 0
             this.duration = 0
             this.buffered = 0
@@ -71,6 +86,10 @@ export class LocalDevice extends Device {
 
     @action seek(seekTime) {
         this.seekTime = seekTime
+    }
+
+    @action resume() {
+        this.isPlaying = true
     }
 
     @action pause() {
@@ -110,8 +129,13 @@ export class LocalDevice extends Device {
         this.isMuted = !this.isMuted
     }
 
+    connect() {
+        remoteControl.setAvailability(true)
+    }
+
     disconnect() {
         clearInterval(this.keepAliveInterval)
+        remoteControl.setAvailability(false)
     }
 }
 
@@ -196,7 +220,8 @@ class PlayerStore {
     getPlayerTitle() {
         const { playlist: { name, files }, currentFileIndex } = this.device
 
-        return name + (currentFileIndex != -1 ?  ' - ' + files[currentFileIndex].name : '')
+        if(name && files)
+            return name + (currentFileIndex != -1 ?  ' - ' + files[currentFileIndex].name : '')
     }
 }
 

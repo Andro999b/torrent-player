@@ -65,41 +65,54 @@ SocketRemoteControl.Events = {
     Action: RemoteControl.Events.Action
 }
 
-function registerSocket(socket) {
-    //register device
-    const device = new SocketRemoteDevice(socket)
-    remoteService.addDevice(device)
-
+function registerControl(socket) {
     //register control
     const control = new SocketRemoteControl(socket)
     remoteService.addControl(control)
-
-    //handle device list
-    const deivcesList = () => {
-        socket.emit(
-            RemoteService.Events.DeviceList, 
-            remoteService.getDevicesDescriptions().filter((d) => d.id != device.id)
-        )
-    }
-    remoteService.addListener(RemoteService.Events.DeviceList, deivcesList)
-    deivcesList()
 
     //connect && disconect to device
     socket.on('connectDevice', (deviceId) => remoteService.connect(control.id, deviceId))
     socket.on('disconnectDevice', (deviceId) => remoteService.disconnect(control.id, deviceId))
 
+    socket.on('disconnect', () => {
+        remoteService.removeControl(control.id)
+    })
+}
+
+function registerDevice(socket) {
+    //register device
+    const device = new SocketRemoteDevice(socket)
+    remoteService.addDevice(device)
+
     //handle disconnect
     socket.on('disconnect', () => {
         remoteService.removeDevice(device.id)
-        remoteService.removeControl(control.id)
+    })
+}
+
+function registerSocket(socket) {
+    //handle device list
+    const deivcesList = () => {
+        socket.emit(
+            RemoteService.Events.DeviceList, 
+            remoteService.getDevicesDescriptions()
+        )
+    }
+    remoteService.addListener(RemoteService.Events.DeviceList, deivcesList)
+    deivcesList()
+
+    //handle disconnect
+    socket.on('disconnect', () => {
         remoteService.removeListener(RemoteService.Events.DeviceList, deivcesList)
     })
 }
 
 module.exports = function (htppServer) {
-    const io = Server(htppServer, { path: '/rc' })
+    const io = Server(htppServer, { path: '/remote' })
 
     io.on('connection', registerSocket)
+    io.of('/control').on('connection', registerControl)
+    io.of('/device').on('connection', registerDevice)
 
     // eslint-disable-next-line
     console.log('Remote control enabled')

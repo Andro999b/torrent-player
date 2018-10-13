@@ -79,15 +79,17 @@ class SearchResultsItemDetails extends Component {
 
         return (
             <Grid container spacing={24}>
-                {details.image && <Grid item sm={12} md={3}>
+                {details.image && <Grid item xs={12} md={3}>
                     <img className="poster" src={`/proxyMedia?url=${encodeURIComponent(details.image)}`} alt='no image' />
                 </Grid>}
-                <Grid item sm={12} md={5}>
-                    {description && description.map((item) => (
-                        <Typography key={item.name}><b>{item.name}:</b> {item.value}</Typography>
+                <Grid item xs={12} md={5}>
+                    {description && description.map((item, index) => (
+                        <Typography key={index}>
+                            {item.name && <b>{item.name}: </b>}{item.value}
+                        </Typography>
                     ))}
                 </Grid>
-                <Grid item sm={12} md={4}>
+                <Grid item xs={12} md={4}>
                     <List className="files-list">
                         { files && <GroupFiles files={files} renderFiles={this.renderFiles} /> }
                         { torrents && torrents.map(this.renderTorrent) }

@@ -72,7 +72,7 @@ class SearchResultsItem extends Component {
                         <ExpansionPanelDetails>
                             <SearchResultsItemDetails details={item.details} />
                         </ExpansionPanelDetails>
-                        {item.isTorrent() && <ExpansionPanelActions>
+                        {item.isDownlodableTorrent() && <ExpansionPanelActions>
                             <Button onClick={() => onDownload(item.details)} variant="raised">
                                 Download Torrent
                                 <DownloadIcon />

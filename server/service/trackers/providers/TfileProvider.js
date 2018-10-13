@@ -48,7 +48,14 @@ module.exports = class TfileProvider extends Provider {
                     selector: '#dlbt',
                     transform: ($el) => $el.attr('href')
                 }
-            }
+            },
+            filterDescription: [
+                'Качество',
+                'Бюджет',
+                'Премьера',
+                'Доп.инфо',
+                'Также роли дублировали'
+            ]
         })
     }
 

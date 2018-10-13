@@ -24,10 +24,8 @@ class Service {
                 (this.version || '')
         this.description = options.description || null
         this.USN = this.device.uuid + '::' + this.serviceType
-        this.SCPDURL =
-            this.device.server.prefix + '/service/desc.xml?usn=' + this.USN
-        this.controlURL =
-            this.device.server.prefix + '/service/control?usn=' + this.USN
+        this.SCPDURL = this.device.server.prefix + '/service/desc.xml?usn=' + this.USN
+        this.controlURL = this.device.server.prefix + '/service/control?usn=' + this.USN
         this.configId = 1
         this.implementation = options.implementation || null
     }
@@ -36,8 +34,7 @@ class Service {
         if (!this.descrtiptionXml) {
             this.descrtiptionXml = RENDER_SERVICE({
                 actions: (this.description && this.description.actions) || {},
-                variables:
-                    (this.description && this.description.variables) || {},
+                variables: (this.description && this.description.variables) || {},
                 configId: this.configId
             })
         }

@@ -14,9 +14,16 @@ import { observer, inject } from 'mobx-react'
 @inject('transitionStore')
 @observer
 class Root extends Component {
+    handleGoToScreen = (screen) => {
+        this.props.transitionStore.goToScreen(screen)
+    }
+
+    handleConnect = () => {
+        this.props.transitionStore.showConnectToDeviceDialog()
+    }
+
     render() {
-        const { transitionStore } = this.props
-        const { screen } = transitionStore
+        const { transitionStore: { screen } } = this.props
 
         let screanView
         let navigation = true 
@@ -45,7 +52,9 @@ class Root extends Component {
                 {navigation && 
                     <MainNavigation 
                         screen={screen} 
-                        goToScreen={(screen) => transitionStore.goToScreen(screen)}/>
+                        goToScreen={this.handleGoToScreen}
+                        onConnect={this.handleConnect}
+                    />
                 }
                 <CastDialog/>
                 <Notification/>

@@ -12,7 +12,9 @@ class Provider {
                 scope: '',
                 slectors: {},
                 pagenatorSelector: '',
-                userAgent: 'Mozilla/5.0 Gecko/20100101 Firefox/59.0',
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 Gecko/20100101 Firefox/59.0'
+                },
                 detailsScope: 'body',
                 filterDescription: []
             },
@@ -58,7 +60,7 @@ class Provider {
             scope,
             selectors,
             pagenatorSelector,
-            userAgent,
+            headers,
             pageSize,
             encoding
         } = this.config
@@ -70,9 +72,7 @@ class Provider {
                 this.getSearchUrl(urlencode(query, encoding), page), 
                 this._crawlerRequestGenerator(query, page)
             )
-            .headers({
-                'User-Agent': userAgent
-            })
+            .headers(headers)
             .scope(scope)
             .set(selectors)
             .paginate(pagenatorSelector)
@@ -88,13 +88,11 @@ class Provider {
     }
 
     getInfo(resultsId) {
-        const { detailsScope, detailsSelectors, userAgent } = this.config
+        const { detailsScope, detailsSelectors, headers } = this.config
 
         return crawler
             .get(this.getInfoUrl(resultsId))
-            .headers({
-                'User-Agent': userAgent
-            })
+            .headers(headers)
             .scope(detailsScope)
             .set(detailsSelectors)
             .gather() 

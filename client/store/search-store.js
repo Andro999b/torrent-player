@@ -30,6 +30,11 @@ class SearchReusltItem {
         return this.details && this.details.type == 'torrent'
     }
 
+    isDownlodableTorrent() {
+        return this.details && 
+            (this.details.magnetUrl || this.details.torrentUrl)
+    }
+
     @action loadDetails() {
         if(!this.needLoadDetails()) return
 

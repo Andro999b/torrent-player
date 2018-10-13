@@ -5,9 +5,10 @@ const pick = require('lodash.pick')
 const mimeLookup = require('mime-types').lookup
 const torrentsService = require('../service/torrents')
 const checkIfTorrentFileReady = require('../service/torrents/checkIfTorrentFileReady')
+const torrentPlaylist = require('../service/torrents/torrentPlaylist')
 const transcodeService = require('../service/transcode')
 const ResponseError = require('../utils/ResponseError')
-const { isVideo, parseRange, formatDLNADuration } = require('../utils')
+const { isVideo, parseRange, formatDLNADuration, fileDirectory } = require('../utils')
 const { TORRENTS_DATA_DIR } = require('../config')
 
 const router = express.Router()
@@ -31,6 +32,15 @@ router.get('/:id', (req, res) => {
         res.json(mapTorrent(torrent))
     else
         throw new ResponseError('Torrent not found', 404)
+})
+
+router.get('/:torrentId/playlist', (req, res) => {
+    const { torrentId } = req.params
+
+    const torrent = torrentsService.getTorrent(torrentId)
+    if (!torrent) throw new ResponseError('Torrent not found', 404)
+
+    res.json(torrentPlaylist(torrent))
 })
 
 router.delete('/:id', (req, res, next) => {
@@ -214,12 +224,8 @@ function mapTorrent(torrent) {
         ]))
 
     filtredFiles.forEach((file, fileIndex) => {
-        //cut file name
-        const lastSeparator = file.path .lastIndexOf('/')
-
         file.id = fileIndex
-        file.path = lastSeparator > -1 ? file.path.substring(0, lastSeparator) : ''
-        file.mimeType = mimeLookup(file.name)
+        file.path = fileDirectory(file.path)
         file.torrentInfoHash = torrent.infoHash
     })
 

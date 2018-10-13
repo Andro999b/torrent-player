@@ -1,9 +1,8 @@
-const Provider = require('../Provider')
-const superagent = require('superagent')
+const DataLifeProvider = require('./DataLIfeProvider')
 const urlencode = require('urlencode')
 const $ = require('cheerio')
 
-class AnimeVostProvider extends Provider {
+class AnimeVostProvider extends DataLifeProvider {
     constructor() {
         super({
             baseUrl: 'http://animevost.org',
@@ -68,37 +67,6 @@ class AnimeVostProvider extends Provider {
 
     getName() {
         return 'animeVost'
-    }
-
-    getType() {
-        return 'directMedia'
-    }
-
-    getSearchUrl() {}
-
-    getInfoUrl(resultsId) {
-        return urlencode.decode(resultsId)
-    }
-
-    _crawlerRequestGenerator(query) {
-        const { searchUrl, userAgent } = this.config
-
-        return () => {
-            return superagent
-                .post(searchUrl)
-                .type('form')
-                .field({ 
-                    do: 'search',
-                    subaction: 'search',
-                    search_start: 0,
-                    full_search: 0,
-                    result_from: 1,
-                    story: query
-                })
-                .set({ 
-                    'User-Agent': userAgent 
-                })
-        }
     }
 }
 
