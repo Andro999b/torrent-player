@@ -1,6 +1,6 @@
-import React, { Component, Fragment } from 'react'
-import { VideoSeekSlider } from 'react-video-seek-slider'
-import '../../node_modules/react-video-seek-slider/lib/ui-video-seek-slider.css'
+import React, { Component } from 'react'
+import VideoSeekSlider from './VideoSeekSlider'
+import '../video-slider.scss'
 import PropTypes from 'prop-types'
 import { Paper, IconButton, Slide } from '@material-ui/core'
 import {
@@ -8,14 +8,59 @@ import {
     Pause as PauseIcon,
     SkipPrevious as PreviousIcon,
     SkipNext as NextIcon,
-    VolumeUp as VolumeOnIcon,
-    VolumeOff as VolumeOffIcon,
     List as ListIcon,
     Fullscreen as FullscreenIcon,
     FullscreenExit as FullscreenExitIcon
 } from '@material-ui/icons'
+import SoundControl from './SoundControl'
 
 import { observer } from 'mobx-react'
+
+@observer
+class VideoSeek extends Component {
+    constructor(props, context) {
+        super(props, context)
+        
+        this.state = {
+            time: props.device.currentTime
+        }
+    }
+    
+    handleTimeChange = (time) => {
+        this.setState({time})
+    }
+    
+    handleEndSeek = () => {
+        const { device } = this.props
+        const { time } = this.state
+
+        device.seek(time)
+    }
+
+    render() {
+        const { device } = this.props
+        const { time } = this.state
+
+        return (
+            <div style={{padding: '0px 10px'}}>
+                <VideoSeekSlider
+                    max={device.duration}
+                    currentTime={time}
+                    progress={device.buffered}
+                    onChange={this.handleTimeChange}
+                    onSeekEnd={this.handleEndSeek}
+                    offset={0}
+                    secondsPrefix="00:00:"
+                    minutesPrefix="00:"
+                />
+            </div>
+        )
+    }
+}
+
+VideoSeek.propTypes = {
+    device: PropTypes.object.isRequired
+}
 
 @observer
 class MediaControls extends Component {
@@ -34,18 +79,7 @@ class MediaControls extends Component {
         return (
             <Slide direction="up" in mountOnEnter unmountOnExit>
                 <Paper elevation={0} square className="player-controls">
-                    {
-                        device.isSeekable() &&
-                        <VideoSeekSlider
-                            max={device.duration}
-                            currentTime={device.currentTime}
-                            progress={device.buffered}
-                            onChange={(time) => device.seek(time)}
-                            offset={0}
-                            secondsPrefix="00:00:"
-                            minutesPrefix="00:"
-                        />
-                    }
+                    {device.isSeekable() && <VideoSeek device={device}/>}
                     <div className="player-controls__panel">
                         <div className="player-controls__panel-section">
                             <IconButton onClick={onPrev}>
@@ -64,12 +98,7 @@ class MediaControls extends Component {
                             <IconButton onClick={onNext}>
                                 <NextIcon />
                             </IconButton>
-                            <Fragment>
-                                <IconButton onClick={() => device.toggleMute()}>
-                                    {device.isMuted && <VolumeOffIcon />}
-                                    {!device.isMuted && <VolumeOnIcon />}
-                                </IconButton>
-                            </Fragment>
+                            <SoundControl device={device}/>
                         </div>
                         <div className="player-controls__panel-section">
                             {local &&

@@ -51,7 +51,7 @@ class TorrentsView extends Component {
 
         return (
             <div className="torrents-list">
-                {!loading && torrents.length == 0 && <Typography className="center" variant="display1">No active torrents</Typography>}
+                {!loading && torrents.length == 0 && <Typography className="center" variant="h4">No active torrents</Typography>}
                 <Grid container spacing={16}>
                     {loading && <div className="center"><CircularProgress /></div>}
                     {!loading && torrents.map((torrent) =>

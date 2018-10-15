@@ -222,6 +222,7 @@ function mapTorrent(torrent) {
             'downloaded',
             'progress'
         ]))
+        .sort((f1, f2) => f1.name.localeCompare(f2.name))
 
     filtredFiles.forEach((file, fileIndex) => {
         file.id = fileIndex

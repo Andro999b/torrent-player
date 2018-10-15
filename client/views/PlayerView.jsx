@@ -9,9 +9,16 @@ import RemotePlayer from '../components/RemotePlayer'
 
 const playerTheme = (mainTheme) => createMuiTheme({
     palette: {
-        primary: mainTheme.palette.primary,
-        secondary: mainTheme.palette.secondary,
+        primary: mainTheme.palette.secondary,
+        secondary: mainTheme.palette.primary,
         type: 'dark',
+    },
+    overrides: {
+        MuiLinearProgress: {
+            colorSecondary: {
+                backgroundColor: 'transparent'
+            }
+        }
     }
 })
 
@@ -24,7 +31,7 @@ class PlayerView extends Component {
         return (
             <MuiThemeProvider theme={playerTheme}>
                 <div className="player__screen">
-                    {!device && <Typography align="center" variant="display1">
+                    {!device && <Typography align="center" variant="h4">
                         Waiting for video to be ready
                     </Typography>}
                     {device &&

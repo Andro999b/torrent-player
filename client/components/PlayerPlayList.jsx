@@ -43,7 +43,7 @@ class PlayerPlayList extends Component {
     getFileGroup = memoize((fileIndex, groups) =>
         groups.find((g) =>
             g.files.find((f) => f.index == fileIndex) != null
-        ) 
+        )
     )   
 
     render() {
@@ -62,7 +62,7 @@ class PlayerPlayList extends Component {
                 <Paper elevation={12} square className="player__file-list">
                     {groups.length > 1 && <Fragment>
                         <List>
-                            <ListItem button style={{ background: grey[600] }} onClick={this.handleOpenGroupsMenu}>
+                            <ListItem  button style={{ background: grey[600] }} onClick={this.handleOpenGroupsMenu}>
                                 <ListItemText primary={currentGroup.name} />
                                 <ExpandMore nativeColor="white" />
                             </ListItem>

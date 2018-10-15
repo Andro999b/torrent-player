@@ -73,7 +73,7 @@ class SearchResultsItem extends Component {
                             <SearchResultsItemDetails details={item.details} />
                         </ExpansionPanelDetails>
                         {item.isDownlodableTorrent() && <ExpansionPanelActions>
-                            <Button onClick={() => onDownload(item.details)} variant="raised">
+                            <Button onClick={() => onDownload(item.details)} variant="contained">
                                 Download Torrent
                                 <DownloadIcon />
                             </Button>
@@ -85,8 +85,8 @@ class SearchResultsItem extends Component {
             <ExpansionPanel expanded={showDetails} onChange={this.handleToggleDetails}>
                 <ExpansionPanelSummary expandIcon={<ExpandIcon />} classes={{ content: 'expand-header' }}>
                     <div>
-                        <Typography variant='title' className='expand-header__row'>{title}</Typography>
-                        <Typography variant='subheading' className='expand-header__row'>{subheader}</Typography>
+                        <Typography variant="h6" className='expand-header__row'>{title}</Typography>
+                        <Typography variant='subtitle1' className='expand-header__row'>{subheader}</Typography>
                     </div>
                 </ExpansionPanelSummary>
                 {content}

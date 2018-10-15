@@ -13,7 +13,7 @@ class PlayerTitle extends Component {
                 <IconButton onClick={onClose}>
                     <CloseIcon />
                 </IconButton>
-                <Typography variant="title" style={{ wordBreak: 'break-all' }}>
+                <Typography variant="h6" style={{ wordBreak: 'break-all' }}>
                     {title}
                 </Typography>
             </div>

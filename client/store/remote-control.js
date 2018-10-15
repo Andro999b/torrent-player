@@ -165,7 +165,8 @@ function listenNameUpdate(socket) {
 }
 
 let setAvailability = () => {}
-if(!isMobile()){
+let isCastAvaliable = !isMobile()
+if(isCastAvaliable){
     const deviceSocket = io('/device', { path: '/remote' })
     trackState(deviceSocket)
     listenIncomeControls(deviceSocket)
@@ -187,5 +188,6 @@ export default {
     devices,
     deviceName,
     setAvailability,
-    getRemoteDevice
+    getRemoteDevice,
+    isCastAvaliable
 }

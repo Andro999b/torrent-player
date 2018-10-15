@@ -48,8 +48,9 @@ class TorrentListItemFile extends Component {
         const { anchorEl } = this.state
 
         const playable = isPlayable(file.name)
-        const isReady = file.progress > 0.99
-        const progress = isReady ? '100%' : Math.ceil(Math.min(file.progress, 1) * 100) + '%'
+        const fileProgress = Math.max(file.progress, 0)
+        const isReady = fileProgress > 0.99
+        const progress = isReady ? '100%' : Math.ceil(Math.min(fileProgress, 1) * 100) + '%'
 
         const text = <div style={{ wordBreak: 'break-all' }}>
             {file.name}&nbsp;
@@ -63,7 +64,7 @@ class TorrentListItemFile extends Component {
                 <ListItemIcon className="hide-on-mobile">
                     {playable ? <PlayableIcon /> : <NotPlayableIcon />}
                 </ListItemIcon>
-                <ListItemText primary={text} style={{ paddingLeft: 0 }} />
+                <ListItemText primary={text} />
                 <ListItemSecondaryAction>
                     <IconButton onClick={this.handleOpenMenu}>
                         <MoreIcon />

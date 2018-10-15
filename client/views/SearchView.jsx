@@ -5,18 +5,20 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import { observer, inject } from 'mobx-react'
 import PropTypes from 'prop-types'
 
-@inject('searchStore') @observer
+@inject('searchStore') 
+@observer
 class SearchView extends Component {
     render() {
         const { searchStore } = this.props
         const { suggestions, searchResults, searchProviders, loading } = searchStore
-
+        
         return (
             <div className="search-view">
                 <SearchBar
                     onInput={(q) => searchStore.suggest(q)}
                     onSubmit={(q) => searchStore.search(q)}
                     onSelectProviders={(providers) => searchStore.selectProviders(providers)}
+                    onRemoveHistory={(s) => searchStore.removeFromHistory(s)}
                     suggestions={suggestions}
                     searchProviders={searchProviders}
                 />

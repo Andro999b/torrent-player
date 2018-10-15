@@ -10,7 +10,7 @@ const { stopTranscoding } = require('../transcode')
 const { TORRENTS_DIR, TORRENTS_DATA_DIR } = require('../../config')
 const debug = require('debug')('torrents')
 
-const torrentClient = WebTorrent()
+const torrentClient = new WebTorrent()
 
 function addTorrent() {
     return new Promise((resolve, reject) => {
@@ -65,7 +65,6 @@ module.exports = {
             const res = await superagent
                 .get(torrentUrl)
                 .buffer(true)
-                .parse(superagent.parse.image)
             parsedTorrent = parseTorrent(res.body)
         } else if (magnetUrl) {
             parsedTorrent = parseTorrent(magnetUrl)

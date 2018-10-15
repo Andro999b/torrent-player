@@ -20,9 +20,10 @@ function getTorrentHLSKeepAliveLink(infoHash, fileIndex) {
 module.exports = function(torrent) {
     const files = torrent.files
         .filter((file) => isAudio(file.name) || isVideo(file.name))
+        .sort((f1, f2) => f1.name.localeCompare(f2.name))
         .map((file, fileIndex) => ({
             index: fileIndex,
-            id: file.id,
+            id: fileIndex,
             name: file.name,
             path: fileDirectory(file.path),
             mimeType: mimeLookup(file.name),

@@ -1,6 +1,7 @@
 import remoteControl from './remote-control'
 import { observable, action } from 'mobx'
 import request from 'superagent'
+import localStore from 'store'
 
 const testMedia = document.createElement('video')
 
@@ -48,6 +49,7 @@ export class LocalDevice extends Device {
 
     constructor() {
         super()
+        this.volume = localStore.get('volume') || 1
         this.keepAliveInterval= setInterval(() => {
             if(this.keepAliveUrl) {
                 request.get(this.keepAliveUrl).end()
@@ -123,6 +125,7 @@ export class LocalDevice extends Device {
 
     @action setVolume(volume) {
         this.volume = volume
+        localStore.set('volume', volume)
     }
 
     @action toggleMute() {
@@ -184,6 +187,19 @@ class PlayerStore {
         this.device.connect()
         this.device.setPlaylist(playlist, fileIndex)
         this.device.play()
+    }
+
+    @action.bound seekIncremetal(inc) {
+        const { device } = this
+        if(device && device.duration) {
+            const { currentTime, duration } = device
+            let seekTime = currentTime + inc
+
+            if(seekTime < 0) seekTime = 0
+            else if(seekTime > duration) seekTime = duration
+
+            device.seek(seekTime)
+        }
     }
 
     @action.bound switchFile(fileIndex) {

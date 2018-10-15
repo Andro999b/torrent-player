@@ -12,9 +12,9 @@ router.get('/', (req, res, next) => {
         throw new ResponseError('url parameter requred')
     }
 
-    superagent.get(url)
-        .buffer(true)
-        .parse(superagent.parse.image)
+    superagent
+        .get(url)
+        .buffer(true) 
         .then((proxyRes) => {
             PROXY_HEADERS.forEach((headerName) => {
                 const header = proxyRes.header[headerName]

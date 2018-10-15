@@ -4,9 +4,12 @@ import PropTypes from 'prop-types'
 import MediaControls from './MediaControls'
 import PlayerTitle from './PlayerTitle'
 import PlayerFilesList from './PlayerPlayList'
-import { isTablet } from '../utils'
-import { Typography, CircularProgress, Button } from '@material-ui/core'
+import PlayBackSeekZones from './PlayBackSeekZones'
+
+import { Typography, LinearProgress, Button } from '@material-ui/core'
 import { observer, inject } from 'mobx-react'
+
+import { toHHMMSS } from '../utils'
 
 @inject('playerStore', 'transitionStore')
 @observer
@@ -21,14 +24,14 @@ class RemotePlayer extends Component {
     }
 
     handleCloseVideo = () => {
-        const { transitionStore } = this.props
-        transitionStore.stopPlayMedia()
+        const { playerStore: { device }, transitionStore } = this.props
+        device.closePlaylist()
+        transitionStore.goBack()
     }
 
     handleCloseDevice = () => {
-        const { playerStore: {device}, transitionStore } = this.props
-        device.closePlaylist()
-        transitionStore.goBack()
+        const { transitionStore } = this.props
+        transitionStore.stopPlayMedia()
     }
 
     handleSelectFile = (fileIndex) => {
@@ -46,36 +49,35 @@ class RemotePlayer extends Component {
         const { playlistOpen } = this.state
         const { playerStore } = this.props
         const { device } = playerStore
-        const { isLoading, error } = device
-
-        const showTitle = !(isTablet() && playlistOpen)
+        const { isLoading, error, currentTime } = device
 
         return (
             <Fragment>
-                { isLoading && <div className="center"><CircularProgress /></div> }
-                { error && <Typography className="center" variant="display1">{error}</Typography> }
-                { showTitle && <PlayerTitle title={playerStore.getPlayerTitle()} onClose={this.handleCloseVideo} /> }
-                { !error && (
-                    <Fragment>
-                        { !isLoading && <Typography className="center" align="center" variant="display1">
-                            Connected: <br/>
-                            {device.getName()} <br/>
-                            <Button onClick={this.handleCloseDevice}>Close device</Button>
-                        </Typography>}
-                        <PlayerFilesList
-                            open={playlistOpen}
-                            device={device}
-                            onFileSelected={this.handleSelectFile}
-                        />
-                        <MediaControls
-                            device={device}
-                            onNext={() => playerStore.nextFile()}
-                            onPrev={() => playerStore.prevFile()}
-                            onPlaylistToggle={this.handleTogglePlayList}
-                            onFullScreenToggle={this.handleToggleFullscreen}
-                        />
-                    </Fragment>
-                )}
+                <Typography className="center" align="center" variant="h4" style={{ width: '100%' }}>
+                    {error && <div>{error}</div>}
+                    {!error && <Fragment>
+                        <div>{device.getName()}</div>
+                        {isLoading && <div style={{padding: '17px 0'}}><LinearProgress color="secondary" /></div>}
+                        {!isLoading && <div>{toHHMMSS(currentTime)}</div>}
+                    </Fragment>}
+                    <Button variant="contained" onClick={this.handleCloseDevice}>Close device</Button>
+                </Typography>
+                {!error && <Fragment>
+                    <PlayerTitle title={playerStore.getPlayerTitle()} onClose={this.handleCloseVideo} />
+                    <PlayBackSeekZones playerStore={playerStore} />
+                    <PlayerFilesList
+                        open={playlistOpen}
+                        device={device}
+                        onFileSelected={this.handleSelectFile}
+                    />
+                    <MediaControls
+                        device={device}
+                        onNext={() => playerStore.nextFile()}
+                        onPrev={() => playerStore.prevFile()}
+                        onPlaylistToggle={this.handleTogglePlayList}
+                        onFullScreenToggle={this.handleToggleFullscreen}
+                    />
+                </Fragment>}
             </Fragment>
         )
     }

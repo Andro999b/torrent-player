@@ -36,7 +36,7 @@ class SearchResults extends Component {
 
         return (
             <div className="search-results">
-                {items.length == 0 && <Typography align="center" variant="display1">Nothing to display</Typography>}
+                {items.length == 0 && <Typography align="center" variant="h4">Nothing to display</Typography>}
                 <InfiniteScroll
                     pageStart={0}
                     loadMore={this.loadMoreItems}

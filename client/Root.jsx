@@ -11,7 +11,7 @@ import CastAwaitView from './views/CastAwaitView'
 
 import { observer, inject } from 'mobx-react'
 
-@inject('transitionStore')
+@inject('transitionStore', 'remoteControl')
 @observer
 class Root extends Component {
     handleGoToScreen = (screen) => {
@@ -23,7 +23,7 @@ class Root extends Component {
     }
 
     render() {
-        const { transitionStore: { screen } } = this.props
+        const { transitionStore: { screen }, remoteControl: { isCastAvaliable} } = this.props
 
         let screanView
         let navigation = true 
@@ -54,6 +54,7 @@ class Root extends Component {
                         screen={screen} 
                         goToScreen={this.handleGoToScreen}
                         onConnect={this.handleConnect}
+                        isCastAvaliable={isCastAvaliable}
                     />
                 }
                 <CastDialog/>
@@ -64,7 +65,8 @@ class Root extends Component {
 }
 
 Root.propTypes = {
-    transitionStore: PropTypes.object
+    transitionStore: PropTypes.object,
+    remoteControl: PropTypes.object
 }
 
 export default Root

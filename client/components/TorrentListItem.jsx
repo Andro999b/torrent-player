@@ -42,7 +42,7 @@ class TorrentListItem extends Component {
     }
 
     renderFiles = (files) => {
-        const { torrent, onCastFile, onPlayFile } = this.props
+        const { torrent, onCastFile, onPlayFile } = this.props 
 
         return (
             <List style={{width: '100%'}}>
@@ -57,7 +57,7 @@ class TorrentListItem extends Component {
         const { torrent, onDelete } = this.props
         const { showDetails } = this.state
 
-        const subheader = (
+        const subtitle = (
             <div style={{ color: grey[600] }}>
                 <span style={{ paddingRight: 4 }}>
                     {filesize(torrent.downloaded).human()}
@@ -84,15 +84,15 @@ class TorrentListItem extends Component {
             <ExpansionPanel expanded={showDetails} onChange={this.handleToggleDetails}>
                 <ExpansionPanelSummary expandIcon={<ExpandIcon />} classes={{ content: 'expand-header' }}>
                     <div>
-                        <Typography variant='title' className='expand-header__row'>{title}</Typography>
-                        <Typography variant='subheading' className='expand-header__row'>{subheader}</Typography>
+                        <Typography variant="h6" className='expand-header__row'>{title}</Typography>
+                        <Typography variant='subtitle1' className='expand-header__row'>{subtitle}</Typography>
                     </div>
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails className="files-list">
                     {showDetails && <GroupFiles files={torrent.files} renderFiles={this.renderFiles} />}
                 </ExpansionPanelDetails>
                 <ExpansionPanelActions>
-                    <Button color="secondary" onClick={() => onDelete(torrent)} variant="raised">
+                    <Button color="secondary" onClick={() => onDelete(torrent)} variant="contained">
                         Delete
                         <DeleteIcon />
                     </Button>

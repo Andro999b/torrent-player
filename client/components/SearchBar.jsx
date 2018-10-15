@@ -7,17 +7,24 @@ import {
     Input,
     InputAdornment,
     Menu,
-    MenuList,
+    List,
     MenuItem,
+    ListItemIcon,
     Collapse,
     IconButton,
+    ListItem,
     ListItemText,
+    ListItemSecondaryAction,
     Checkbox
 } from '@material-ui/core'
 
-import SearchIcon from '@material-ui/icons/Search'
-import ClearIcon from '@material-ui/icons/Clear'
-import MoreIcon from '@material-ui/icons/MoreVert'
+import {
+    Search as SearchIcon,
+    Clear as ClearIcon,
+    MoreVert as MoreIcon,
+    Restore as HistoryIcon,
+    Delete as DeleteIcon
+} from '@material-ui/icons'
 
 import PropTypes from 'prop-types'
 import debounce from 'lodash.debounce'
@@ -29,20 +36,12 @@ function renderInput(inputProps) {
     return <Input fullWidth ref={ref} {...other} />
 }
 
-function renderSuggestion(suggestion, { isHighlighted }) {
-    return (
-        <MenuItem selected={isHighlighted} component="div">
-            {suggestion}
-        </MenuItem>
-    )
-}
-
 function renderSuggestionsContainer(options) {
     const { containerProps, children, query } = options
 
     return (
         <Collapse in={children && query != ''}>
-            <MenuList {...containerProps}>{children}</MenuList>
+            <List {...containerProps}>{children}</List>
         </Collapse>
     )
 }
@@ -105,6 +104,27 @@ class SearchBar extends Component {
         }
     }
 
+    renderSuggestion = (suggestion, { isHighlighted }) => {
+        const { onRemoveHistory } = this.props
+
+        return (
+            <ListItem selected={isHighlighted} component="div" ContainerComponent="div">
+                {suggestion.history && <ListItemIcon>
+                    <HistoryIcon/>
+                </ListItemIcon>}
+                <ListItemText primary={suggestion.text}/>
+                {suggestion.history && <ListItemSecondaryAction>
+                    <IconButton onClick={(e) => {
+                        onRemoveHistory(suggestion)
+                        e.stopPropagation()
+                    }}> 
+                        <DeleteIcon/>
+                    </IconButton>
+                </ListItemSecondaryAction>}
+            </ListItem>
+        )
+    }
+
     renderSettings() {
         const { props: { searchProviders }, state: { settingsAnchorEl } } = this
         return (
@@ -124,6 +144,7 @@ class SearchBar extends Component {
     render() {
         const { searchQuery } = this.state
         const { suggestions } = this.props
+
         return (
             <Paper className="search-bar">
                 <Autosuggest
@@ -133,11 +154,11 @@ class SearchBar extends Component {
                     onSuggestionsFetchRequested={this.handleInput}
                     onSuggestionsClearRequested={this.handleCleanSuggestions}
                     onSuggestionSelected={(e, { suggestion }) =>
-                        this.handleSubmit(suggestion)
+                        this.handleSubmit(suggestion.text)
                     }
                     renderSuggestionsContainer={renderSuggestionsContainer}
-                    getSuggestionValue={(suggestion) => suggestion}
-                    renderSuggestion={renderSuggestion}
+                    getSuggestionValue={(suggestion) => suggestion.text}
+                    renderSuggestion={this.renderSuggestion}
                     inputProps={{
                         disableUnderline: true,
                         fullWidth: true,
@@ -176,6 +197,7 @@ SearchBar.propTypes = {
     onInput: PropTypes.func.isRequired,
     onSubmit: PropTypes.func.isRequired,
     onSelectProviders: PropTypes.func.isRequired,
+    onRemoveHistory: PropTypes.func.isRequired,
     suggestions: PropTypes.array.isRequired
 }
 

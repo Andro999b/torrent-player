@@ -40,7 +40,7 @@ class SearchResultsItemDetails extends Component {
                 <ListItemIcon className="hide-on-mobile">
                     {playable ? <PlayableIcon /> : <NotPlayableIcon />}
                 </ListItemIcon>
-                <ListItemText primary={<div style={{ wordBreak: 'break-all' }}>{file.name}</div>} style={{ paddingLeft: 0 }} />
+                <ListItemText primary={<div style={{ wordBreak: 'break-all' }}>{file.name}</div>}/>
                 {playable &&
                     <ListItemSecondaryAction>
                         <IconButton onClick={() => onCastFile(details, file)}>

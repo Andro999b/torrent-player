@@ -31,7 +31,6 @@ export function fileGroupingFun(files) {
             }, [])
     }
     return Object.keys(groupedByPath)
-        .sort((a, b) => a.localeCompare(b))
         .map((key) => ({
             name: key,
             files: groupedByPath[key]

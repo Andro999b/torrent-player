@@ -110,6 +110,7 @@ html {
     right: 0;
     padding-bottom: 3px;
     opacity: 0.8;
+    z-index: 3;
 }
 
 .player__screen {
@@ -158,9 +159,10 @@ html {
     width: 100%;
     position: absolute;
     right: 0;
-    bottom: 55px;
+    bottom: 71px;
     top: 0;
     opacity: 0.8;
+    z-index: 2;
 
     @media (min-width: 576px) {
         width: 576px;
@@ -183,6 +185,33 @@ html {
 
 .hide-on-desktop {
     display: none;
+}
+
+.playback-seek {
+    position: absolute;
+    top: 25%;
+    bottom: 15%;
+    height: 50%;
+    width: 30%;
+    z-index: 1;
+
+    +.forward {
+        right: 0
+    }
+
+    +.backward {
+        left: 0
+    }
+}
+
+.sound-conrol__slider {
+    height: 40px;
+    width: 200px;
+    padding: 20px 15px;
+}
+
+.idle {
+    cursor: none;
 }
 
 @media (min-width: 576px) {

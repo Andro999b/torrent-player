@@ -8,3 +8,4 @@ export const SEARCH_RPVODERS_NAME = {
     'anidub': 'AniDub'
 // 'coldfilm': 'Coldfilm' // no longer supported
 }
+export const SEARCH_HISTORY_MAX_SIZE = 100

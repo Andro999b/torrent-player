@@ -4,17 +4,24 @@ import pick from 'lodash.pick'
 import notificationStore from './notifications-store'
 import playerStore, { LocalDevice } from './player-store'
 import remoteControl from './remote-control'
+import localStore from 'store'
+
+const MAIN_SCREENS = new Set(['search', 'torrents', 'cast-screan'])
 
 class TransitionStore {
     @observable castDialog = null
-    @observable screen = 'search'
+    @observable screen = localStore.get('lastScreen') || 'search'
     prevScreen = null
 
     @action.bound goToScreen(screen) {
         if(this.screen == screen) return
         
-        this.prevScrean = this.screen
+        if(MAIN_SCREENS.has(this.screen))
+            this.prevScrean = this.screen
+
         this.screen = screen
+        if(MAIN_SCREENS.has(screen))
+            localStore.set('lastScreen', screen)
     }
 
     @action.bound goBack() {

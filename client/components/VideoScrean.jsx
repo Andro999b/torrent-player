@@ -132,6 +132,12 @@ class VideoScrean extends Component {
                     }
                 ),
                 reaction(
+                    () => this.props.device.volume,
+                    (volume) => {
+                        this.video.volume = volume
+                    }
+                ),
+                reaction(
                     () => this.props.device.url,
                     () => this.initVideo()
                 )
@@ -166,6 +172,7 @@ class VideoScrean extends Component {
         const restoreVideoState = () => {
             video.currentTime = device.currentTime
             video.muted = device.isMuted
+            video.volume = device.volume
             if (device.isPlaying) {
                 video.play()
             } else {

@@ -137,9 +137,8 @@ class Provider {
         }
 
         return superagent
-            .get(details.torrentUrl)
             .buffer(true)
-            .parse(superagent.parse.image)
+            .get(details.torrentUrl)
             .then((res) => {
                 return parseTorrent(res.body)
             })

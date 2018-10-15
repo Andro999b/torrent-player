@@ -2,7 +2,7 @@ import { observable, action } from 'mobx'
 import { fetchOnce } from '../utils'
 import request from 'superagent'
 import notificationStore from './notifications-store'
-import { SEARCH_RPVODERS } from '../constants'
+import { SEARCH_RPVODERS, SEARCH_HISTORY_MAX_SIZE } from '../constants'
 import localStore from 'store'
 
 const fetchSuggestions = fetchOnce()
@@ -63,6 +63,8 @@ class SearchStore {
     @observable searchResults = []
     @observable loading = false
     @observable searchProviders = localStore.get('searchProviders') || SEARCH_RPVODERS.concat([])
+    
+    searchHistory = localStore.get('searchHistory') || []
 
     waitingSuggestions = true
 
@@ -73,11 +75,22 @@ class SearchStore {
 
     @action suggest(searchQuery) {
         if (searchQuery) {
+            searchQuery = searchQuery.toLowerCase()
+
             this.waitingSuggestions = true
+            this.suggestions = this.searchHistory
+                .filter((text) => text.search(searchQuery) != -1)
+                .map((text) => ({
+                    history: true,
+                    text
+                }))
+
             fetchSuggestions(`/api/suggestions?q=${searchQuery}`)
                 .then((res) => {
                     if (this.waitingSuggestions)
-                        this.suggestions = res.body
+                        this.suggestions = this.suggestions.concat(
+                            res.body.map((text) => ({text}))
+                        )
                 })
         } else {
             this.waitingSuggestions = false
@@ -89,6 +102,9 @@ class SearchStore {
         if(this.searchProviders.length == 0) 
             return
 
+        searchQuery = searchQuery.toLowerCase()
+
+        this.updateSearchHistory(searchQuery)
         this.waitingSuggestions = false
         this.suggestions = []
         this.searchResults = []
@@ -115,6 +131,40 @@ class SearchStore {
             this.searchResults = searchResults.sort((a, b) => b.seeds - a.seeds)
             this.loading = false
         })
+    }
+
+    @action removeFromHistory(suggestion) {
+        const { text } = suggestion
+        const { searchHistory, suggestions } = this
+
+        let idx = searchHistory.findIndex((text) => text === text)
+        if(idx != -1) {
+            searchHistory.splice(idx, 1)
+        }
+
+        this.suggestions = suggestions
+            .filter((s) => s.text != text)
+
+        localStore.set('searchHistory', searchHistory)
+    }
+
+    updateSearchHistory(searchQuery) {
+        if(!searchQuery) return
+
+        const { searchHistory } = this
+
+        const idx = searchHistory.findIndex((text) => text === searchQuery)
+        if(idx != -1) {
+            searchHistory.splice(idx, 1)
+        }
+
+        searchHistory.unshift(searchQuery)
+
+        if(searchHistory.length > SEARCH_HISTORY_MAX_SIZE) {
+            searchHistory.pop()
+        }
+
+        localStore.set('searchHistory', searchHistory)
     }
 }
 

@@ -6,11 +6,12 @@ import MediaControls from './MediaControls'
 import PlayerFilesList from './PlayerPlayList'
 import PlayerTitle from './PlayerTitle'
 import VideoScrean from './VideoScrean'
+import PlayBackSeekZones from './PlayBackSeekZones'
 
 import { Typography, CircularProgress } from '@material-ui/core'
 import { observer, inject } from 'mobx-react'
 
-import { isMobile, isTablet } from '../utils'
+import { isMobile } from '../utils'
 
 const IDLE_TIMEOUT = 3000
 
@@ -103,34 +104,35 @@ class LocalPlayer extends Component {
         const { device } = playerStore
         const { isLoading, error } = device
 
-        const showTitle = !(isTablet() && playlistOpen)
-
         return (
             <Fullscreen
                 enabled={fullScreen}
                 onChange={this.handleSetFullScreen}
             >
-                <VideoScrean device={device} onEnded={playerStore.nextFile} />
-                {isLoading && <div className="center"><CircularProgress /></div>}
-                {error && <Typography className="center" variant="display1">{error}</Typography>}
-                {(!idle) && (
-                    <Fragment>
-                        {showTitle && <PlayerTitle title={playerStore.getPlayerTitle()} onClose={this.handleCloseVideo} />}
-                        <PlayerFilesList
-                            open={playlistOpen}
-                            device={device}
-                            onFileSelected={this.handleSelectFile}
-                        />
-                        <MediaControls
-                            fullScreen={fullScreen}
-                            device={device}
-                            onNext={() => playerStore.nextFile()}
-                            onPrev={() => playerStore.prevFile()}
-                            onPlaylistToggle={this.handleTogglePlayList}
-                            onFullScreenToggle={this.handleToggleFullscreen}
-                        />
-                    </Fragment>
-                )}
+                <div className={idle ? 'idle': ''}>
+                    <VideoScrean device={device} onEnded={playerStore.nextFile} />
+                    { isLoading && <div className="center"><CircularProgress color="secondary"/></div> }
+                    { error && <Typography className="center" variant="h4">{error}</Typography> }
+                    <PlayBackSeekZones playerStore={playerStore}/>
+                    { (!idle) && (
+                        <Fragment>
+                            <PlayerTitle title={playerStore.getPlayerTitle()} onClose={this.handleCloseVideo} />
+                            <PlayerFilesList
+                                open={playlistOpen}
+                                device={device}
+                                onFileSelected={this.handleSelectFile}
+                            />
+                            <MediaControls
+                                fullScreen={fullScreen}
+                                device={device}
+                                onNext={() => playerStore.nextFile()}
+                                onPrev={() => playerStore.prevFile()}
+                                onPlaylistToggle={this.handleTogglePlayList}
+                                onFullScreenToggle={this.handleToggleFullscreen}
+                            />
+                        </Fragment>
+                    )}
+                </div>
             </Fullscreen >
         )
     }

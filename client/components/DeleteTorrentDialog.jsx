@@ -28,7 +28,7 @@ class DeleteTorrentDialog extends Component {
                     <Button onClick={onReject} color="primary">
                         Cancel
                     </Button>
-                    <Button onClick={() => onAccept(torrent)} color="secondary" variant="raised" autoFocus>
+                    <Button onClick={() => onAccept(torrent)} color="secondary" variant="contained" autoFocus>
                         Delete
                     </Button>
                 </DialogActions>
