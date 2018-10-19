@@ -73,11 +73,13 @@ class RemoteDevice extends Device {
         this.sendAction('play', currentTime)
     }
 
-    seek(currentTime) {
+    @action seek(currentTime) {
+        this.currentTime = currentTime
         this.sendAction('seek', currentTime)
     }
 
-    setVolume(volume) {
+    @action setVolume(volume) {
+        this.volume = volume
         this.sendAction('setVolume', volume)
     }
 

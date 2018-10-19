@@ -19,19 +19,26 @@ function getTorrentHLSKeepAliveLink(infoHash, fileIndex) {
 
 module.exports = function(torrent) {
     const files = torrent.files
-        .filter((file) => isAudio(file.name) || isVideo(file.name))
+        .map((file, fileIndex) => { 
+            if(!isAudio(file.name) && !isVideo(file.name)) return null
+
+            return {
+                id: fileIndex,
+                name: file.name,
+                path: fileDirectory(file.path),
+                mimeType: mimeLookup(file.name),
+                url: getTorrentFileContentLink(torrent.infoHash, fileIndex),
+                hlsUrl: getTorrentFileHLSLink(torrent.infoHash, fileIndex),
+                transcodedUrl: getTorrentTranscodedLink(torrent.infoHash, fileIndex),
+                keepAliveUrl: getTorrentHLSKeepAliveLink(torrent.infoHash, fileIndex)
+            }
+        })
+        .filter((f) => f != null)
         .sort((f1, f2) => f1.name.localeCompare(f2.name))
-        .map((file, fileIndex) => ({
-            index: fileIndex,
-            id: fileIndex,
-            name: file.name,
-            path: fileDirectory(file.path),
-            mimeType: mimeLookup(file.name),
-            url: getTorrentFileContentLink(torrent.infoHash, fileIndex),
-            hlsUrl: getTorrentFileHLSLink(torrent.infoHash, fileIndex),
-            transcodedUrl: getTorrentTranscodedLink(torrent.infoHash, fileIndex),
-            keepAliveUrl: getTorrentHLSKeepAliveLink(torrent.infoHash, fileIndex)
-        }))
+        .map((f, fileIndex) => {
+            f.index = fileIndex
+            return f
+        })
 
     return {
         name: torrent.name,

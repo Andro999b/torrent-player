@@ -49,7 +49,7 @@ class RemotePlayer extends Component {
         const { playlistOpen } = this.state
         const { playerStore } = this.props
         const { device } = playerStore
-        const { isLoading, error, currentTime } = device
+        const { isLoading, error, currentTime, duration } = device
 
         return (
             <Fragment>
@@ -57,8 +57,12 @@ class RemotePlayer extends Component {
                     {error && <div>{error}</div>}
                     {!error && <Fragment>
                         <div>{device.getName()}</div>
-                        {isLoading && <div style={{padding: '17px 0'}}><LinearProgress color="secondary" /></div>}
-                        {!isLoading && <div>{toHHMMSS(currentTime)}</div>}
+                        {isLoading && <div style={{padding: '18px 0 17px'}}>
+                            <LinearProgress color="secondary" />
+                        </div>}
+                        {!isLoading && <div style={{whiteSpace: 'nowrap'}}>
+                            {toHHMMSS(currentTime)} / {toHHMMSS(duration)}
+                        </div>}
                     </Fragment>}
                     <Button variant="contained" onClick={this.handleCloseDevice}>Close device</Button>
                 </Typography>

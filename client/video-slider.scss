@@ -89,20 +89,21 @@
     position: absolute;
     background-color: rgba(0, 0, 0, 0.5);  
     color: #fff;
-    top: -55px;
+    top: -60px;
     left: 50%;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
-    transform: translateX(-61px);
+    transform: translateX(-130px);
     border-radius: 5px;
     padding: 5px 10px;
     pointer-events: none;
     font-size: 26px;
     font-weight: bold;
     font-family: "Roboto", "Helvetica", "Arial", sans-serif;
-    opacity: 0;
+    display: none;
+    white-space: nowrap;
   }
   .ui-video-seek-slider .hover-time.active {
-    opacity: 1;
+    display: block;
   }
   .ui-video-seek-slider:hover .track .main .seek-hover {
     opacity: 1;

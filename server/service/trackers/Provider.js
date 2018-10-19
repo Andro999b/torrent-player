@@ -137,23 +137,26 @@ class Provider {
         }
 
         return superagent
-            .buffer(true)
             .get(details.torrentUrl)
+            .buffer(true).parse(superagent.parse.image)
             .then((res) => {
                 return parseTorrent(res.body)
             })
             .then((parsedTorrent) => {
-                const files = parsedTorrent.files.map((file, fileIndex) => {
-                    const lastSeparator = file.path .lastIndexOf('/')
-                    const path = lastSeparator > -1 ? file.path.substring(0, lastSeparator) : ''
+                const files = 
+                    parsedTorrent.files
+                        .map((file, fileIndex) => {
+                            const lastSeparator = file.path .lastIndexOf('/')
+                            const path = lastSeparator > -1 ? file.path.substring(0, lastSeparator) : ''
 
-                    return {
-                        path,
-                        name: file.name,
-                        id: fileIndex,
-                        length: file.length
-                    }
-                })
+                            return {
+                                path,
+                                name: file.name,
+                                id: fileIndex,
+                                length: file.length
+                            }
+                        })
+                        .sort((f1, f2) => f1.name.localeCompare(f2.name))
 
                 return { ...details, files }
             })

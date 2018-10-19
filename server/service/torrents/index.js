@@ -64,7 +64,7 @@ module.exports = {
         if(torrentUrl) {
             const res = await superagent
                 .get(torrentUrl)
-                .buffer(true)
+                .buffer(true).parse(superagent.parse.image)
             parsedTorrent = parseTorrent(res.body)
         } else if (magnetUrl) {
             parsedTorrent = parseTorrent(magnetUrl)

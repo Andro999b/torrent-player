@@ -14,7 +14,7 @@ router.get('/', (req, res, next) => {
 
     superagent
         .get(url)
-        .buffer(true) 
+        .buffer(true).parse(superagent.parse.image) 
         .then((proxyRes) => {
             PROXY_HEADERS.forEach((headerName) => {
                 const header = proxyRes.header[headerName]

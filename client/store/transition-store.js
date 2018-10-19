@@ -106,7 +106,7 @@ class TransitionStore {
     downloadPlaylist(result, item) {
         if(result.type == 'directMedia') {
             return Promise.resolve({
-                startIndex: item.index,
+                startIndex: item.id,
                 playlist: pick(result, 'name', 'files')
             })
         }

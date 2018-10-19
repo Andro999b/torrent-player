@@ -22,36 +22,36 @@ class VideoSeek extends Component {
         super(props, context)
         
         this.state = {
-            time: props.device.currentTime
+            seekTime: null
         }
     }
     
-    handleTimeChange = (time) => {
-        this.setState({time})
+    handleTimeChange = (seekTime) => {
+        this.setState({seekTime})
     }
     
     handleEndSeek = () => {
         const { device } = this.props
-        const { time } = this.state
+        const { seekTime } = this.state
 
-        device.seek(time)
+        device.seek(seekTime)
+
+        this.setState({seekTime: null})
     }
 
     render() {
         const { device } = this.props
-        const { time } = this.state
+        const { seekTime } = this.state
 
         return (
             <div style={{padding: '0px 10px'}}>
                 <VideoSeekSlider
                     max={device.duration}
-                    currentTime={time}
+                    currentTime={seekTime || device.currentTime}
                     progress={device.buffered}
                     onChange={this.handleTimeChange}
                     onSeekEnd={this.handleEndSeek}
                     offset={0}
-                    secondsPrefix="00:00:"
-                    minutesPrefix="00:"
                 />
             </div>
         )

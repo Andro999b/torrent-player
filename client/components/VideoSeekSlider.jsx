@@ -1,8 +1,11 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import { toHHMMSS } from '../utils'
 
 /**
  * Origin source: https://github.com/egorovsa/react-video-seek-slider
+ * 
+ * TODO: investigate: why 2 flags for seeking
  */
 class VideoSeekSlider extends Component {
     constructor(props, context) {
@@ -14,7 +17,6 @@ class VideoSeekSlider extends Component {
             seekHoverPosition: 0
         }
     }
-
 
     componentDidMount() {
         this.setTrackWidthState()
@@ -113,44 +115,29 @@ class VideoSeekSlider extends Component {
         }
     }
 
-    secondsToTime(seconds) {
-        seconds = Math.round(seconds + this.props.offset)
-
-        let hours = Math.floor(seconds / 3600)
-        let divirsForMinutes = seconds % 3600
-        let minutes = Math.floor(divirsForMinutes / 60)
-        let sec = Math.ceil(divirsForMinutes % 60)
-
-        return {
-            hh: hours.toString(),
-            mm: minutes < 10 ? '0' + minutes : minutes.toString(),
-            ss: sec < 10 ? '0' + sec : sec.toString()
-        }
-    }
-
     getHoverTime() {
-        let percent = this.state.seekHoverPosition * 100 / this.state.trackWidth
-        let time = Math.floor(+(percent * (this.props.max / 100)))
-        let times = this.secondsToTime(time)
+        const {seekHoverPosition, trackWidth} = this.state
+        const {offset, max} = this.props
+        const percent = seekHoverPosition * 100 / trackWidth
+        let seconds = Math.floor(+ (percent * (max / 100)))
+        seconds = Math.round(seconds + offset)
 
-        if ((this.props.max + this.props.offset) < 60) {
-            return this.props.secondsPrefix + (times.ss)
-        } else if ((this.props.max + this.props.offset) < 3600) {
-            return this.props.minutesPrefix + times.mm + ':' + times.ss
-        } else {
-            return times.hh + ':' + times.mm + ':' + times.ss
-        }
+        return `${toHHMMSS(seconds)} / ${toHHMMSS(max)}`
     }
 
     mouseSeekingHandler = (event) => {
         this.setSeeking(false, event)
-        this.props.onSeekEnd()
     };
 
     setSeeking = (state, event) => {
         event.preventDefault()
 
         this.handleSeeking(event)
+
+        if (this.seeking && !state) {
+            this.props.onSeekEnd()
+        }
+
         this.seeking = state
 
         this.setState({
@@ -160,10 +147,13 @@ class VideoSeekSlider extends Component {
 
     mobileTouchSeekingHandler = () => {
         this.setMobileSeeking(false)
-        this.props.onSeekEnd()
     };
 
     setMobileSeeking = (state) => {
+        if (this.mobileSeeking && !state) {
+            this.props.onSeekEnd()
+        }
+
         this.mobileSeeking = state
 
         this.setState({
@@ -223,9 +213,7 @@ VideoSeekSlider.defaultProps = {
     currentTime: 0,
     progress: 0,
     hideHoverTime: false,
-    offset: 0,
-    secondsPrefix: '',
-    minutesPrefix: ''
+    offset: 0
 }
 
 VideoSeekSlider.propTypes = {
@@ -236,8 +224,6 @@ VideoSeekSlider.propTypes = {
     onSeekEnd: PropTypes.func.isRequired,
     hideHoverTime: PropTypes.bool,
     offset: PropTypes.number,
-    secondsPrefix: PropTypes.string,
-    minutesPrefix: PropTypes.string,
     limitTimeTooltipBySides: PropTypes.bool
 }
 
