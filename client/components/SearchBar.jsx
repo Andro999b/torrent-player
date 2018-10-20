@@ -31,9 +31,7 @@ import debounce from 'lodash.debounce'
 import { toJS } from 'mobx'
 
 function renderInput(inputProps) {
-    const { ref, ...other } = inputProps
-
-    return <Input fullWidth ref={ref} {...other} />
+    return <Input fullWidth {...inputProps} />
 }
 
 function renderSuggestionsContainer(options) {

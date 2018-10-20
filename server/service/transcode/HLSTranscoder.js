@@ -12,7 +12,7 @@ const {
     TORRENTS_DATA_DIR
 } = require('../../config')
 const { waitForFile, touch, parseCodeDuration } = require('../../utils')
-const database = require('../database')
+const database = require('../torrents/database')
 const debug = require('debug')('transcode-hls')
 
 class HLSTranscoder {

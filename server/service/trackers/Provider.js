@@ -92,6 +92,7 @@ class Provider {
 
         return crawler
             .get(this.getInfoUrl(resultsId))
+            .limit(1)
             .headers(headers)
             .scope(detailsScope)
             .set(detailsSelectors)
@@ -138,10 +139,9 @@ class Provider {
 
         return superagent
             .get(details.torrentUrl)
+            .set(this.config.headers)
             .buffer(true).parse(superagent.parse.image)
-            .then((res) => {
-                return parseTorrent(res.body)
-            })
+            .then((res) => parseTorrent(res.body))
             .then((parsedTorrent) => {
                 const files = 
                     parsedTorrent.files

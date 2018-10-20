@@ -1,6 +1,6 @@
 const lowdb = require('lowdb')
 const FileSync = require('lowdb/adapters/FileSync')
-const { ROOT_DIR } = require('../config')
+const { ROOT_DIR } = require('../../config')
 const path = require('path')
 
 const torrentDb = lowdb(new FileSync(path.join(ROOT_DIR, 'torrents.db.json')))

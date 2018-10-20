@@ -1,6 +1,6 @@
 const mime = require('mime-types')
 const ip = require('ip')
-const database = require('../service/database')
+const database = require('../service/torrents/database')
 const { isVideo, isAudio, isPsSupported, formatDLNADuration } = require('../utils')
 const { WEB_PORT } = require('../config')
 

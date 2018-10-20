@@ -1,17 +1,20 @@
 const Provider = require('../Provider')
 const $ = require('cheerio')
 
-const extratId = ($el) => $el.attr('href').split('=')[1]
-
 class NNMClubProvider extends Provider {
-    constructor() {
+    constructor(categories, subtype) {
         super({
-            baseUrl: 'http://nnm-club.me',
-            searchUrl: 'http://nnm-club.me/forum/tracker.php',
+            subtype,
+            categories,
+            baseUrl: 'http://nnmclub.to',
+            searchUrl: 'http://nnmclub.to/forum/tracker.php',
             scope: '.tablesorter>tbody>tr:matches(.prow1,.prow2)',
             pageSize: 50,
             selectors: {
-                id: { selector: '.topictitle', transform: extratId },
+                id: { 
+                    selector: '.topictitle', 
+                    transform: ($el) => $el.attr('href').split('=')[1]
+                },
                 name: '.topictitle>b',
                 size: { 
                     selector: 'td:nth-child(6)', 
@@ -74,12 +77,16 @@ class NNMClubProvider extends Provider {
     }
 
     getName() {
-        return 'nnm'
+        const { subtype } = this.config
+        return `nnm${subtype ? '-' + subtype : ''}`
     }
 
     getSearchUrl(query) {
-        const { searchUrl } = this.config
-        return `${searchUrl}?nm=${query}`
+        const { searchUrl, categories } = this.config
+        if(categories)
+            return `${searchUrl}?f=${categories.join(',')}&nm=${query}`
+        else
+            return `${searchUrl}?nm=${query}`
     }
 
     getInfoUrl(resultsId) {
@@ -89,3 +96,17 @@ class NNMClubProvider extends Provider {
 }
 
 module.exports = NNMClubProvider
+module.exports.providers = [
+    new NNMClubProvider(
+        [216,270,218,219,954,888,217,1293,1298,266,318,320,677,1177,319,678,885,908,909,910,911,912,220,221,222,882,889,224,225,226,227,1296,891,1299,682,694,884,1211,693,913,228,1150,254,321,255,906],
+        'video'
+    ),
+    new NNMClubProvider(
+        [1219,1221,1220,768,779,778,788,1288,787,1196,1141,777,786,803,776,785,775,1265,1242,1289,774,1140,782,773,1142,784,1195,772,771,783,1144,804,1290,1300,770,922,780,781,769,799,800,791,798,797,790,793,794,789,796,792,795,1307,683,573,501,919,566,498,985,720,987,664,497,721,719,1229,1228,849,949,665,986,666,1230,722,1120,920,570,499],
+        'tv-shows'
+    ),
+    new NNMClubProvider(
+        [615,616,1297,648,617,619,620,623,622,621,632,624,627,626,625,644,628,635,634,638,646], 
+        'anime'
+    )
+]

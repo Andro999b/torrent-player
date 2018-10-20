@@ -1,12 +1,13 @@
 const providers = [
     new (require('./providers/TfileProvider'))(),
     new (require('./providers/RutorProvider'))(),
-    new (require('./providers/NNMClubProvider'))(),
     new (require('./providers/AnimeVostProvider'))(),
     new (require('./providers/AnidubProvider'))(),
     new (require('./providers/ColdFilmProvider'))(),
     new (require('./providers/FastTorrentsProvider'))()
 ]
+    .concat(require('./providers/RutrackerProvider').providers)
+    .concat(require('./providers/NNMClubProvider').providers)
 
 module.exports = {
     getTrackers() {

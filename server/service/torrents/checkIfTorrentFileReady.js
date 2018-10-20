@@ -1,4 +1,4 @@
-const database = require('../database')
+const database = require('./database')
 
 module.exports = function (file) {
     const torrentId = file._torrent.infoHash

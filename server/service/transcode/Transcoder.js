@@ -4,7 +4,7 @@ const CycleBuffer = require('../../utils/CycleBuffer')
 const { TORRENTS_DATA_DIR } = require('../../config')
 const debug = require('debug')('transcode')
 const checkIfTorrentFileReady = require('../torrents/checkIfTorrentFileReady')
-const database = require('../database')
+const database = require('../torrents/database')
 const { parseCodeDuration } = require('../../utils')
 
 class Transcoder {
