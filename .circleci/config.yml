@@ -15,10 +15,12 @@ jobs:
           - v1-dependencies-
 
       - run: 
+          name: Install Dependencies
+          command: yarn
+
+      - run: 
           name: Build UI
-          command: |
-            yarn
-            npm run build
+          command: npm run build
 
       - save_cache:
           paths:
@@ -28,7 +30,7 @@ jobs:
       - run:
           name: Build Binaries
           command: |
-            npm i -g pkg
+            sudo npm i -g pkg
             pkg --version
             chmod +x build/package-bin.sh
             cd build && sudo ./package-bin.sh
