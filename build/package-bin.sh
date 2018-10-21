@@ -3,7 +3,7 @@
 ARCHIVE_NAME="package"
 NODE_VERSION="8"
 TARGETS="win linux"
-ARCHS="x64 x86"
+ARCHS="x64"
 OUT_BIN="out/bin"
 OUT_ZIP="out/zip"
 
