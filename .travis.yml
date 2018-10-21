@@ -3,7 +3,7 @@ node_js:
   - "8"
 install:
   - npm i -g pkg
-  - npm i
+  - yarn
 script:
   - npm run build
-  - build/package-bin.sh
+  - cd build && package-bin.sh
