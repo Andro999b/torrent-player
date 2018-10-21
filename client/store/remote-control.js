@@ -136,6 +136,15 @@ function trackState(socket) {
             socket.emit('clear')
         }
     }, { delay: 1000 })
+
+    socket.on('reconnect', () => {
+        const { device } = playerStore
+        if (device && device.isLocal()) {
+            socket.emit('sync', pick(device, ALLOWED_STATE_FIELDS))
+        } else {
+            socket.emit('clear')
+        }
+    })
 }
 
 function listenIncomeControls(socket) {

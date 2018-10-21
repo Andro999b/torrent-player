@@ -12,7 +12,7 @@ fs.ensureDirSync(HLS_DIRECTORY)
 
 
 const dlna = require('./dlna')
-const dlnaRenderers = require('./dlna/renderers')
+// const dlnaRenderers = require('./dlna/renderers')
 const torrentsService = require('./service/torrents')
 const web = require('./web')
 const os = require('os')

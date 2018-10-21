@@ -89,7 +89,7 @@ class HLSTranscoder {
                 .once('codecData', (metadata) => {
                     database.storeTorrentFileMetadata(
                         this.torrentHash,
-                        this.filePath, 
+                        this.file.path, 
                         { ...metadata, duration: parseCodeDuration(metadata.duration)}
                     )
                 })

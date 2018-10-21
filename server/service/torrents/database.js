@@ -13,6 +13,8 @@ module.exports = {
         return torrentDb.get([ torrentId, path, 'metadata' ]).value()
     },
     setTorrentFileCompleted(torrentId, paths) {
+        if(!torrentId || !path) throw Error('torrentId or path is null')
+
         if (typeof paths === 'string') {
             paths = [paths]
         }
@@ -24,6 +26,8 @@ module.exports = {
         chain.write()
     },
     storeTorrentFileMetadata(torrentId, path, metadata) {
+        if(!torrentId || !path) throw Error('torrentId or path is null')
+
         return torrentDb.set([ torrentId, path, 'metadata' ], metadata).write()
     },
     wipeTorrentData(torrentId) {
