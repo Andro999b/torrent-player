@@ -22,11 +22,6 @@ jobs:
           name: Build UI
           command: npm run build
 
-      - save_cache:
-          paths:
-            - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
-
       - run:
           name: Build Binaries
           command: |
@@ -34,5 +29,11 @@ jobs:
             pkg --version
             chmod +x build/package-bin.sh
             cd build && sudo ./package-bin.sh
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
+
 
 
