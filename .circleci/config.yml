@@ -37,6 +37,7 @@ jobs:
       
       - store_artifacts:
           path: build/out/zip
+          destination: zip
 
 
 
