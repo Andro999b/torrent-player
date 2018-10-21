@@ -3,6 +3,7 @@ node_js:
   - "8"
 before_install:
   - npm i -g pkg
+  - pkg --version
 install:
   - yarn
 before_script:
