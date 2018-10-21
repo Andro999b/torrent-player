@@ -1,8 +1,9 @@
 language: node_js
 node_js:
   - "8"
-install:
+before_install:
   - npm i -g pkg
+install:
   - yarn
 before_script:
   - chmod +x build/package-bin.sh
