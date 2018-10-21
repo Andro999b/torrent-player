@@ -6,4 +6,4 @@ install:
   - yarn
 script:
   - npm run build
-  - cd build && package-bin.sh
+  - cd build && cd build && package-bin.shpackage-bin.sh
