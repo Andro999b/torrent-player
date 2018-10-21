@@ -15,10 +15,10 @@ jobs:
           - v1-dependencies-
 
       - run: 
-        name: Build UI
-        command: |
-          yarn
-          npm run build
+          name: Build UI
+          command: |
+            yarn
+            npm run build
 
       - save_cache:
           paths:
@@ -26,11 +26,11 @@ jobs:
           key: v1-dependencies-{{ checksum "package.json" }}
 
       - run:
-        name: Build Binaries
-        command: |
-          npm i -g pkg
-          pkg --version
-          chmod +x build/package-bin.sh
-          cd build && sudo ./package-bin.sh
+          name: Build Binaries
+          command: |
+            npm i -g pkg
+            pkg --version
+            chmod +x build/package-bin.sh
+            cd build && sudo ./package-bin.sh
 
 
