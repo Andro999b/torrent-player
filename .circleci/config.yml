@@ -12,6 +12,8 @@ jobs:
       - restore_cache:
           keys:
           - v1-dependencies-{{ checksum "package.json" }}
+          - v1-dependencies-client-{{ checksum "client/package.json" }}
+          - v1-dependencies-server-{{ checksum "server/package.json" }}
           - v1-dependencies-
 
       - run: 
@@ -34,9 +36,22 @@ jobs:
             cd build && sudo ./package-bin.sh
 
       - save_cache:
+          name: Save Cache
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
+
+      - save_cache:
+          name: Save Client Cache
+          paths:
+            - client/node_modules
+          key: v1-dependencies-client-{{ checksum "client/package.json" }}
+
+      - save_cache:
+          name: Save Server Cache
+          paths:
+            - server/node_modules
+          key: v1-dependencies-server-{{ checksum "server/package.json" }}
       
       - store_artifacts:
           path: build/out/zip
