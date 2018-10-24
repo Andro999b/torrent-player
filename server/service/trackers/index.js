@@ -27,5 +27,9 @@ module.exports = {
     getInfo(tracker, resultsId) {
         return this.getTracker(tracker)
             .then((provider) => provider.getInfo(resultsId))
+    },
+    loadTorentFile(tracker, torrentUrl) {
+        return this.getTracker(tracker)
+            .then((provider) => provider.loadTorentFile(torrentUrl))
     }
 }

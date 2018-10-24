@@ -2,6 +2,7 @@ import remoteControl from './remote-control'
 import { observable, action } from 'mobx'
 import request from 'superagent'
 import localStore from 'store'
+import { isElectron } from '../utils'
 
 const testMedia = document.createElement('video')
 
@@ -46,6 +47,7 @@ export class LocalDevice extends Device {
     @observable seekTime = null
 
     keepAliveInterval = 0
+    source = null
 
     constructor() {
         super()
@@ -59,20 +61,10 @@ export class LocalDevice extends Device {
 
     @action setSource(source) {
         if (source.url != this.url) {
-            this.hsl = false
+            this.source = source
+            this.hls = false
             this.keepAliveUrl = null
-            
-            //determinate best option
-            if(source.mimeType && testMedia.canPlayType(source.mimeType)) {
-                this.url = source.url
-            } else if(source.hlsUrl) {
-                this.url = source.hlsUrl
-                this.keepAliveUrl = source.keepAliveUrl
-                this.hls = true
-            } else {
-                this.url = source.url
-            }
-
+            this.url = source.url
             this.currentTime = 0
             this.duration = 0
             this.buffered = 0
@@ -120,7 +112,13 @@ export class LocalDevice extends Device {
     }
 
     @action setError(error) {
-        this.error = error
+        if(error && !this.hls && this.source.hlsUrl) { //switch to hls in case of error
+            this.hls = true
+            this.url = this.source.hlsUrl
+            this.keepAliveUrl = this.source.keepAliveUrl
+        } else {
+            this.error = error
+        }
     }
 
     @action setVolume(volume) {

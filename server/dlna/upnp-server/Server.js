@@ -3,16 +3,19 @@ const http = require('http')
 const xml2js = require('xml2js')
 const ejs = require('ejs')
 const fs = require('fs')
+const path = require('path')
 const URL = require('url')
 const querystring = require('querystring')
 const { EventEmitter } = require('events')
 const concat = require('concat-stream')
 const debug = require('debug')('upnp')
 
+const { RESOURCES_DIR } = require('../../config')
+
 const UPNPError = require('./UPNPError')
 
 const RENDER_SOAP_RES = ejs.compile(
-    fs.readFileSync('resources/xml/soap-res.xml', 'utf8')
+    fs.readFileSync(path.join(RESOURCES_DIR, 'xml', 'soap-res.xml'), 'utf8')
 )
 
 class Server extends EventEmitter {

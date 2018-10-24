@@ -21,7 +21,7 @@ router.post('/', (req, res, next) => {
     if (!req.body.magnetUrl && !req.body.torrentUrl)
         throw new ResponseError('magnetUrl or torrentUrl reuired')
 
-    torrentsService.addTorrent(req.body.magnetUrl, req.body.torrentUrl)
+    torrentsService.addTorrent(req.body)
         .then((torrent) => res.json(mapTorrent(torrent)))
         .catch(next)
 })

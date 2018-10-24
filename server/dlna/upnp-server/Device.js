@@ -1,11 +1,13 @@
 const uuid = require('uuid')
 const ejs = require('ejs')
 const fs = require('fs')
+const path = require('path')
 const Service = require('./Service')
 const SsdpServer = require('node-ssdp').Server
+const { RESOURCES_DIR } = require('../../config')
 
 const RENDER_DEVICE = ejs.compile(
-    fs.readFileSync('resources/xml/device-desc.xml', 'utf8')
+    fs.readFileSync(path.join(RESOURCES_DIR, 'xml', 'device-desc.xml'), 'utf8')
 )
 
 class Device {

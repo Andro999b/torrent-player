@@ -7,6 +7,7 @@ const parseTorrent = require('parse-torrent')
 const superagent = require('superagent')
 const database = require('./database')
 const { stopTranscoding } = require('../transcode')
+const trackers = require('../trackers')
 const { TORRENTS_DIR, TORRENTS_DATA_DIR } = require('../../config')
 const debug = require('debug')('torrents')
 
@@ -58,15 +59,25 @@ module.exports = {
             }
         })
     },
-    async addTorrent(magnetUrl, torrentUrl) {
+    async addTorrent({ magnetUrl, torrentUrl, provider }) {
         let parsedTorrent = null
         
         if(torrentUrl) {
-            const res = await superagent
-                .get(torrentUrl)
-                .buffer(true).parse(superagent.parse.image)
-            parsedTorrent = parseTorrent(res.body)
-        } else if (magnetUrl) {
+            try{
+                if(provider) {
+                    parsedTorrent = await trackers.loadTorentFile(provider, torrentUrl)
+                } else {
+                    const res = await superagent
+                        .get(torrentUrl)
+                        .buffer(true).parse(superagent.parse.image)
+                    parsedTorrent = parseTorrent(res.body)
+                }
+            } catch(e) {
+                console.warn(`Fail to load torrent file: ${e}`)
+            }
+        } 
+        
+        if (!parsedTorrent && magnetUrl) {
             parsedTorrent = parseTorrent(magnetUrl)
         }
 

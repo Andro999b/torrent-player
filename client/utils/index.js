@@ -73,3 +73,20 @@ export function toHHMMSS(timestamp) {
     }
     return hours+':'+minutes+':'+seconds
 }
+
+export function isElectron() {
+    // Renderer process
+    if (typeof window !== 'undefined' && typeof window.process === 'object' && window.process.type === 'renderer') {
+        return true
+    }
+
+    return false
+}
+
+export function hasArgv(arg) {
+    if(window.process && window.process.argv) {
+        return window.process.argv.indexOf(`--${arg}`) != -1
+    }
+
+    return false
+}

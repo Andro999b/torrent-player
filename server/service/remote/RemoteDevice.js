@@ -21,7 +21,7 @@ class RemoteDevice extends EventEmitter {
         Object.keys(state).forEach((key) => {
             this.state[key] = state[key]
         })
-        this.emit(RemoteDevice.Events.Sync, this.state)
+        this.emit(RemoteDevice.Events.Sync, state)
 
         if (state.playlist) {
             this.playlistName = state.playlist.name

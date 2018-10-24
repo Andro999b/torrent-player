@@ -1,11 +1,15 @@
 const fs = require('fs-extra')
+const path = require('path')
 const readline = require('readline')
 const Stream = require('stream')
 const sprintf = require('sprintf-js').sprintf
 const ResponseError = require('./ResponseError')
-const videExtensions = require('../../resources/video-extensions.json')
-const audioExtensions = require('../../resources/audio-extensions.json')
-const psMediaExtensions = require('../../resources/ps-media-extensions.json')
+const { RESOURCES_DIR } = require('../config')
+
+//TODO: Read json maybe?
+const videExtensions = JSON.parse(fs.readFileSync(path.join(RESOURCES_DIR, 'video-extensions.json')))
+const audioExtensions = JSON.parse(fs.readFileSync(path.join(RESOURCES_DIR, 'audio-extensions.json')))
+const psMediaExtensions = JSON.parse(fs.readFileSync(path.join(RESOURCES_DIR, 'ps-media-extensions.json')))
 
 function hasOneOfExtensions(extensions, fileName) {
     return extensions.findIndex((ext) => {

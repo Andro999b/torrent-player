@@ -7,14 +7,13 @@ const suggestionsApi = require('./suggestions')
 const proxyMedia = require('./proxyMedia')
 const extractVideo = require('./extractVideo')
 const remote = require('./remote')
-const path = require('path')
-const { WEB_PORT } = require('../config')
+const { WEB_PORT, CLIENT_DIR } = require('../config')
 
 module.exports = function () {
     const expressServer = express()
 
     expressServer.use(cors())
-    expressServer.use(express.static(path.join('client', 'dist')))
+    expressServer.use(express.static(CLIENT_DIR))
 
     expressServer.use(bodyParser.json())
     expressServer.use('/api/torrents', torrentsApi)

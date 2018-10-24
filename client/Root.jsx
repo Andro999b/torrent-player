@@ -29,9 +29,6 @@ class Root extends Component {
         let navigation = true 
 
         switch (screen) {
-            case 'search':
-                screanView = <SearchView/>
-                break
             case 'torrents':
                 screanView = <TorrentsView/>
                 break
@@ -42,6 +39,8 @@ class Root extends Component {
                 screanView = <PlayerView/>
                 navigation = false
                 break
+            default:
+                screanView = <SearchView/>
         }
 
         return (

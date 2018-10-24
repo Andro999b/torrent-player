@@ -1,7 +1,21 @@
 const os = require('os')
 const path = require('path')
+const firstExistPath = require('./utils/firstExistPath')
 
 module.exports = {
+    CLIENT_DIR: firstExistPath([
+        path.join('client', 'dist'),
+        path.join('..', 'client', 'dist'),
+        path.join('client')
+    ]),
+    RESOURCES_DIR: firstExistPath([
+        path.join('resources'),
+        path.join('..', 'resources'),
+    ]),
+    TOOLS_DIR: firstExistPath([
+        path.join('tools'),
+        path.join('..', 'tools'),
+    ]),
     DLNA_PORT: 5004,
     WEB_PORT: 8080,
     TRANSCODER_IDLE_TIMEOUT: 60 * 1000,

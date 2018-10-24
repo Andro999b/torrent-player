@@ -16,11 +16,14 @@ jobs:
 
       - run: 
           name: Install Dependencies
-          command: yarn
+          command: |
+            yarn
+            cd client && yarn
+            cd ../server && yarn
 
-      - run: 
-          name: Build UI
-          command: npm run build
+      - run:
+          name: Build Electron
+          command: yarn build
 
       - run:
           name: Build Binaries

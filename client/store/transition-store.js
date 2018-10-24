@@ -128,10 +128,10 @@ class TransitionStore {
     }
 
     downloadTorrent(result) {
-        const { magnetUrl, torrentUrl } = result
+        const { magnetUrl, torrentUrl, provider } = result
 
         return request
-            .post('/api/torrents', { magnetUrl, torrentUrl })
+            .post('/api/torrents', { magnetUrl, torrentUrl, provider })
             .then((res) => {
                 notificationStore.showMessage(`Starting download torrent ${result.name}`)
                 return res.body

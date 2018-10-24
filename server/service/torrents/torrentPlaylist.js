@@ -42,6 +42,7 @@ module.exports = function(torrent) {
 
     return {
         name: torrent.name,
+        torrentInfoHash: torrent.infoHash,
         files
     }
 }

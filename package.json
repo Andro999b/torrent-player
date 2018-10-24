@@ -1,105 +1,52 @@
 {
   "name": "torrent-player",
   "version": "1.0.0",
-  "description": "",
+  "description": "Video player for popular torrent trackers",
+  "author": {
+    "name": "Andrii Pivovarov",
+    "email": "andro999b@gmail.com"
+  },
+  "main": "./electron/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/Andro999b/torrent-player"
   },
-  "main": "index.js",
-  "nodemonConfig": {
-    "ignore": [
-      "client/*"
-    ],
-    "delay": "2500"
+  "build": {
+    "directories": {
+      "output": "build/out/electron"
+    },
+    "electronVersion": "3.0.5",
+    "extraFiles": [
+      {
+        "from": "server",
+        "to": "server",
+        "filter": [
+          "*.js",
+          "*/**"
+        ]
+      },
+      "tools",
+      "resources",
+      {
+        "from": "client/dist",
+        "to": "client"
+      }
+    ]
   },
   "scripts": {
-    "profile": "webpack --mode production --profile --json --config client/webpack.config.js > stats.json",
-    "lint": "eslint .",
-    "start": "concurrently -n \"SERVER,CLIENT\" -c \"black.bold,blue.bold\" \"npm run server\" \"npm run client\"",
-    "debug": "DEBUG=transcode-hls concurrently -n \"SERVER,CLIENT\" -c \"black.bold,blue.bold\" \"npm run server\" \"npm run client\"",
-    "server": "nodemon --inspect index.js",
-    "client": "webpack-dev-server --config client/webpack.dev.config.js",
-    "build": "webpack --config client/webpack.config.js --mode production",
-    "build-dev": "webpack --config client/webpack.config.js --mode development"
+    "cast-screan": "electron ./electron --cast-screan",
+    "start": "cd client && yarn build && cd .. && electron ./electron",
+    "debug": "concurrently -n \"SERVER,ELECTRON,WEBPACK\" -c \"black.bold,white,blue.bold\" \"cd server && yarn start\" \"electron ./electron/window.js\" \"cd client && yarn start\"",
+    "server-debug": "concurrently -n \"SERVER,WEBPACK\" -c \"black.bold,blue.bold\" \"cd server && yarn start\" \"cd client && yarn start\"",
+    "server": "cd client && yarn build && cd ../server && yarn start",
+    "build": "cd client && yarn build && cd .. && electron-builder",
+    "build:dir": "electron-builder --dir"
   },
-  "author": "",
-  "license": "ISC",
   "devDependencies": {
-    "@babel/core": "^7.1.2",
-    "@babel/plugin-proposal-class-properties": "^7.1.0",
-    "@babel/plugin-proposal-decorators": "^7.1.2",
-    "@babel/preset-env": "^7.1.0",
-    "@babel/preset-react": "^7.0.0",
-    "babel-core": "^6.26.3",
-    "babel-eslint": "^10.0.1",
-    "babel-loader": "^8.0.4",
-    "css-loader": "^1.0.0",
+    "electron": "^3.0.5",
+    "electron-builder": "^20.28.4",
     "eslint": "^5.7.0",
     "eslint-plugin-react": "^7.11.1",
-    "html-webpack-plugin": "^3.2.0",
-    "mobx-react-devtools": "^6.0.3",
-    "node-sass": "^4.9.3",
-    "sass-loader": "^7.1.0",
-    "style-loader": "^0.23.1",
-    "webpack": "^4.20.2",
-    "webpack-bundle-analyzer": "^3.0.2",
-    "webpack-cli": "^3.1.2",
-    "webpack-dev-server": "^3.1.9",
-    "webpack-merge": "^4.1.4"
-  },
-  "dependencies": {
-    "@material-ui/core": "^3.2.0",
-    "@material-ui/icons": "^3.0.1",
-    "@material-ui/lab": "^3.0.0-alpha.19",
-    "bidirectional-map": "^1.0.4",
-    "cheerio": "^1.0.0-rc.2",
-    "classnames": "^2.2.6",
-    "concat-stream": "^1.6.2",
-    "cors": "^2.8.4",
-    "debug": "^4.1.0",
-    "ejs": "^2.6.1",
-    "express": "^4.16.4",
-    "file-size": "^1.0.0",
-    "fluent-ffmpeg": "^2.1.2",
-    "fs-extra": "^7.0.0",
-    "full-icu": "^1.2.1",
-    "hls.js": "^0.11.0",
-    "jstoxml": "^1.4.3",
-    "lodash.debounce": "^4.0.8",
-    "lodash.groupby": "^4.6.0",
-    "lodash.pick": "^4.4.0",
-    "lowdb": "^1.0.0",
-    "m3u8-parser": "^4.2.0",
-    "memoize-one": "^4.0.2",
-    "mime-types": "^2.1.20",
-    "mobx": "^5.5.0",
-    "mobx-react": "^5.2.8",
-    "node-ssdp": "^4.0.0",
-    "parse-torrent": "^6.1.2",
-    "react": "^16.5.2",
-    "react-autosuggest": "^9.4.2",
-    "react-dom": "^16.5.2",
-    "react-full-screen": "^0.2.3",
-    "react-hot-loader": "^4.3.11",
-    "react-infinite-scroller": "^1.2.2",
-    "react-resize-detector": "^3.1.3",
-    "rimraf": "^2.6.2",
-    "socket.io": "^2.1.1",
-    "socket.io-client": "^2.1.1",
-    "sprintf-js": "^1.1.1",
-    "store": "^2.0.12",
-    "superagent": "^4.0.0-beta.5",
-    "superagent-charset": "^1.2.0",
-    "urlencode": "^1.1.0",
-    "uuid": "^3.3.2",
-    "webtorrent": "^0.102.4",
-    "xml2js": "^0.4.19"
-  },
-  "pkg": {
-    "assets": [
-      "resources/**/*",
-      "client/dist/**"
-    ]
+    "babel-eslint": "^10.0.1"
   }
 }

@@ -99,7 +99,11 @@ class Provider {
             .gather() 
             .then((details) => details[0])
             .then((details) => this._postProcessResultDetails(details, resultsId))
-            .then((details) => ({...details, type: this.getType()}))
+            .then((details) => ({
+                ...details, 
+                provider: this.getName(), 
+                type: this.getType()
+            }))
             .then(this._loadTorrentFileInfo.bind(this))
     }
 
@@ -137,11 +141,7 @@ class Provider {
             return details
         }
 
-        return superagent
-            .get(details.torrentUrl)
-            .set(this.config.headers)
-            .buffer(true).parse(superagent.parse.image)
-            .then((res) => parseTorrent(res.body))
+        return this.loadTorentFile(details.torrentUrl) 
             .then((parsedTorrent) => {
                 const files = 
                     parsedTorrent.files
@@ -160,6 +160,14 @@ class Provider {
 
                 return { ...details, files }
             })
+    }
+
+    loadTorentFile(torrentUrl) {
+        return superagent
+            .get(torrentUrl)
+            .set(this.config.headers)
+            .buffer(true).parse(superagent.parse.image)
+            .then((res) => parseTorrent(res.body))
     }
 }
 

@@ -1,8 +1,10 @@
 const ejs = require('ejs')
 const fs = require('fs')
+const path = require('path')
+const { RESOURCES_DIR } = require('../../config')
 
 const RENDER_SERVICE = ejs.compile(
-    fs.readFileSync('resources/xml/service-desc.xml', 'utf8')
+    fs.readFileSync(path.join(RESOURCES_DIR, 'xml', 'service-desc.xml'), 'utf8')
 )
 
 class Service {

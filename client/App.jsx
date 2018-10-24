@@ -1,13 +1,18 @@
 import './styles.scss'
 import { hot } from 'react-hot-loader'
 import React, { Component } from 'react'
+
 import Root from './Root'
+import CastScreanRoot from './CastScreanRoot'
+
 import { 
     MuiThemeProvider, 
     createMuiTheme
 } from '@material-ui/core/styles'
 import red from '@material-ui/core/colors/red'
+
 import './store/remote-control'
+import { hasArgv } from './utils'
 // import DevTools from 'mobx-react-devtools'
 
 import stores from './store'
@@ -41,11 +46,15 @@ const theme = createMuiTheme({
 
 class App extends Component {
     render() {
+        const root = hasArgv('cast-screan') ? 
+            <CastScreanRoot/> :
+            <Root/>
+            
         return (
             <div>
                 <MuiThemeProvider theme={theme}>
                     <Provider {...stores}>
-                        <Root />
+                        {root}
                     </Provider>
                 </MuiThemeProvider>
                 {/* <DevTools /> */}

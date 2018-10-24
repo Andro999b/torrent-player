@@ -229,5 +229,4 @@ module.exports = function () {
     })
 
     server.start(() => console.log(`DLNA Server started at port ${DLNA_PORT}`))// eslint-disable-line no-console
-    process.on('exit', () => server.stop())
 }

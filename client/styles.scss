@@ -31,10 +31,13 @@ html {
     bottom: 0;
 }
 
+.screan-view,
 .search-view {
     padding: 10px;
     height: 100%;
+    width: 100%;
     position: relative;
+    background: white
 }
 
 .search-bar {
