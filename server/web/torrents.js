@@ -1,22 +1,24 @@
 const express = require('express')
 const fs = require('fs')
 const path = require('path')
-const pick = require('lodash.pick')
 const mimeLookup = require('mime-types').lookup
 const torrentsService = require('../service/torrents')
 const checkIfTorrentFileReady = require('../service/torrents/checkIfTorrentFileReady')
 const torrentPlaylist = require('../service/torrents/torrentPlaylist')
 const transcodeService = require('../service/transcode')
 const ResponseError = require('../utils/ResponseError')
-const { isVideo, parseRange, formatDLNADuration, fileDirectory } = require('../utils')
+const mapTorrent = require('../utils/mapTorrent')
+const { isVideo, parseRange, formatDLNADuration } = require('../utils')
 const { TORRENTS_DATA_DIR } = require('../config')
 
 const router = express.Router()
 
+// get all torrent
 router.get('/', (req, res) => {
     res.json(torrentsService.getTorrents().map(mapTorrent))
 })
 
+// add torrents
 router.post('/', (req, res, next) => {
     if (!req.body.magnetUrl && !req.body.torrentUrl)
         throw new ResponseError('magnetUrl or torrentUrl reuired')
@@ -26,6 +28,7 @@ router.post('/', (req, res, next) => {
         .catch(next)
 })
 
+// get torrent by id
 router.get('/:id', (req, res) => {
     const torrent = torrentsService.getTorrent(req.params.id)
     if(torrent)
@@ -34,6 +37,7 @@ router.get('/:id', (req, res) => {
         throw new ResponseError('Torrent not found', 404)
 })
 
+// create torrent playlist
 router.get('/:torrentId/playlist', (req, res) => {
     const { torrentId } = req.params
 
@@ -43,6 +47,7 @@ router.get('/:torrentId/playlist', (req, res) => {
     res.json(torrentPlaylist(torrent))
 })
 
+// delete torrent by id
 router.delete('/:id', (req, res, next) => {
     torrentsService
         .removeTorrent(req.params.id)
@@ -50,11 +55,13 @@ router.delete('/:id', (req, res, next) => {
         .catch(next)
 })
 
+// get torrent file
 router.get('/:torrentId/files/:fileId', (req, res) => {
     const { file } = getTorrentAndFile(req)
     writeFileRange(file, req, res)
 })
 
+// get torrent video file transcoded stream
 router.get('/:torrentId/files/:fileId/transcoded', (req, res, next) => {
     const { torrent, file } = getTorrentAndFile(req)
     const { clientId } = req.query
@@ -104,6 +111,7 @@ router.get('/:torrentId/files/:fileId/transcoded', (req, res, next) => {
         .catch(next)
 })
 
+// get torrent video file hls m3u file
 router.get('/:torrentId/files/:fileId/hls', (req, res, next) => {
     const { torrent, fileId } = getTorrentAndFile(req)
 
@@ -120,6 +128,7 @@ router.get('/:torrentId/files/:fileId/hls', (req, res, next) => {
         .catch(next)
 })
 
+// notify server to not stop hls transcoding 
 router.get('/:torrentId/files/:fileId/hls/keepAlive', (req, res) => {
     const { torrent, fileId } = getTorrentAndFile(req)
 
@@ -130,6 +139,7 @@ router.get('/:torrentId/files/:fileId/hls/keepAlive', (req, res) => {
     res.json('OK')
 })
 
+// get torrent file hls segment
 router.get('/:torrentId/files/:fileId/hls/:segment', (req, res) => {
     const { torrent, fileId } = getTorrentAndFile(req)
 
@@ -196,43 +206,6 @@ function createFileStream(file, opts) {
         return fs.createReadStream(path.join(TORRENTS_DATA_DIR, file.path), opts)
     }
     return file.createReadStream(opts)
-}
-
-function mapTorrent(torrent) {
-    const filterdTorrent = pick(torrent, [
-        'infoHash',
-        'name',
-        'timeRemaining',
-        'received',
-        'downloaded',
-        'uploaded',
-        'downloadSpeed',
-        'uploadSpeed',
-        'ratio',
-        'numPeers',
-        'path',
-        'files'
-    ])
-
-    const filtredFiles = filterdTorrent.files
-        .map((file) => pick(file, [
-            'name',
-            'path',
-            'length',
-            'downloaded',
-            'progress'
-        ]))
-        
-    filtredFiles.forEach((file, fileIndex) => {
-        file.id = fileIndex
-        file.path = fileDirectory(file.path)
-        file.torrentInfoHash = torrent.infoHash
-    })
-
-    filterdTorrent.files = filtredFiles
-        .sort((f1, f2) => f1.name.localeCompare(f2.name))
-
-    return filterdTorrent
 }
 
 module.exports = router

@@ -5,11 +5,15 @@ const { promisify } = require('util')
 const rimraf = promisify(require('rimraf'))
 const parseTorrent = require('parse-torrent')
 const superagent = require('superagent')
+
 const database = require('./database')
-const { stopTranscoding } = require('../transcode')
-const trackers = require('../trackers')
+
 const { TORRENTS_DIR, TORRENTS_DATA_DIR } = require('../../config')
 const debug = require('debug')('torrents')
+
+const { stopTranscoding } = require('../transcode')
+const trackers = require('../trackers')
+const continueWatching =  require('../continueWatching')
 
 const torrentClient = new WebTorrent()
 
@@ -99,8 +103,10 @@ module.exports = {
 
         if (!torrent) return
 
+        // cleanup torrent databases
         torrentClient.remove(torrentId)
         database.wipeTorrentData(torrentId)
+        continueWatching.removeByTorrentInfoHash(torrentId)
 
         await fs.unlink(torrentFileName(torrent))
 

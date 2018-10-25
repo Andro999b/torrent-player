@@ -6,7 +6,7 @@ import playerStore, { LocalDevice } from './player-store'
 import remoteControl from './remote-control'
 import localStore from 'store'
 
-const MAIN_SCREENS = new Set(['search', 'torrents', 'cast-screan'])
+const MAIN_SCREENS = new Set(['search', 'library', 'cast-screan'])
 
 class TransitionStore {
     @observable castDialog = null
@@ -32,42 +32,68 @@ class TransitionStore {
     }
 
     @action.bound download(result) {
-        this.goToScreen('torrents')
-        this.downloadTorrent(result) 
-            .catch(console.error)
+        this.goToScreen('library')
+        this.downloadTorrent(result).catch(console.error)
     }
 
-    @action.bound downloadAndPlay(result, item) {
+    @action.bound downloadAndPlay(result, item, startTime) {
         this.goToScreen('player')
         this.downloadPlaylist(result, item)
-            .then((params) => this.playMediaOnDevice({ ...params, result }))
+            .then((params) => this.playMediaOnDevice({ 
+                ...params, 
+                result, 
+                startTime 
+            }))
             .catch(console.error)
     }
 
         
-    @action.bound downloadAndPlayMediaOnDevice(result, item, device) {
+    @action.bound downloadAndPlayMediaOnDevice(result, item, device, startTime) {
         this.goToScreen('player')
         this.downloadPlaylist(result, item)
-            .then((params) => this.playMediaOnDevice({...params, device, result}))
+            .then((params) => this.playMediaOnDevice({
+                ...params, 
+                device, 
+                result, 
+                startTime
+            }))
             .catch(console.error)
     }
 
-    playTorrentMedia = (result, item) => {
-        this.playMedia({...result, type: 'torrent' }, item)
+    playTorrentMedia = (result, item, startTime) => {
+        this.playMedia(
+            {
+                ...result, 
+                type: 'torrent' 
+            }, 
+            item, 
+            startTime
+        )
     }
 
-    @action.bound playMedia(result, item) {
+    @action.bound playMedia(result, item, startTime) {
         this.goToScreen('player')
         this.downloadPlaylist(result, item)
-            .then((params) => this.playMediaOnDevice({ ...params, result }))
+            .then((params) => this.playMediaOnDevice({ 
+                ...params, 
+                result, 
+                startTime 
+            }))
             .catch(console.error)
     }
 
-    @action.bound playMediaOnDevice({ playlist, startIndex, device, result }) {
+    @action.bound playMediaOnDevice({ 
+        playlist, 
+        startIndex, 
+        startTime, 
+        device, 
+        result
+    }) {
         playerStore.openPlaylist(
             device ? remoteControl.getRemoteDevice(device) : new LocalDevice(), 
             playlist, 
-            startIndex, 
+            startIndex,
+            startTime, 
             result.type == 'torrent' ? result : null
         )
 
@@ -78,10 +104,15 @@ class TransitionStore {
         this.openCastDialog({...result, type: 'torrent' }, item)
     }
 
-    @action.bound openCastDialog(result, item) {
+    @action.bound openCastDialog(result, item, startTime) {
         this.castDialog = { 
             onDeviceSelected: (device) => {
-                this.downloadAndPlayMediaOnDevice(result, item, device)
+                this.downloadAndPlayMediaOnDevice(
+                    result, 
+                    item, 
+                    device, 
+                    startTime
+                )
             }
         }
     }
@@ -104,13 +135,6 @@ class TransitionStore {
     }
 
     downloadPlaylist(result, item) {
-        if(result.type == 'directMedia') {
-            return Promise.resolve({
-                startIndex: item.id,
-                playlist: pick(result, 'name', 'files')
-            })
-        }
-
         if(result.type == 'torrent') {
             if(result.magnetUrl || result.torrentUrl) {
                 return this
@@ -120,11 +144,13 @@ class TransitionStore {
                     )
   
             }
-
             return this.downloadTorrentPlaylist(result, item)
         }
 
-        throw Error('Unsupported result type')
+        return Promise.resolve({
+            startIndex: item.id,
+            playlist: pick(result, 'name', 'files')
+        })
     }
 
     downloadTorrent(result) {

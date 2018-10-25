@@ -15,11 +15,18 @@ function createMainWindow () {
         allowRunningInsecureContent: true,
         fullscreen: castScrean,
         webPreferences: {
-            additionalArguments: process.argv.slice(2)
-        }
+            additionalArguments: process.argv.slice(2),
+            webSecurity: false
+        },
+        show: false,
+        backgroundThrottling: false
     })
     win.loadURL('http://localhost:8080')
     win.setMenu(null)
+    win.on('ready-to-show', () => {
+        win.maximize()
+        win.show()
+    })
     win.on('close', () => serverProcess.kill())
 
     globalShortcut.register('F11', () => {

@@ -4,7 +4,8 @@ function createWindow () {
     const win = new BrowserWindow({ 
         allowRunningInsecureContent: true,
         webPreferences: {
-            additionalArguments: process.argv.slice(2)
+            additionalArguments: process.argv.slice(2),
+            webSecurity: false
         }
     })
     win.loadURL('http://localhost:3000')

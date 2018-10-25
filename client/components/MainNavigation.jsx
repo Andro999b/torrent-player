@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import { BottomNavigation, BottomNavigationAction } from '@material-ui/core'
 import { 
     Search as SearchIcon,
-    List as TorrentsIcon,
+    List as LibraryIcon,
     Airplay as CastScreanIcon,
     Input as ConnectIcon
 } from '@material-ui/icons'
@@ -33,7 +33,7 @@ class MainNavigation extends Component {
                 onChange={this.handleChange}
             >
                 <BottomNavigationAction value="search" label="Search" icon={<SearchIcon />} />
-                <BottomNavigationAction value="torrents" label="Torrents" icon={<TorrentsIcon />} />
+                <BottomNavigationAction value="library" label="Library" icon={<LibraryIcon />} />
                 { isCastAvaliable && <BottomNavigationAction value="cast-screan" label="Cast Screan" icon={<CastScreanIcon />} /> }
                 <BottomNavigationAction value={this.handleConnect} label="Connect" icon={<ConnectIcon />} />
             </BottomNavigation>

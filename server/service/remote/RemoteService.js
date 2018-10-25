@@ -1,7 +1,11 @@
 const { EventEmitter } = require('events')
-const pick = require('lodash.pick')
+const { pick } = require('lodash')
+
+const continueWatching =  require('../continueWatching')
+
 const RemoteDevice = require('./RemoteDevice')
 const RemoteControl = require('./RemoteControl')
+
 const BiMap = require('bidirectional-map')
 const debug = require('debug')('remote')
 
@@ -11,6 +15,25 @@ class RemoteService extends EventEmitter {
         this.devices = {}
         this.controls = {}
         this.connections = new BiMap()
+        this.anyStateCahnged = false
+
+        setInterval(
+            this.storeDeviceState.bind(this), 
+            10 * 1000
+        )
+    }
+
+    storeDeviceState() {
+        if(this.anyStateCahnged) {
+            this.anyStateCahnged = false
+
+            Object.values(this.devices).forEach((device) => {
+                const { playlistName, state } = device
+                if(playlistName) {
+                    continueWatching.updatePlayerState(playlistName, state)
+                }
+            })
+        }
     }
 
     // eslint-disable-next-line
@@ -135,6 +158,7 @@ class RemoteService extends EventEmitter {
 
     _handleDeviceSync(device) {
         return (state) => {
+            this.anyStateCahnged = true
             this._doWithControlConnection(device.id, (control) => {
                 control.syncState(state)
                 debug(`Sync state from device ${device.id} to control ${control.id}`)

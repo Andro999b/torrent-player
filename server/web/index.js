@@ -4,9 +4,11 @@ const bodyParser = require('body-parser')
 const torrentsApi = require('./torrents')
 const trackersApi = require('./trackers')
 const suggestionsApi = require('./suggestions')
+const libraryApi = require('./library')
 const proxyMedia = require('./proxyMedia')
 const extractVideo = require('./extractVideo')
 const remote = require('./remote')
+
 const { WEB_PORT, CLIENT_DIR } = require('../config')
 
 module.exports = function () {
@@ -18,6 +20,7 @@ module.exports = function () {
     expressServer.use(bodyParser.json())
     expressServer.use('/api/torrents', torrentsApi)
     expressServer.use('/api/trackers', trackersApi)
+    expressServer.use('/api/library', libraryApi)
     expressServer.use('/api/suggestions', suggestionsApi)
     expressServer.use('/proxyMedia', proxyMedia)
     expressServer.use('/extractVideo', extractVideo)

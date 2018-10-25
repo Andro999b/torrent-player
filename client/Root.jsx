@@ -5,7 +5,7 @@ import Notification from './components/Notification'
 import CastDialog from './components/CastDialog'
 
 import SearchView from './views/SearchView'
-import TorrentsView from './views/TorrentsView'
+import LibraryView from './views/LibraryView'
 import PlayerView from './views/PlayerView'
 import CastAwaitView from './views/CastAwaitView'
 
@@ -29,8 +29,8 @@ class Root extends Component {
         let navigation = true 
 
         switch (screen) {
-            case 'torrents':
-                screanView = <TorrentsView/>
+            case 'library':
+                screanView = <LibraryView/>
                 break
             case 'cast-screan':
                 screanView = <CastAwaitView/>

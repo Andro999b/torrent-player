@@ -68,6 +68,8 @@ class VideoSeekSlider extends Component {
         let percent = position * 100 / this.state.trackWidth
         let time = +(percent * (this.props.max / 100)).toFixed(0)
 
+        if(isNaN(time)) return
+
         this.props.onChange(time, (time + this.props.offset))
     }
 
@@ -121,6 +123,9 @@ class VideoSeekSlider extends Component {
         const percent = seekHoverPosition * 100 / trackWidth
         let seconds = Math.floor(+ (percent * (max / 100)))
         seconds = Math.round(seconds + offset)
+
+        if(isNaN(seconds)) return
+        if(isNaN(max)) return
 
         return `${toHHMMSS(seconds)} / ${toHHMMSS(max)}`
     }

@@ -69,10 +69,14 @@ html {
     height: auto;
 }
 
-.torrents-list {
+.library {
     overflow-y: auto;
     max-height: 100%;
     padding: 10px;
+}
+
+.library__title {
+    padding: 5px 10px;
 }
 
 .expand-header {
@@ -202,9 +206,9 @@ html {
 }
 
 .sound-conrol__slider {
-    height: 50px;
+    height: 60px;
     width: 220px;
-    padding: 25px 25px;
+    padding: 30px 30px;
 }
 
 .idle {

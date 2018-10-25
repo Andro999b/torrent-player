@@ -91,10 +91,10 @@ class RemoteDevice extends Device {
         this.sendAction('toggleMute')
     }
 
-    @action setPlaylist(playlist, fileIndex) {
+    @action setPlaylist(playlist, fileIndex, startTime) {
         this.playlist = playlist
         this.currentFileIndex = fileIndex
-        this.sendAction('openPlaylist', { playlist, fileIndex })
+        this.sendAction('openPlaylist', { playlist, fileIndex, startTime })
     }
 
     closePlaylist() {
@@ -153,9 +153,9 @@ function listenIncomeControls(socket) {
 
         switch (action) {
             case 'openPlaylist': {
-                const { playlist, fileIndex } = payload
+                const { playlist, fileIndex, startTime } = payload
                 transitionStore.goToScreen('player')
-                playerStore.openPlaylist(new LocalDevice(), playlist, fileIndex)
+                playerStore.openPlaylist(new LocalDevice(), playlist, fileIndex, startTime)
                 return
             }
             case 'closePlaylist':
@@ -177,8 +177,11 @@ function listenNameUpdate(socket) {
 
 let setAvailability = () => {}
 let isCastAvaliable = !isMobile()
-if(isCastAvaliable){
-    const deviceSocket = io('/device', { path: '/remote' })
+
+const deviceSocket = io('/device', { path: '/remote' })
+trackState(deviceSocket)
+
+if(isCastAvaliable) {
     trackState(deviceSocket)
     listenIncomeControls(deviceSocket)
     listenNameUpdate(deviceSocket)

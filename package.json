@@ -16,6 +16,9 @@
       "output": "build/out/electron"
     },
     "electronVersion": "3.0.5",
+    "files": [
+      "electron"
+    ],
     "extraFiles": [
       {
         "from": "server",
@@ -25,13 +28,25 @@
           "*/**"
         ]
       },
-      "tools",
       "resources",
       {
         "from": "client/dist",
         "to": "client"
       }
-    ]
+    ],
+    "linux": {
+      "target": "zip",
+      "category": "Video",
+      "extraFiles": [
+        {
+          "from": "tools",
+          "to": "tools",
+          "filter": [
+            "linux*"
+          ]
+        }
+      ]
+    }
   },
   "scripts": {
     "cast-screan": "electron ./electron --cast-screan",

@@ -34,12 +34,10 @@ function renderInput(inputProps) {
     return <Input fullWidth {...inputProps} />
 }
 
-function renderSuggestionsContainer(options) {
-    const { containerProps, children, query } = options
-
+function renderSuggestionsContainer({ containerProps, children, query }) {
     return (
         <Collapse in={children && query != ''}>
-            <List {...containerProps}>{children}</List>
+            <List {...containerProps} component="div">{children}</List>
         </Collapse>
     )
 }
@@ -102,6 +100,8 @@ class SearchBar extends Component {
         }
     }
 
+    handleClearProviders = () => this.props.onSelectProviders([])
+
     renderSuggestion = (suggestion, { isHighlighted }) => {
         const { onRemoveHistory } = this.props
 
@@ -135,6 +135,9 @@ class SearchBar extends Component {
                         <ListItemText primary={SEARCH_RPVODERS_NAME[provider]} />
                     </MenuItem>
                 ))}
+                <MenuItem onClick={this.handleClearProviders} style={{'justifyContent': 'center'}}>
+                    Deselect All
+                </MenuItem>
             </Menu>
         )
     }

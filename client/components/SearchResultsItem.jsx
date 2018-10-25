@@ -1,5 +1,6 @@
-import React, { Component, Fragment } from 'react'
+import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import watchLater from '../store/watchLater'
 
 import {
     ExpansionPanel,
@@ -11,8 +12,11 @@ import {
     Typography
 } from '@material-ui/core'
 
-import DownloadIcon from '@material-ui/icons/CloudDownloadOutlined'
-import ExpandIcon from '@material-ui/icons/ExpandMore'
+import { 
+    CloudDownloadOutlined as DownloadIcon,
+    ExpandMore as ExpandIcon,
+    WatchLaterOutlined as WatchLaterIcon
+} from '@material-ui/icons'
 
 import SearchResultsItemDetails from './SearchResultsItemDetails'
 
@@ -76,6 +80,12 @@ class SearchResultsItem extends Component {
                             <Button onClick={() => onDownload(item.details)} variant="contained">
                                 Download Torrent
                                 <DownloadIcon />
+                            </Button>
+                        </ExpansionPanelActions>}
+                        {!item.isTorrent() && <ExpansionPanelActions>
+                            <Button onClick={() => watchLater(item.details)} variant="contained">
+                                Watch Later
+                                <WatchLaterIcon />
                             </Button>
                         </ExpansionPanelActions>}
                     </div>

@@ -2,6 +2,8 @@ import React, { Component, Fragment } from 'react'
 import PropTypes from 'prop-types'
 
 import Fullscreen from 'react-full-screen'
+import fscreen from 'fscreen'
+
 import MediaControls from './MediaControls'
 import PlayerFilesList from './PlayerPlayList'
 import PlayerTitle from './PlayerTitle'

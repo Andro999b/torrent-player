@@ -2,9 +2,6 @@ import remoteControl from './remote-control'
 import { observable, action } from 'mobx'
 import request from 'superagent'
 import localStore from 'store'
-import { isElectron } from '../utils'
-
-const testMedia = document.createElement('video')
 
 export class Device {
     @observable playlist = { name: '', files: [] }
@@ -36,7 +33,7 @@ export class Device {
     disconnect() { }
     setVolume(volume) {}
     selectFile(fileIndex) {}
-    setPlaylist(playlist, fileIndex) {} 
+    setPlaylist(playlist, fileIndex, starTime) {} 
     /* eslint-enable */
 }
 
@@ -96,9 +93,10 @@ export class LocalDevice extends Device {
         this.currentTime = currentTime
     }
 
-    @action setPlaylist(playlist, fileIndex) {
+    @action setPlaylist(playlist, fileIndex, startTime) {
         this.playlist = playlist
         this.selectFile(fileIndex)
+        this.currentTime = startTime
     }
 
     @action selectFile(fileIndex) {
@@ -173,7 +171,7 @@ class PlayerStore {
         device.connect()
     }
 
-    @action openPlaylist(device, playlist, fileIndex, torrent) {
+    @action openPlaylist(device, playlist, fileIndex, startTime, torrent) {
         if(playlist.files.length === 0) return
 
         this.torrent = torrent
@@ -183,7 +181,7 @@ class PlayerStore {
 
         this.device = device
         this.device.connect()
-        this.device.setPlaylist(playlist, fileIndex)
+        this.device.setPlaylist(playlist, fileIndex, startTime)
         this.device.play()
     }
 
