@@ -55,7 +55,11 @@ jobs:
       
       - store_artifacts:
           path: build/out/zip
-          destination: zip
+          destination: server
+      
+      - store_artifacts:
+          path: build/out/electron/torrent-player-1.0.0.zip
+          destination: electron.zip
 
 
 

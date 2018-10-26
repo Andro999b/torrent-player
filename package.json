@@ -6,6 +6,7 @@
     "name": "Andrii Pivovarov",
     "email": "andro999b@gmail.com"
   },
+  "license": "GPL",
   "main": "./electron/index.js",
   "repository": {
     "type": "git",
