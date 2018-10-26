@@ -73,10 +73,23 @@ html {
     overflow-y: auto;
     max-height: 100%;
     padding: 10px;
+    position: relative;
 }
 
 .library__title {
     padding: 5px 10px;
+}
+
+.library__filter {
+    width: 100%;
+    padding: 5px 10px;
+
+    
+    @media (min-width: 576px) {
+        width: 350px;
+        position: absolute;
+        right: 0
+    }
 }
 
 .expand-header {
@@ -165,7 +178,7 @@ html {
     opacity: 0.8;
     z-index: 2;
 
-    @media (min-width: 576px) {
+    @media (min-width: 768px) {
         width: 576px;
     }
 }
@@ -225,4 +238,8 @@ html {
     .hide-on-desktop {
         display: inline-block;
     }
+}
+
+.button-icon__left {
+    margin-right: 15px;
 }

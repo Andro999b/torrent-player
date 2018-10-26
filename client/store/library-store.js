@@ -6,7 +6,7 @@ import playerStore from './player-store'
 
 class LibraryStore {
     @observable library = {
-        continueWatching: [],
+        bookmarks: [],
         torrents: []
     }
     @observable loading = true
@@ -48,9 +48,9 @@ class LibraryStore {
             })
     }
 
-    @action cleanContinueWatchingItem(item) {
+    @action removeBookmark(item) {
         superagent
-            .delete(`/api/library/continueWatching/${encodeURIComponent(item.playlist.name)}`)
+            .delete(`/api/library/bookmarks/${encodeURIComponent(item.playlist.name)}`)
             .then(() => {
                 this.updateLibrary()
                 notificationStore.showMessage(`Playlist ${item.playlist.name} removed from history`)

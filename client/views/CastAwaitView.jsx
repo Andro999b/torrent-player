@@ -24,8 +24,8 @@ class CastAwaitView extends Component {
         return (
             <div  className="screan-view" ref={(node) => (this.node = node)}>
                 <Typography className="center" align="center" variant="h4">
-                    Awaiting connection<br/>
-                    { toJS(deviceName) }
+                    { toJS(deviceName) }<br/>
+                    Awaiting connection
                 </Typography>
             </div>
         )

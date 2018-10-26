@@ -13,7 +13,7 @@ const debug = require('debug')('torrents')
 
 const { stopTranscoding } = require('../transcode')
 const trackers = require('../trackers')
-const continueWatching =  require('../continueWatching')
+const bookmarks =  require('../bookmarks')
 
 const torrentClient = new WebTorrent()
 
@@ -106,7 +106,7 @@ module.exports = {
         // cleanup torrent databases
         torrentClient.remove(torrentId)
         database.wipeTorrentData(torrentId)
-        continueWatching.removeByTorrentInfoHash(torrentId)
+        bookmarks.removeByTorrentInfoHash(torrentId)
 
         await fs.unlink(torrentFileName(torrent))
 

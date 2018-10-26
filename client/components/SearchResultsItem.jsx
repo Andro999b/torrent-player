@@ -78,14 +78,14 @@ class SearchResultsItem extends Component {
                         </ExpansionPanelDetails>
                         {item.isDownlodableTorrent() && <ExpansionPanelActions>
                             <Button onClick={() => onDownload(item.details)} variant="contained">
+                                <DownloadIcon className="button-icon__left" />
                                 Download Torrent
-                                <DownloadIcon />
                             </Button>
                         </ExpansionPanelActions>}
                         {!item.isTorrent() && <ExpansionPanelActions>
                             <Button onClick={() => watchLater(item.details)} variant="contained">
+                                <WatchLaterIcon className="button-icon__left"/>
                                 Watch Later
-                                <WatchLaterIcon />
                             </Button>
                         </ExpansionPanelActions>}
                     </div>

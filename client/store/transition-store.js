@@ -148,7 +148,7 @@ class TransitionStore {
         }
 
         return Promise.resolve({
-            startIndex: item.id,
+            startIndex: item.index,
             playlist: pick(result, 'name', 'files')
         })
     }

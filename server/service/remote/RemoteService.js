@@ -1,7 +1,7 @@
 const { EventEmitter } = require('events')
 const { pick } = require('lodash')
 
-const continueWatching =  require('../continueWatching')
+const bookmarks =  require('../bookmarks')
 
 const RemoteDevice = require('./RemoteDevice')
 const RemoteControl = require('./RemoteControl')
@@ -30,7 +30,7 @@ class RemoteService extends EventEmitter {
             Object.values(this.devices).forEach((device) => {
                 const { playlistName, state } = device
                 if(playlistName) {
-                    continueWatching.updatePlayerState(playlistName, state)
+                    bookmarks.update(playlistName, state)
                 }
             })
         }

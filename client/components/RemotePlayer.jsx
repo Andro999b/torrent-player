@@ -45,6 +45,30 @@ class RemotePlayer extends Component {
         }))
     }
 
+    handleTogglePlaying = () => {
+        const { props: { playerStore: {device}}} = this
+
+        if (device.isPlaying) {
+            device.pause()
+        } else {
+            device.play()
+        }
+    }
+
+    handleKeyUp = (e) => {
+        if(e.which == 32) { //spacebar
+            this.handleClick()
+        }
+    }
+
+    componentDidMount() {
+        window.addEventListener('keyup', this.handleKeyUp)
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('keyup', this.handleKeyUp)
+    }
+
     render() {
         const { playlistOpen } = this.state
         const { playerStore } = this.props
@@ -55,15 +79,17 @@ class RemotePlayer extends Component {
             <Fragment>
                 <Typography className="center" align="center" variant="h4" style={{ width: '100%' }}>
                     {error && <div>{error}</div>}
-                    {!error && <Fragment>
-                        <div>{device.getName()}</div>
-                        {isLoading && <div style={{padding: '18px 0 17px'}}>
-                            <LinearProgress color="secondary" />
-                        </div>}
-                        {!isLoading && <div style={{whiteSpace: 'nowrap'}}>
-                            {toHHMMSS(currentTime)} / {toHHMMSS(duration)}
-                        </div>}
-                    </Fragment>}
+                    {!error && 
+                        <div style={{ cursor: 'pointer' }} onClick={this.handleTogglePlaying}>
+                            <div>{device.getName()}</div>
+                            {isLoading && <div style={{padding: '18px 0 17px'}}>
+                                <LinearProgress color="secondary" />
+                            </div>}
+                            {!isLoading && <div style={{whiteSpace: 'nowrap'}}>
+                                {toHHMMSS(currentTime)} / {toHHMMSS(duration)}
+                            </div>}
+                        </div>
+                    }
                     <Button variant="contained" onClick={this.handleCloseDevice}>Close device</Button>
                 </Typography>
                 {!error && <Fragment>

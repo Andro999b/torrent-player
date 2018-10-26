@@ -96,7 +96,7 @@ export class LocalDevice extends Device {
     @action setPlaylist(playlist, fileIndex, startTime) {
         this.playlist = playlist
         this.selectFile(fileIndex)
-        this.currentTime = startTime
+        this.play(startTime)
     }
 
     @action selectFile(fileIndex) {
@@ -152,25 +152,6 @@ class PlayerStore {
         this.device.connect()
     }
 
-    @action switchDevice(device) {
-        const prevDevice = this.device
-
-        this.device = device
-
-        const { playlist, fileIndex } = this.prevDevice
-
-        this.device.setPlaylist(playlist, fileIndex)
-
-        //response prev device stat
-        if (prevDevice) {
-            if (prevDevice.isPlaying) {
-                device.play(prevDevice.position)
-            }
-            prevDevice.disconnect()
-        }
-        device.connect()
-    }
-
     @action openPlaylist(device, playlist, fileIndex, startTime, torrent) {
         if(playlist.files.length === 0) return
 
@@ -182,7 +163,6 @@ class PlayerStore {
         this.device = device
         this.device.connect()
         this.device.setPlaylist(playlist, fileIndex, startTime)
-        this.device.play()
     }
 
     @action.bound seekIncremetal(inc) {

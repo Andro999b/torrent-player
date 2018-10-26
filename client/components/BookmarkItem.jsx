@@ -16,7 +16,7 @@ import {
     MoreVert as MoreIcon
 } from '@material-ui/icons'
 
-class ContinueWatchingItem extends Component {
+class BookmarkItem extends Component {
     constructor(props, context) {
         super(props, context)
         this.state = { anchorEl: null }
@@ -38,7 +38,7 @@ class ContinueWatchingItem extends Component {
 
     handlePlay = () => this.resumePlaying(this.props.onPlay)
     handleCast = () => this.resumePlaying(this.props.onCast)
-    handleClean = () => this.props.onClean(this.props.item)
+    handleRemove = () => this.props.onRemove(this.props.item)
 
     handleOpenMenu = (event) => this.setState({ anchorEl: event.currentTarget })
     handleCloseMenu = () => this.setState({ anchorEl: null })
@@ -64,7 +64,7 @@ class ContinueWatchingItem extends Component {
                             {<MenuItem onClick={this.handleCast}>
                                 Cast
                             </MenuItem>}
-                            <MenuItem onClick={this.handleClean}>
+                            <MenuItem onClick={this.handleRemove}>
                                 Clean
                             </MenuItem>
                         </Menu>
@@ -75,11 +75,11 @@ class ContinueWatchingItem extends Component {
     }
 }
 
-ContinueWatchingItem.propTypes = {
+BookmarkItem.propTypes = {
     item: PropTypes.object.isRequired,
     onPlay: PropTypes.func.isRequired,
     onCast: PropTypes.func.isRequired,
-    onClean: PropTypes.func.isRequired
+    onRemove: PropTypes.func.isRequired
 }
 
-export default ContinueWatchingItem
+export default BookmarkItem

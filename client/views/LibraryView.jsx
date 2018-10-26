@@ -1,16 +1,19 @@
 import React, { Component, Fragment } from 'react'
 import PropTypes from 'prop-types'
+
 import TorrentListItem from '../components/TorrentListItem'
 import DeleteDialog from '../components/DeleteDialog'
-import ContinueWatchingItem from '../components/ContinueWatchingItem'
+import BookmarkItem from '../components/BookmarkItem'
 
 import {
     Grid,
     CircularProgress,
-    Typography
+    Typography,
+    TextField
 } from '@material-ui/core'
 
 import { observer, inject } from 'mobx-react'
+import memoize from 'memoize-one'
 
 const DeleteTorrentDialog = (props) => 
     <DeleteDialog 
@@ -27,20 +30,21 @@ class LibraryView extends Component {
         super(props, context)
 
         this.state = {
-            torrentToDelete: null
+            torrentToDelete: null,
+            filter: ''
         }
     }
 
     componentDidMount() {
         this.props.libraryStore.startUpdate()
-        // this.props.libraryStore.updateTorrents()
     }
 
     componentWillUnmount() {
         this.props.libraryStore.stopUpdate()
     }
 
-    handleCleanRecent = (item) => this.props.libraryStore.cleanContinueWatchingItem(item)
+    handleFilterChange = (e) => this.setState({ filter: e.target.value })
+    handleRemoveBookmark = (item) => this.props.libraryStore.removeBookmark(item)
     handleAskDeleteToprrent = (torrent) => this.setState({ torrentToDelete: torrent })
     handleRejectDeleteToprrent = () => this.setState({ torrentToDelete: null })
     handleAcceptDeleteToprrent = (torrent) => {
@@ -49,25 +53,43 @@ class LibraryView extends Component {
         libraryStore.deleteTorrent(torrent)
     }
 
-    renderContinueWatching(continueWatching) {
-        if(!continueWatching || continueWatching.length == 0) return
+    filterBookmarks = memoize((bookmarks, filter) => {
+        if(filter == '') return bookmarks
 
-        const {
-            transitionStore: {
-                playMedia,
-                openCastDialog
-            }
-        } = this.props
+        filter = filter.toLowerCase()
+        return bookmarks.filter((bookmark) =>
+            bookmark.playlist.name
+                .toLowerCase()
+                .search(filter) != -1
+        )    
+    })
+    filterTorrents = memoize((torrents, filter) => {
+        if(filter == '') return torrents
+
+        filter = filter.toLowerCase()
+        return torrents.filter((torrent) =>
+            torrent.name
+                .toLowerCase()
+                .search(filter) != -1
+        )    
+    })
+
+    renderBookmarks(bookmarks) {
+        if(!bookmarks || bookmarks.length == 0) return
+
+        const { transitionStore: { playMedia, openCastDialog }} = this.props
 
         return (
             <Fragment>
-                <Typography variant="h6" className="library__title">Continue Watching</Typography>
-                {continueWatching.map((item) =>
+                <Typography variant="h6" className="library__title">
+                    Continue Watching
+                </Typography>
+                {bookmarks.map((item) =>
                     <Grid item xs={12} key={item.playlist.name}>
-                        <ContinueWatchingItem item={item} 
+                        <BookmarkItem item={item} 
                             onPlay={playMedia} 
                             onCast={openCastDialog}
-                            onClean={this.handleCleanRecent}
+                            onRemove={this.handleRemoveBookmark}
                         />
                     </Grid>
                 )}
@@ -80,7 +102,9 @@ class LibraryView extends Component {
 
         return (
             <Fragment>
-                <Typography variant="h6" className="library__title">Torrents</Typography>
+                <Typography variant="h6" className="library__title">
+                    Torrents
+                </Typography>
                 {torrents.map((torrent) =>
                     <Grid item xs={12} key={torrent.infoHash}>
                         <TorrentListItem torrent={torrent} onDelete={this.handleAskDeleteToprrent.bind(this)} />
@@ -91,22 +115,43 @@ class LibraryView extends Component {
     }
 
     render() {
-        const { 
-            libraryStore: { 
-                library: { torrents, continueWatching }, 
-                loading 
-            }
-        } = this.props
-        const { torrentToDelete } = this.state
+        const { libraryStore: { library: { torrents, bookmarks }, loading }} = this.props
+        const { torrentToDelete, filter } = this.state
+        
+        const filteredBookmarks = this.filterBookmarks(bookmarks, filter)
+        const filteredTorrets = this.filterTorrents(torrents, filter)
+
+        const emptyLibrary = torrents.length == 0 && bookmarks.length == 0
+        const noResults = filteredTorrets.length == 0 && filteredBookmarks.length == 0
 
         return (
             <div className="library">
                 <Grid container spacing={16}>
-                    {loading && <div className="center"><CircularProgress /></div>}
+                    {loading && <div className="center"><CircularProgress/></div>}
                     {!loading && 
                         <Fragment>
-                            {this.renderContinueWatching(continueWatching)}
-                            {this.renderTorrents(torrents)}
+                            {!emptyLibrary && <Fragment>
+                                <div className="library__filter">
+                                    <TextField
+                                        placeholder="Filter"
+                                        value={filter}
+                                        onChange={this.handleFilterChange}
+                                        fullWidth
+                                    />
+                                </div>
+                                {this.renderBookmarks(filteredBookmarks)}
+                                {this.renderTorrents(filteredTorrets)}
+                                {noResults && 
+                                    <Typography className="center" align="center" variant="h4">
+                                        No results
+                                    </Typography>
+                                }
+                            </Fragment>}
+                            {emptyLibrary && 
+                                <Typography className="center" align="center" variant="h4">
+                                    Library is empty
+                                </Typography>
+                            }
                         </Fragment>
                     }
                     <DeleteTorrentDialog

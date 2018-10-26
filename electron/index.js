@@ -1,7 +1,10 @@
 const { app, BrowserWindow, globalShortcut } = require('electron')
 const { fork } = require('child_process')
 
-const castScrean = process.argv.indexOf('--cast-screan') != -1
+const fullscreen = 
+    process.argv.indexOf('--cast-screan') != -1 ||
+    process.argv.indexOf('--fullscreen') != -1
+    
 let serverProcess
 
 function appReady() {
@@ -13,7 +16,7 @@ function appReady() {
 function createMainWindow () {
     const win = new BrowserWindow({ 
         allowRunningInsecureContent: true,
-        fullscreen: castScrean,
+        fullscreen,
         webPreferences: {
             additionalArguments: process.argv.slice(2),
             webSecurity: false
@@ -24,7 +27,7 @@ function createMainWindow () {
     win.loadURL('http://localhost:8080')
     win.setMenu(null)
     win.on('ready-to-show', () => {
-        win.maximize()
+        !fullscreen && win.maximize()
         win.show()
     })
     win.on('close', () => serverProcess.kill())

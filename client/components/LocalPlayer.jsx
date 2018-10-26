@@ -2,7 +2,6 @@ import React, { Component, Fragment } from 'react'
 import PropTypes from 'prop-types'
 
 import Fullscreen from 'react-full-screen'
-import fscreen from 'fscreen'
 
 import MediaControls from './MediaControls'
 import PlayerFilesList from './PlayerPlayList'
@@ -65,6 +64,18 @@ class LocalPlayer extends Component {
         if (fullScreen) this.setState({ idle: true })
     }
 
+    handleKeyUp = (e) => {
+        if(e.which == 32) { //spacebar
+            const { props: { playerStore: {device}}} = this
+
+            if (device.isPlaying) {
+                device.pause()
+            } else {
+                device.play()
+            }
+        }
+    }
+
     // --- idle checking ---
     handleActivity = () => {
         const { state: { idle }, idleTimeout } = this
@@ -89,6 +100,8 @@ class LocalPlayer extends Component {
         ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll'].forEach(
             (event) => window.removeEventListener(event, this.handleActivity)
         )
+
+        window.removeEventListener('keyup', this.handleKeyUp)
     }
 
     componentDidMount() {
@@ -97,6 +110,8 @@ class LocalPlayer extends Component {
         ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll'].forEach(
             (event) => window.addEventListener(event, this.handleActivity)
         )
+
+        window.addEventListener('keyup', this.handleKeyUp)
     }
     // --- idle checking ---
 

@@ -93,8 +93,8 @@ class TorrentListItem extends Component {
                 </ExpansionPanelDetails>
                 <ExpansionPanelActions>
                     <Button color="secondary" onClick={() => onDelete(torrent)} variant="contained">
+                        <DeleteIcon className="button-icon__left"/>
                         Delete
-                        <DeleteIcon />
                     </Button>
                 </ExpansionPanelActions>
             </ExpansionPanel>

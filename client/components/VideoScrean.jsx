@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import ReactResizeDetector from 'react-resize-detector'
 import { reaction } from 'mobx'
 import { observer } from 'mobx-react'
-import { invokeAll, isTablet } from '../utils'
+import { invokeAll } from '../utils'
 import Hls from 'hls.js'
 
 @observer
@@ -100,12 +100,6 @@ class VideoScrean extends Component {
         }
     }
 
-    handleKeyUp = (e) => {
-        if(e.which == 32) { //spacebar
-            this.handleClick()
-        }
-    }
-
     componentDidMount() {
         if (this.video) {
             this.disposeReactions = invokeAll(
@@ -144,7 +138,6 @@ class VideoScrean extends Component {
             )
         }
         this.initVideo()
-        this.attachListeners()
     }
 
     componentWillUnmount() {
@@ -153,7 +146,6 @@ class VideoScrean extends Component {
         }
 
         this.disposeHls()
-        this.deattachListenrs()
     }
 
     disposeHls() {
@@ -202,18 +194,6 @@ class VideoScrean extends Component {
         }
     }
 
-    attachListeners() {
-        window.addEventListener('keyup', this.handleKeyUp)
-        if(!isTablet()) {
-            this.video.addEventListener('click', this.handleClick)
-        }
-    }
-
-    deattachListenrs() {
-        window.removeEventListener('keyup', this.handleKeyUp)
-        this.video.removeEventListener('click', this.handleClick)
-    }
-
     render() {
         const { videoScale } = this.state
 
@@ -228,6 +208,7 @@ class VideoScrean extends Component {
                 <video
                     className={`scale_${videoScale}`}
                     ref={(video) => this.video = video}
+                    onClick={this.handleClick}
                     onDurationChange={this.handleUpdate}
                     onLoadedMetadata={this.handleLoadedMetadata}
                     onProgress={this.handleUpdate}
