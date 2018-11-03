@@ -15,7 +15,7 @@ class RemoteService extends EventEmitter {
         this.devices = {}
         this.controls = {}
         this.connections = new BiMap()
-        this.anyStateCahnged = false
+        this.anyStateChanged = false
 
         setInterval(
             this.storeDeviceState.bind(this), 
@@ -24,8 +24,8 @@ class RemoteService extends EventEmitter {
     }
 
     storeDeviceState() {
-        if(this.anyStateCahnged) {
-            this.anyStateCahnged = false
+        if(this.anyStateChanged) {
+            this.anyStateChanged = false
 
             Object.values(this.devices).forEach((device) => {
                 const { playlistName, state } = device
@@ -158,7 +158,7 @@ class RemoteService extends EventEmitter {
 
     _handleDeviceSync(device) {
         return (state) => {
-            this.anyStateCahnged = true
+            this.anyStateChanged = true
             this._doWithControlConnection(device.id, (control) => {
                 control.syncState(state)
                 debug(`Sync state from device ${device.id} to control ${control.id}`)

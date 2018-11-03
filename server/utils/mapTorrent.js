@@ -2,7 +2,7 @@ const { pick } = require('lodash')
 const { fileDirectory } = require('.')
 
 module.exports = (torrent) => {
-    const filterdTorrent = pick(torrent, [
+    const filteredTorrent = pick(torrent, [
         'infoHash',
         'name',
         'timeRemaining',
@@ -14,10 +14,11 @@ module.exports = (torrent) => {
         'ratio',
         'numPeers',
         'path',
-        'files'
+        'files',
+        'downloadInBackground'
     ])
 
-    const filtredFiles = filterdTorrent.files
+    const filtredFiles = filteredTorrent.files
         .map((file) => pick(file, [
             'name',
             'path',
@@ -32,8 +33,8 @@ module.exports = (torrent) => {
         file.torrentInfoHash = torrent.infoHash
     })
 
-    filterdTorrent.files = filtredFiles
+    filteredTorrent.files = filtredFiles
         .sort((f1, f2) => f1.name.localeCompare(f2.name))
 
-    return filterdTorrent
+    return filteredTorrent
 }

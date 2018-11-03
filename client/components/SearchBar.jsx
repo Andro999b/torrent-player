@@ -1,29 +1,25 @@
 import React, { Component } from 'react'
 import Autosuggest from 'react-autosuggest'
-import { SEARCH_RPVODERS, SEARCH_RPVODERS_NAME } from '../constants'
+import SearchBarSettings from './SearchBarSettings'
 
 import {
     Paper,
     Input,
     InputAdornment,
-    Menu,
     List,
-    MenuItem,
     ListItemIcon,
     Collapse,
     IconButton,
     ListItem,
     ListItemText,
-    ListItemSecondaryAction,
-    Checkbox
+    ListItemSecondaryAction
 } from '@material-ui/core'
 
 import {
     Search as SearchIcon,
     Clear as ClearIcon,
-    MoreVert as MoreIcon,
     Restore as HistoryIcon,
-    Delete as DeleteIcon
+    Delete as DeleteIcon,
 } from '@material-ui/icons'
 
 import PropTypes from 'prop-types'
@@ -46,8 +42,7 @@ class SearchBar extends Component {
     constructor(props, context) {
         super(props, context)
         this.state = {
-            searchQuery: '',
-            settingsAnchorEl: null
+            searchQuery: ''
         }
         this.onInput = debounce(this.handleInput.bind(this), 200)
     }
@@ -81,27 +76,6 @@ class SearchBar extends Component {
         this.lastSearchQuery = searchQuery
     }
 
-    handleOpenSettings = (event) => {
-        this.setState({ settingsAnchorEl: event.currentTarget })
-    }
-
-    handleCloseSettings = () => {
-        this.setState({ settingsAnchorEl: null })
-    }
-
-    toggleProvider(provider) {
-        const { searchProviders, onSelectProviders } = this.props
-
-        const index = searchProviders.indexOf(provider)
-        if (index != -1) {
-            onSelectProviders(searchProviders.filter((v, i) => i != index))
-        } else {
-            onSelectProviders(searchProviders.concat([provider]))
-        }
-    }
-
-    handleClearProviders = () => this.props.onSelectProviders([])
-
     renderSuggestion = (suggestion, { isHighlighted }) => {
         const { onRemoveHistory } = this.props
 
@@ -123,28 +97,9 @@ class SearchBar extends Component {
         )
     }
 
-    renderSettings() {
-        const { props: { searchProviders }, state: { settingsAnchorEl } } = this
-        return (
-            <Menu anchorEl={settingsAnchorEl}
-                open={settingsAnchorEl != null}
-                onClose={this.handleCloseSettings.bind(this)}>
-                {SEARCH_RPVODERS.map((provider) => (
-                    <MenuItem key={provider} onClick={() => this.toggleProvider(provider)}>
-                        <Checkbox disableRipple checked={searchProviders.indexOf(provider) != -1} />
-                        <ListItemText primary={SEARCH_RPVODERS_NAME[provider]} />
-                    </MenuItem>
-                ))}
-                <MenuItem onClick={this.handleClearProviders} style={{'justifyContent': 'center'}}>
-                    Deselect All
-                </MenuItem>
-            </Menu>
-        )
-    }
-
     render() {
         const { searchQuery } = this.state
-        const { suggestions } = this.props
+        const { suggestions, searchProviders, onSelectProviders } = this.props
 
         return (
             <Paper className="search-bar">
@@ -175,15 +130,13 @@ class SearchBar extends Component {
                         ),
                         endAdornment: (
                             <InputAdornment>
-                                <IconButton
-                                    onClick={this.handleClean}
-                                >
+                                <IconButton onClick={this.handleClean}>
                                     <ClearIcon />
                                 </IconButton>
-                                <IconButton onClick={this.handleOpenSettings} >
-                                    <MoreIcon />
-                                </IconButton>
-                                {this.renderSettings()}
+                                <SearchBarSettings
+                                    searchProviders={searchProviders}
+                                    onSelectProviders={onSelectProviders}
+                                />
                             </InputAdornment>
                         )
                     }}

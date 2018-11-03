@@ -1,5 +1,10 @@
 {
   "name": "torrent-player-server",
+  "author": {
+    "name": "Andrii Pivovarov",
+    "email": "andro999b@gmail.com"
+  },
+  "license": "GPL-2.0+",
   "nodemonConfig": {
     "delay": "2500"
   },

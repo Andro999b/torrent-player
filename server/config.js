@@ -3,6 +3,7 @@ const path = require('path')
 const firstExistPath = require('./utils/firstExistPath')
 
 module.exports = {
+    VIDEO_ENCODER: 'libx264',
     CLIENT_DIR: firstExistPath([
         path.join('client', 'dist'),
         path.join('..', 'client', 'dist'),
@@ -29,4 +30,8 @@ module.exports = {
     HLS_DIRECTORY: path.join(os.homedir(), 'webtorrents', 'hls'),
     TORRENTS_DIR: path.join(os.homedir(), 'webtorrents', 'torrents'),
     TORRENTS_DATA_DIR: path.join(os.homedir(), 'webtorrents', 'data'),
+    TRANSCODER_COPY_CODECS: {
+        audio: ['acc', 'mp3'],
+        video: ['h264'],
+    }
 }

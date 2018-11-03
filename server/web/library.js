@@ -7,9 +7,7 @@ const router = express.Router()
 
 router.get('/', (req, res) => {
     const bookmarks = continueWatchingService.getAllBookmarks()
-        .sort((s1, s2) => 
-            s1.playlist.name.localeCompare(s2.playlist.name)
-        )
+        .sort((s1, s2) => s2.ts - s1.ts)
 
     res.json({
         bookmarks,

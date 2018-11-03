@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import { BottomNavigation, BottomNavigationAction } from '@material-ui/core'
 import { 
     Search as SearchIcon,
-    List as LibraryIcon,
+    ListRounded as LibraryIcon,
     Airplay as CastScreanIcon,
     Input as ConnectIcon
 } from '@material-ui/icons'

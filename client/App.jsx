@@ -28,7 +28,7 @@ const theme = createMuiTheme({
         }
     },
     typography: {
-        useNextVariants: true,
+        useNextVariants: true
     },
     overrides: {
         MuiListItemIcon: {
@@ -40,13 +40,18 @@ const theme = createMuiTheme({
             root: {
                 padding: '0 5px 0 16px'
             }
+        },
+        MuiExpansionPanelActions: {
+            root: {
+                padding: '16px'
+            }
         }
     }
 })
 
 class App extends Component {
     render() {
-        const root = hasArgv('cast-screan') ? 
+        const root = hasArgv('cast-screen') ? 
             <CastScreanRoot/> :
             <Root/>
             

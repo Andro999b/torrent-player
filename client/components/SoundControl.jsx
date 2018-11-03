@@ -1,12 +1,19 @@
 import React, { Component, Fragment } from 'react'
 import {
-    VolumeUp as VolumeOnIcon,
-    VolumeOff as VolumeOffIcon
+    VolumeUpRounded as VolumeUpIcon,
+    VolumeDownRounded as VolumeDownIcon,
+    VolumeOffRounded as VolumeOffIcon
 } from '@material-ui/icons'
-import { IconButton, Paper, Popover } from '@material-ui/core'
-import Slider from '@material-ui/lab/Slider'
+import { 
+    IconButton,
+    Paper,
+    Popover,
+    Typography
+} from '@material-ui/core'
 import PropTypes from 'prop-types'
 import { observer } from 'mobx-react'
+
+const VOLUME_LEVELS = 15
 
 @observer
 class SoundControl extends Component {
@@ -18,10 +25,15 @@ class SoundControl extends Component {
         }
     }
 
-    handleVolumeChange = (_, value) => {
+    changeVolue(inc) {
         const { device } = this.props
-        device.setVolume(value)
+        const newVolume = (Math.ceil(device.volume * VOLUME_LEVELS) + inc ) / VOLUME_LEVELS
+        device.setVolume(Math.max(Math.min(newVolume, 1), 0))
     }
+
+    handleVolumeUp = () => this.changeVolue(1)
+
+    handleVolumeDown = () => this.changeVolue(-1)
 
     handleCloseRequest = () => {
         this.setState({
@@ -29,7 +41,7 @@ class SoundControl extends Component {
         })
     }
 
-    toggleVolumeSlider = (event) => {
+    toggleVolumePopup = (event) => {
         const { currentTarget } = event
         this.setState((state) => ({
             anchorEl: state.anchorEl ? null : currentTarget
@@ -37,14 +49,14 @@ class SoundControl extends Component {
     }
 
     render() {
-        const { device } = this.props
+        const { device: { volume } } = this.props
         const { anchorEl } = this.state
 
         return (
             <Fragment>
-                <IconButton onClick={this.toggleVolumeSlider}>
-                    {device.volume == 0 && <VolumeOffIcon />}
-                    {device.volume > 0 && <VolumeOnIcon />}
+                <IconButton onClick={this.toggleVolumePopup}>
+                    {volume == 0 && <VolumeOffIcon />}
+                    {volume > 0 && <VolumeUpIcon />}
                 </IconButton>
                 <Popover 
                     anchorEl={anchorEl}
@@ -61,7 +73,15 @@ class SoundControl extends Component {
                 >
                     <Paper>
                         <div className="sound-conrol__slider">
-                            <Slider max={1} value={device.volume} onChange={this.handleVolumeChange} />
+                            <IconButton onClick={this.handleVolumeDown}>
+                                <VolumeDownIcon/>
+                            </IconButton>
+                            <Typography align="center">
+                                {Math.ceil(volume * VOLUME_LEVELS)}
+                            </Typography>
+                            <IconButton onClick={this.handleVolumeUp}>
+                                <VolumeUpIcon/>
+                            </IconButton>
                         </div>
                     </Paper>
                 </Popover>

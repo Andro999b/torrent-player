@@ -3,6 +3,7 @@ const fs = require('fs')
 const path = require('path')
 const mimeLookup = require('mime-types').lookup
 const torrentsService = require('../service/torrents')
+const metadataService = require('../service/metadata')
 const checkIfTorrentFileReady = require('../service/torrents/checkIfTorrentFileReady')
 const torrentPlaylist = require('../service/torrents/torrentPlaylist')
 const transcodeService = require('../service/transcode')
@@ -55,10 +56,37 @@ router.delete('/:id', (req, res, next) => {
         .catch(next)
 })
 
+// change torrent backgroud download status
+router.post('/:torrentId/backgroundDownload', (req, res) => {
+    const { torrentId } = req.params
+    const { enabled } = req.body
+
+    torrentsService.setTorrentBackgroundDownload(torrentId, enabled)
+
+    res.json({ status: 'OK' })
+})
+
 // get torrent file
 router.get('/:torrentId/files/:fileId', (req, res) => {
     const { file } = getTorrentAndFile(req)
     writeFileRange(file, req, res)
+})
+
+router.get('/:torrentId/files/:fileId/browserVideo', (req, res, next) => {
+    const { file } = getTorrentAndFile(req)
+
+    if (!isVideo(file.path))
+        throw new ResponseError('Not video file', 404)
+
+    metadataService.isBrowserSupportedVideo(file)
+        .then((supported) => {
+            if(!supported) {
+                res.sendStatus(404)
+            } else {
+                writeFileRange(file, req, res)
+            }
+        })
+        .catch(next)
 })
 
 // get torrent video file transcoded stream

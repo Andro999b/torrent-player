@@ -4,10 +4,10 @@ const providers = [
     new (require('./providers/AnimeVostProvider'))(),
     new (require('./providers/AnidubProvider'))(),
     new (require('./providers/ColdFilmProvider'))(),
-    new (require('./providers/FastTorrentsProvider'))()
+    new (require('./providers/FastTorrentsProvider'))(),
+    ...require('./providers/RutrackerProvider').providers,
+    ...require('./providers/NNMClubProvider').providers
 ]
-    .concat(require('./providers/RutrackerProvider').providers)
-    .concat(require('./providers/NNMClubProvider').providers)
 
 module.exports = {
     getTrackers() {

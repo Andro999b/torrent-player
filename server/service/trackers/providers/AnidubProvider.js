@@ -44,12 +44,15 @@ class AnidubProvider extends DataLifeProvider {
                             .map((node, index) => {
                                 const $node = $(node)
                                 const playerUrl = $node.attr('value').split('|')[0] 
+                                const type = playerUrl.indexOf('sibnet') != -1 ?
+                                    'sibnet' :
+                                    'stormTv'
 
                                 return {
                                     index,
                                     id: index,
                                     name: $node.text(),
-                                    url: `/extractVideo?type=stormTv&url=${urlencode(playerUrl)}`
+                                    url: `/extractVideo?type=${type}&url=${urlencode(playerUrl)}`
                                 }
                             })
                 }

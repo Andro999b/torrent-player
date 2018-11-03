@@ -1,5 +1,7 @@
 const { app, BrowserWindow } = require('electron')
 
+app.commandLine.appendSwitch('--autoplay-policy','no-user-gesture-required')
+
 function createWindow () {
     const win = new BrowserWindow({ 
         allowRunningInsecureContent: true,

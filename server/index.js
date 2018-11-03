@@ -34,4 +34,6 @@ dlna()
 // dlnaRenderers()
 
 process.on('uncaughtException', (e) => console.error(e))
+process.on('SIGPIPE', () => { /* noop for electron */ })
+
 process.send && process.send('ready')

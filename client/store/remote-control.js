@@ -192,7 +192,9 @@ if(isCastAvaliable) {
 
 function listenDeviceList(socket) {
     socket.on('divicesList', (newDevices) => { 
-        devices.replace(newDevices) 
+        devices.replace(
+            newDevices.filter((dev) =>  dev.id != newDevices.id)
+        ) 
     })
 }
 

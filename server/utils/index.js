@@ -6,7 +6,6 @@ const sprintf = require('sprintf-js').sprintf
 const ResponseError = require('./ResponseError')
 const { RESOURCES_DIR } = require('../config')
 
-//TODO: Read json maybe?
 const videExtensions = JSON.parse(fs.readFileSync(path.join(RESOURCES_DIR, 'video-extensions.json')))
 const audioExtensions = JSON.parse(fs.readFileSync(path.join(RESOURCES_DIR, 'audio-extensions.json')))
 const psMediaExtensions = JSON.parse(fs.readFileSync(path.join(RESOURCES_DIR, 'ps-media-extensions.json')))

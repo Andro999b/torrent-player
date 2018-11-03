@@ -38,6 +38,7 @@ module.exports = {
         ])
 
         if(Object.keys(state).length == 0) return
+        state.ts = Date.now()
 
         if(db.has(['bookmarks', playlistName]).value()){
             db.get(['bookmarks', playlistName])

@@ -12,6 +12,14 @@ module.exports = {
     getTorrentFileMetadata(torrentId, path) {
         return torrentDb.get([ torrentId, path, 'metadata' ]).value()
     },
+    isEnabledDownloadInBackground(torrentId) {
+        return torrentDb.get([ torrentId, path, 'bownloadInBackground' ]).value() == true
+    },
+    setDownLoadInBackgroundStatus(torrentId, status) {
+        if(!torrentId) throw Error('torrentId')
+
+        return torrentDb.set([ torrentId, path, 'bownloadInBackground' ], status).write()
+    },
     setTorrentFileCompleted(torrentId, paths) {
         if(!torrentId || !path) throw Error('torrentId or path is null')
 

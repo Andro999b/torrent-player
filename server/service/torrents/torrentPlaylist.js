@@ -2,7 +2,7 @@ const mimeLookup = require('mime-types').lookup
 const { isAudio, isVideo, fileDirectory } = require('../../utils')
 
 function getTorrentFileContentLink(infoHash, fileIndex) {
-    return `/api/torrents/${infoHash}/files/${fileIndex}`
+    return `/api/torrents/${infoHash}/files/${fileIndex}/browserVideo`
 }
 
 function getTorrentFileHLSLink(infoHash, fileIndex) {

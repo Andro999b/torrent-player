@@ -26,4 +26,18 @@ export const SEARCH_RPVODERS_NAME = {
     'anidub': 'AniDub'
 // 'coldfilm': 'Coldfilm' // no longer supported
 }
+export const SEARCH_RPVODERS_PRESET = {
+    'movies': ['rutracker-movies', 'nnm-video', 'rutor'],   
+    'tv-shows': ['rutracker-tv-shows', 'nnm-tv-shows', 'rutor'],   
+    'cartoons': ['rutracker-cartoons', 'nnm-video', 'rutor'],   
+    'anime': ['rutracker-anime', 'nnm-anime', 'rutor'],   
+    'anime-direct': ['animeVost', 'anidub'],   
+}
+export const SEARCH_RPVODERS_PRESET_NAMES = {
+    'movies': 'Movies',   
+    'tv-shows': 'TV Shows',   
+    'cartoons': 'Cartoons',   
+    'anime': 'Anime Torrents',   
+    'anime-direct': 'Anime Online',   
+}
 export const SEARCH_HISTORY_MAX_SIZE = 100

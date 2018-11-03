@@ -31,8 +31,12 @@ function torrentFileName(torrent) {
     return path.join(TORRENTS_DIR, torrent.infoHash + '.torrent')
 }
 
-function deselectAll(torrent) {
-    torrent.deselect(0, torrent.pieces.length - 1)
+function setTorrentDownloadStatus(torrent, download) {
+    if(download) {
+        torrent.select(0, torrent.pieces.length - 1)
+    } else {
+        torrent.deselect(0, torrent.pieces.length - 1)
+    }
 }
 
 function waitCompletion(torrent) {
@@ -55,7 +59,8 @@ module.exports = {
                     const seedTorrent = fs.readFileSync(seedTorrentFile)
                     torrentClient.add(seedTorrent, { path: TORRENTS_DATA_DIR }, (torrent) => {
                         debug(`${torrent.name} verified`)
-                        deselectAll(torrent)
+                        const autoDownload = database.isEnabledDownloadInBackground(torrent.infoHash)
+                        setTorrentDownloadStatus(torrent, autoDownload)
                         waitCompletion(torrent)
                     })
                     debug(`Torrent resumed: ${seedTorrentFile}`)
@@ -91,7 +96,7 @@ module.exports = {
 
         torrent = await addTorrent(parsedTorrent, { path: TORRENTS_DATA_DIR })
 
-        deselectAll(torrent)
+        setTorrentDownloadStatus(torrent)
         waitCompletion(torrent)
 
         await fs.writeFile(torrentFileName(torrent), torrent.torrentFile)
@@ -124,9 +129,27 @@ module.exports = {
         }
     },
     getTorrent(torrentId) {
-        return torrentClient.get(torrentId)
+        const torrent = torrentClient.get(torrentId)
+        torrent.downloadInBackground = 
+            database.isEnabledDownloadInBackground(torrent.infoHash)
+
+        return torrent
     },
     getTorrents() {
-        return torrentClient.torrents
+        return torrentClient
+            .torrents
+            .map((torrent) => {
+                torrent.downloadInBackground = 
+                    database.isEnabledDownloadInBackground(torrent.infoHash)
+
+                return torrent
+            })
+    },
+    setTorrentBackgroundDownload(torrentId, enabled) {
+        const torrent = torrentClient.get(torrentId)
+        if(torrent) {
+            setTorrentDownloadStatus(torrent, enabled)
+            database.setDownLoadInBackgroundStatus(torrent.infoHash, enabled)
+        }
     }
 }

@@ -19,7 +19,10 @@ const playerTheme = (mainTheme) => createMuiTheme({
                 backgroundColor: 'transparent'
             }
         }
-    }
+    },
+    typography: {
+        useNextVariants: true
+    },
 })
 
 @inject('playerStore')
@@ -31,7 +34,7 @@ class PlayerView extends Component {
         return (
             <MuiThemeProvider theme={playerTheme}>
                 <div className="player__screen">
-                    {!device && <Typography align="center" variant="h4">
+                    {!device && <Typography className="center" align="center" variant="h4">
                         Waiting for video to be ready
                     </Typography>}
                     {device &&

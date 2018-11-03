@@ -1,10 +1,11 @@
 const path = require('path')
 const ffmpeg = require('fluent-ffmpeg')
 const CycleBuffer = require('../../utils/CycleBuffer')
-const { TORRENTS_DATA_DIR } = require('../../config')
+const { TORRENTS_DATA_DIR, TRANSCODER_COPY_CODECS, VIDEO_ENCODER } = require('../../config')
 const debug = require('debug')('transcode')
 const checkIfTorrentFileReady = require('../torrents/checkIfTorrentFileReady')
 const database = require('../torrents/database')
+const metadataService = require('../metadata')
 const { parseCodeDuration } = require('../../utils')
 
 class Transcoder {
@@ -26,6 +27,10 @@ class Transcoder {
             this.torrentHash = torrent.infoHash
             this.filePath = file.path
             this._lastStart = start
+
+            const codecs = await metadataService.getCodecs(file)
+            const copyAudio = TRANSCODER_COPY_CODECS.audio.indexOf(codecs.audio) != -1
+            const copyVideo = TRANSCODER_COPY_CODECS.video.indexOf(codecs.video) != -1
 
             await new Promise((resolve, reject) => {
                 if (this.command) {//fix concurrect problem
@@ -49,8 +54,8 @@ class Transcoder {
 
                 this.command = ffmpeg(source)
                     .seekInput(start)
-                    .videoCodec('libx264')
-                    .audioCodec('aac')
+                    .videoCodec(copyVideo ? 'copy' : VIDEO_ENCODER)
+                    .audioCodec(copyAudio ? 'copy' : 'aac')
                     .addOutputOption('-max_muxing_queue_size 400')
                     .addOutputOption('-preset ultrafast')
                     .addOutputOption('-tune zerolatency')

@@ -71,6 +71,7 @@ html {
 
 .library {
     overflow-y: auto;
+    height: 100%;
     max-height: 100%;
     padding: 10px;
     position: relative;
@@ -220,8 +221,11 @@ html {
 
 .sound-conrol__slider {
     height: 60px;
-    width: 220px;
-    padding: 30px 30px;
+    width: 160px;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .idle {

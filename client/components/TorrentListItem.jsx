@@ -7,7 +7,9 @@ import {
     ExpansionPanelActions,
     Button,
     List,
-    Typography
+    Typography,
+    FormControlLabel,
+    Checkbox
 } from '@material-ui/core'
 import {
     ExpandMore as ExpandIcon,
@@ -21,12 +23,17 @@ import GroupFiles from './GroupFiles'
 import TorrentListItemFile from './TorrentListItemFile'
 import PropTypes from 'prop-types'
 import filesize from 'file-size'
-import { inject } from 'mobx-react'
+import { inject, observer } from 'mobx-react'
 
-@inject(({ transitionStore: { playTorrentMedia, openCastTorrentDialog } }) => ({
+@inject(({
+    transitionStore: { playTorrentMedia, openCastTorrentDialog }, 
+    libraryStore: { setBackgroudDownload } 
+}) => ({
     onPlayFile: playTorrentMedia,
-    onCastFile: openCastTorrentDialog
+    onCastFile: openCastTorrentDialog,
+    onSetBackgroudDownload: setBackgroudDownload
 }))
+@observer
 class TorrentListItem extends Component {
 
     constructor(props, context) {
@@ -54,7 +61,7 @@ class TorrentListItem extends Component {
     }
 
     render() {
-        const { torrent, onDelete } = this.props
+        const { torrent, onDelete, onSetBackgroudDownload } = this.props
         const { showDetails } = this.state
 
         const subtitle = (
@@ -92,6 +99,16 @@ class TorrentListItem extends Component {
                     {showDetails && <GroupFiles files={torrent.files} renderFiles={this.renderFiles} />}
                 </ExpansionPanelDetails>
                 <ExpansionPanelActions>
+                    <FormControlLabel
+                        control={
+                            <Checkbox 
+                                onChange={() => onSetBackgroudDownload(torrent)}
+                                checked={torrent.downloadInBackground}
+                                color="primary"
+                            />
+                        }
+                        label="Download in background"
+                    />
                     <Button color="secondary" onClick={() => onDelete(torrent)} variant="contained">
                         <DeleteIcon className="button-icon__left"/>
                         Delete
@@ -107,7 +124,8 @@ TorrentListItem.propTypes = {
     torrent: PropTypes.object.isRequired,
     onDelete: PropTypes.func.isRequired,
     onPlayFile: PropTypes.func,
-    onCastFile: PropTypes.func
+    onCastFile: PropTypes.func,
+    onSetBackgroudDownload: PropTypes.func,
 }
 
 export default TorrentListItem

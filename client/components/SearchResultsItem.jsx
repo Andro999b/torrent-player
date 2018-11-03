@@ -13,7 +13,7 @@ import {
 } from '@material-ui/core'
 
 import { 
-    CloudDownloadOutlined as DownloadIcon,
+    PlaylistAddRounded as AddToLibraryIcon,
     ExpandMore as ExpandIcon,
     WatchLaterOutlined as WatchLaterIcon
 } from '@material-ui/icons'
@@ -78,8 +78,8 @@ class SearchResultsItem extends Component {
                         </ExpansionPanelDetails>
                         {item.isDownlodableTorrent() && <ExpansionPanelActions>
                             <Button onClick={() => onDownload(item.details)} variant="contained">
-                                <DownloadIcon className="button-icon__left" />
-                                Download Torrent
+                                <AddToLibraryIcon className="button-icon__left" />
+                                Add to Library
                             </Button>
                         </ExpansionPanelActions>}
                         {!item.isTorrent() && <ExpansionPanelActions>

@@ -24,7 +24,6 @@ export class Device {
     }
 
     /* eslint-disable no-unused-vars */
-    setSource(source) { }
     resume() { }
     pause() { }
     play(currentTime) { }
@@ -40,7 +39,7 @@ export class Device {
 export class LocalDevice extends Device {
     @observable url = null
     keepAliveUrl = null
-    @observable hls = false
+    @observable sourceType = 'direct'
     @observable seekTime = null
 
     keepAliveInterval = 0
@@ -59,9 +58,17 @@ export class LocalDevice extends Device {
     @action setSource(source) {
         if (source.url != this.url) {
             this.source = source
-            this.hls = false
+            this.sourceType = 'direct'
             this.keepAliveUrl = null
-            this.url = source.url
+
+            if(source.url) {
+                this.url = source.url
+            } else if(source.hlsUrl) {
+                this.source = 'hls'
+                this.url = source.hlsUrl
+                this.keepAliveUrl = source.keepAliveUrl
+            }
+
             this.currentTime = 0
             this.duration = 0
             this.buffered = 0
@@ -110,8 +117,8 @@ export class LocalDevice extends Device {
     }
 
     @action setError(error) {
-        if(error && !this.hls && this.source.hlsUrl) { //switch to hls in case of error
-            this.hls = true
+        if(error && this.sourceType != 'hls' && this.source.hlsUrl) { //switch to hls in case of error
+            this.sourceType = 'hls'
             this.url = this.source.hlsUrl
             this.keepAliveUrl = this.source.keepAliveUrl
         } else {
@@ -144,9 +151,7 @@ class PlayerStore {
 
     @action loadDevice(device) {
         const prevDevice = this.device
-        if (prevDevice) {
-            prevDevice.disconnect()
-        }
+        if (prevDevice) prevDevice.disconnect()
 
         this.device = device
         this.device.connect()
@@ -213,7 +218,7 @@ class PlayerStore {
         const { playlist: { name, files }, currentFileIndex } = this.device
 
         if(name && files)
-            return name + (currentFileIndex != -1 ?  ' - ' + files[currentFileIndex].name : '')
+            return name + (files.length > 1 ? ' - ' + (files[currentFileIndex].index + 1) : '')
     }
 }
 

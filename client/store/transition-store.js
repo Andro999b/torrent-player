@@ -1,7 +1,7 @@
 import { action, observable } from 'mobx'
 import request from 'superagent'
 import pick from 'lodash.pick'
-import notificationStore from './notifications-store'
+import libraryStore from './library-store'
 import playerStore, { LocalDevice } from './player-store'
 import remoteControl from './remote-control'
 import localStore from 'store'
@@ -11,7 +11,7 @@ const MAIN_SCREENS = new Set(['search', 'library', 'cast-screan'])
 class TransitionStore {
     @observable castDialog = null
     @observable screen = localStore.get('lastScreen') || 'search'
-    prevScreen = null
+    prevScreen = this.screen
 
     @action.bound goToScreen(screen) {
         if(this.screen == screen) return
@@ -33,7 +33,9 @@ class TransitionStore {
 
     @action.bound download(result) {
         this.goToScreen('library')
-        this.downloadTorrent(result).catch(console.error)
+        libraryStore
+            .addTorrent(result)
+            .catch(console.error)
     }
 
     @action.bound downloadAndPlay(result, item, startTime) {
@@ -138,7 +140,7 @@ class TransitionStore {
         if(result.type == 'torrent') {
             if(result.magnetUrl || result.torrentUrl) {
                 return this
-                    .downloadTorrent(result)
+                    .addTorrent(result)
                     .then((torrent) => 
                         this.downloadTorrentPlaylist(torrent, item)
                     )
@@ -151,21 +153,6 @@ class TransitionStore {
             startIndex: item.index,
             playlist: pick(result, 'name', 'files')
         })
-    }
-
-    downloadTorrent(result) {
-        const { magnetUrl, torrentUrl, provider } = result
-
-        return request
-            .post('/api/torrents', { magnetUrl, torrentUrl, provider })
-            .then((res) => {
-                notificationStore.showMessage(`Starting download torrent ${result.name}`)
-                return res.body
-            })
-            .catch(() => {
-                notificationStore.showMessage(`Fail download torrent ${result.name}`)
-                this.screen = 'torrents'
-            })
     }
 
     downloadTorrentPlaylist(torrent, tragetItem) {
