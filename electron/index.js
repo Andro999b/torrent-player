@@ -8,7 +8,7 @@ const fullscreen =
 let serverProcess
 
 function appReady() {
-    serverProcess = fork('./server/index.js')
+    serverProcess = fork('./server/index.js', process.argv)
         .on('exit', (code, signal) => {
             console.error(`Server process exited. code: ${code}, signal: ${signal}`)
             process.exit()

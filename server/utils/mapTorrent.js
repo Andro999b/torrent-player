@@ -7,6 +7,7 @@ module.exports = (torrent) => {
         'name',
         'timeRemaining',
         'received',
+        'length',
         'downloaded',
         'uploaded',
         'downloadSpeed',

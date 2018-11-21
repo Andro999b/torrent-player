@@ -18,22 +18,26 @@ class RemoteService extends EventEmitter {
         this.anyStateChanged = false
 
         setInterval(
-            this.storeDeviceState.bind(this), 
+            this._storeDeviceState.bind(this), 
             10 * 1000
         )
     }
 
-    storeDeviceState() {
-        if(this.anyStateChanged) {
-            this.anyStateChanged = false
+    stopPlayTorrent(torrentId) {
+        Object.values(this.devices)
+            .filter(
+                (device) => {
+                    const { playlist } = device.state
+                    if(!playlist) return false
 
-            Object.values(this.devices).forEach((device) => {
-                const { playlistName, state } = device
-                if(playlistName) {
-                    bookmarks.update(playlistName, state)
+                    const { torrentInfoHash } = playlist
+                    return torrentInfoHash == torrentId
                 }
+            )
+            .forEach((device) => {
+                device.clearState(false)
+                device.doAction(RemoteControl.Actions.ClosePlaylist)
             })
-        }
     }
 
     // eslint-disable-next-line
@@ -60,6 +64,7 @@ class RemoteService extends EventEmitter {
             //TODO: notify controll of dissconection
             this._doWithControlConnection(device.id, (control) => control.disconnect())
             this.connections.deleteValue(device.id)
+            device.destroy()
 
             debug(`Device removed ${deviceId}`)
         }
@@ -143,6 +148,7 @@ class RemoteService extends EventEmitter {
 
     _removeDeviceListener(device) {
         device.removeAllListeners(RemoteDevice.Events.Sync)
+        device.removeAllListeners(RemoteDevice.Events.Clear)
         device.removeAllListeners(RemoteDevice.Events.UpdateList)
     }
 
@@ -205,7 +211,20 @@ class RemoteService extends EventEmitter {
         clearTimeout(this.updateTimeout)
         this.updateTimeout = setTimeout(() => {
             this.emit(RemoteService.Events.DeviceList)
-        }, 200)
+        }, 1000)
+    }
+
+    _storeDeviceState() {
+        if(this.anyStateChanged) {
+            this.anyStateChanged = false
+
+            Object.values(this.devices).forEach((device) => {
+                const { playlistName, state } = device
+                if(playlistName) {
+                    bookmarks.update(playlistName, state)
+                }
+            })
+        }
     }
 }
 

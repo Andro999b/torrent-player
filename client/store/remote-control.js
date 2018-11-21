@@ -116,7 +116,7 @@ class RemoteDevice extends Device {
 }
 
 function getRemoteDevice(device) {
-    const deviceSocket = io('/control', { path: '/remote' })
+    const deviceSocket = io('/control')
     return new RemoteDevice(deviceSocket, device)
 }
 
@@ -178,7 +178,7 @@ function listenNameUpdate(socket) {
 let setAvailability = () => {}
 let isCastAvaliable = !isMobile()
 
-const deviceSocket = io('/device', { path: '/remote' })
+const deviceSocket = io('/device')
 trackState(deviceSocket)
 
 if(isCastAvaliable) {
@@ -198,7 +198,7 @@ function listenDeviceList(socket) {
     })
 }
 
-listenDeviceList(io({ path: '/remote' }))
+listenDeviceList(io())
 
 export default {
     devices,

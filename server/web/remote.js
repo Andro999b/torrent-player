@@ -108,7 +108,7 @@ function registerSocket(socket) {
 }
 
 module.exports = function (htppServer) {
-    const io = Server(htppServer, { path: '/remote' })
+    const io = Server(htppServer)
 
     io.on('connection', registerSocket)
     io.of('/control').on('connection', registerControl)

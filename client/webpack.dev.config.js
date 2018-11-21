@@ -14,7 +14,7 @@ module.exports = merge(webpackConfig, {
             context: ['/api', '/proxyMedia', '/extractVideo'],
             target: 'http://localhost:8080'
         }, {
-            context: '/remote',
+            context: '/',
             target: 'ws://localhost:8080'
         }]
     },

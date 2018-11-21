@@ -2,7 +2,7 @@ const uuid = require('uuid')
 const UPNPServer = require('./upnp-server/Server')
 const { toXML } = require('jstoxml')
 const torrentsService = require('../service/torrents')
-const { DLNA_PORT } = require('../config')
+const { DLNA_PORT, TRANSCODING_ENABLED } = require('../config')
 const getMediaResource = require('./resources')
 const getTorrentFs = require('./torrentFs')
 const debug = require('debug')('dlna')
@@ -62,7 +62,12 @@ async function browseTorrentFs(inputs, req) {
 
     const didl = await Promise.all(sliced.map(async (fsEntry) => 
         fsEntry.type == 'file' ? 
-            await getMediaResource({fsEntry, infoHash, clientId: getClientId(req)}):
+            await getMediaResource({ 
+                fsEntry, 
+                infoHash, 
+                clientId: getClientId(req), 
+                transcoded: TRANSCODING_ENABLED 
+            }):
             toDIDLContainer(fsEntry)
     ))
 
@@ -98,7 +103,13 @@ async function browseMetadata(inputs, req) {
 
     
     const didl = fsEntry.type == 'file' ? 
-        await getMediaResource({fsEntry, infoHash, clientId: getClientId(req), metadata: true}):
+        await getMediaResource({
+            fsEntry, 
+            infoHash, 
+            clientId: getClientId(req), 
+            metadata: true,
+            transcoded: TRANSCODING_ENABLED
+        }):
         toDIDLContainer(fsEntry)
 
     return {

@@ -1,55 +1,92 @@
 const SSDP = require('node-ssdp').Client
 const RemoteDevice = require('../service/remote/RemoteDevice')
-//const remote = require('../service/remote')
+const MediaRendererClient = require('upnp-mediarenderer-client')
+const remote = require('../service/remote')
+const ip = require('ip')
+const { WEB_PORT } = require('../config')
 
 class DLNADevice extends RemoteDevice {
-    constructor(player) {
+    constructor(client) {
         super()
-        this.id = player.xml
-        this.player = player
-        this.avaliable = true
-        this.name = player.name   
+        this.avaliable = true   
+        this.client = client
+
+        client.getDeviceDescription((err, description) => {
+            if(err) {
+                console.error(err)
+                return
+            }
+            this.name = description.friendlyName
+        })
+        
+        client.on('playing', () => {
+            this.updateState({
+                isPlaying: true,
+                isLoading: false
+            })
+
+            if(this.seekToPosition) {
+                client.seek(this.seekToPosition)
+                this.seekToPosition = null
+            }
+            
+            client.getDuration((err, duration) => {
+                this.updateState({ duration })
+            })
+        })
+
+        // client.on('stopped', () => this.stop())
     }
 
-    play(currentTime) {
+    play(startTime) {
         const { currentFileIndex, playlist } = this.state
         const source = playlist.files[currentFileIndex]
 
-        let url, title = `${this.playlistName} - ${source.name}`
-        if (
-            (source.mimeType && source.mimeType == 'video/mp4') ||
-            source.name.endsWith('mp4')
-        ) {
-            url = source.url
-        } else if (source.transcodedUrl) {
-            url = source.transcodedUrl
-        } else {
-            url = source.url
-        }
+        const title = `${this.playlistName} - ${currentFileIndex + 1}`
+
+        this.startTrackState()
+        this.seekToPosition = startTime
+        this.client.load(`http://${ip.address()}:${WEB_PORT}${source.url}`, {
+            autoplay: true,
+            metadata: {
+                title,
+                type: 'video'
+            }
+        }, (err) => {
+            if(err) {
+                console.error('client.load', err)
+                return
+            } 
+        })
     }
     
     resume() {
-        this.player.resume()
+        this.client.play()
     }
 
     pause() {
-        this.player.pause()
+        this.client.pause()
     }
     
     seek(currentTime) {
-        this.player.seek(currentTime)
+        this.client.seek(currentTime)
+    }
+
+    stop() {
+        this.client.stop()
+        this.clearState()
     }
 
     selectFile(fileIndex) {
         this.updateState({ currentFileIndex: fileIndex })
+        this.play()
     }
 
-    setPlaylist(playlist, fileIndex) {
-        this.playlist = playlist
+    setPlaylist(playlist, fileIndex, currentTime) {
         this.playlistName = playlist.name
         this.updateState({ 
-            currentFileIndex: 0,
-            currentTime: 0,
+            currentFileIndex: fileIndex,
+            currentTime,
             duration: 0,
             isPlaying: false,
             isLoading: true,
@@ -57,7 +94,7 @@ class DLNADevice extends RemoteDevice {
             volume: 1,
             playlist 
         })
-        this.selectFile(fileIndex)
+        this.play(currentTime)
     } 
 
     doAction(action, payload) {
@@ -70,23 +107,93 @@ class DLNADevice extends RemoteDevice {
             case 'selectFile': this.selectFile(payload); break
             case 'toggleMute': break 
             case 'openPlaylist': {
-                const { playlist, fileIndex } = payload
-                this.setPlaylist(playlist, fileIndex)
+                const { playlist, fileIndex, startTime } = payload
+                this.setPlaylist(playlist, fileIndex, startTime)
                 break
             }
-            case 'closePlaylist': break 
+            case 'closePlaylist': this.stop(); break 
         }
+    }
+
+    destroy() {
+        this.stopTrackState()
+    } 
+
+    startTrackState() {
+        this.stopTrackState()
+        this.trackingId = setInterval(() => {
+            const { client } = this
+            const { isLoading, isPlaying } = this.state
+            if(isLoading) return
+
+            client.callAction(
+                'AVTransport', 
+                'GetTransportInfo',
+                { InstanceID: client.instanceId },
+                (err, result) => {
+                    if(err) {
+                        console.error(err)
+                        return
+                    } 
+
+                    switch(result.CurrentTransportState) {
+                        case 'STOPPED':
+                            this.clearState()
+                            break
+                        case 'PLAYING':
+                            if(isPlaying) return
+                            this.updateState({ isPlaying: true })
+                            break
+                        case 'PAUSED_PLAYBACK':
+                            if(!isPlaying) return
+                            this.updateState({ isPlaying: false })
+                            break
+                    }
+                }
+            )
+
+            client.getPosition((err, currentTime) => {
+                if(err) {
+                    console.error('getPosition', err)
+                    return
+                } 
+
+                this.updateState({ currentTime })
+            })
+        }, 1000)
+    }
+
+    stopTrackState() {
+        if(this.trackingId) {
+            clearInterval(this.trackingId)
+        }
+    }
+
+    clearState(emitEvents = true) {
+        this.stopTrackState()
+        super.clearState(emitEvents)
     }
 }
 
 module.exports = () => {
+    const devices = {}
     const ssdpClient = new SSDP()
 
-    ssdpClient.on('response', (headers, statusCode, rinfo) => {
-        console.log(headers, statusCode, rinfo)
+    ssdpClient.on('response', (headers) => {
+        // console.log(headers, statusCode, rinfo)
+
+        const usn = headers.USN
+        
+        if(!devices[usn]) {
+            const device = new DLNADevice(new MediaRendererClient(headers.LOCATION))
+            devices[usn] = device
+            remote.addDevice(device)
+        }
     })
 
-    // setInterval(() => {
-    //     ssdpClient.search('urn:schemas-upnp-org:device:MediaRenderer:1')
-    // }, 1000)
+    ssdpClient.search('urn:schemas-upnp-org:device:MediaRenderer:1')
+
+    setInterval(() => {
+        ssdpClient.search('urn:schemas-upnp-org:device:MediaRenderer:1')
+    }, 5000)
 }

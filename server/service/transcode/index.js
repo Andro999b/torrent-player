@@ -1,5 +1,6 @@
 const Transcoder = require('./Transcoder')
 const { HLSTranscoder, cleanUpHlsData } = require('./HLSTranscoder')
+const { TRANSCODING_ENABLED } = require('../../config')
 
 const transcoders = {}
 const hlsTanscoders = {}
@@ -25,6 +26,9 @@ module.exports = {
         cleanUpHlsData(torrent.infoHash)
     },
     getTranscoder(clientId) {
+        if(!TRANSCODING_ENABLED) 
+            throw new Error('Transcoding not avalaible')
+
         let transcoder = transcoders[clientId]
         if (!transcoder) {
             transcoder = new Transcoder()
@@ -35,6 +39,9 @@ module.exports = {
         return transcoder
     },
     getHLSTranscoder(torrent, fileIndex) {
+        if(!TRANSCODING_ENABLED) 
+            throw new Error('Transcoding not avalaible')
+
         const key = `${torrent.infoHash}_${fileIndex}`
 
         let transcoder = hlsTanscoders[key]

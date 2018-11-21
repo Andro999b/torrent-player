@@ -38,7 +38,7 @@ function commonResource({ infoHash, upnpClass, fsEntry }) {
     }
 }
 
-async function videoResource({ infoHash, upnpClass, fsEntry, clientId }) {
+async function videoResource({ infoHash, upnpClass, fsEntry, clientId, transcoded }) {
     const { title, fileIndex, parentId, id, file } = fsEntry
 
     const content = [
@@ -52,7 +52,18 @@ async function videoResource({ infoHash, upnpClass, fsEntry, clientId }) {
         formatedDuration = formatDLNADuration(metadata.duration)
     }
 
-    if(clientId != 'ps' && isPsSupported(title)) {
+    if(transcoded) {
+        content.push({
+            _name: 'res',
+            _attrs: {
+                'protocolInfo': 'http-get:*:video/mpegts:DLNA.ORG_PN=MPEG_TS_SD_EU_ISO;DLNA.ORG_OP=10',
+                'xmlns:dlna': 'urn:schemas-dlna-org:metadata-1-0/',
+                'size': -1,
+                'duration': formatedDuration
+            },
+            _content: `http://${ip.address()}:${WEB_PORT}/api/torrents/${infoHash}/files/${fileIndex}/transcoded?clientId=${clientId}`
+        })
+    } else {
         content.push({
             _name: 'res',
             _attrs: {
@@ -64,17 +75,6 @@ async function videoResource({ infoHash, upnpClass, fsEntry, clientId }) {
             _content: `http://${ip.address()}:${WEB_PORT}/api/torrents/${infoHash}/files/${fileIndex}`
         })
     }
-
-    content.push({
-        _name: 'res',
-        _attrs: {
-            'protocolInfo': 'http-get:*:video/mpegts:DLNA.ORG_PN=MPEG_TS_SD_EU_ISO;DLNA.ORG_OP=10',
-            'xmlns:dlna': 'urn:schemas-dlna-org:metadata-1-0/',
-            'size': -1,
-            'duration': formatedDuration
-        },
-        _content: `http://${ip.address()}:${WEB_PORT}/api/torrents/${infoHash}/files/${fileIndex}/transcoded?clientId=${clientId}`
-    })
 
     return {
         _name: 'item',

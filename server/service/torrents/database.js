@@ -13,12 +13,12 @@ module.exports = {
         return torrentDb.get([ torrentId, path, 'metadata' ]).value()
     },
     isEnabledDownloadInBackground(torrentId) {
-        return torrentDb.get([ torrentId, path, 'bownloadInBackground' ]).value() == true
+        return torrentDb.get([ torrentId, 'bownloadInBackground' ]).value() == true
     },
     setDownLoadInBackgroundStatus(torrentId, status) {
         if(!torrentId) throw Error('torrentId')
 
-        return torrentDb.set([ torrentId, path, 'bownloadInBackground' ], status).write()
+        return torrentDb.set([ torrentId, 'bownloadInBackground' ], status).write()
     },
     setTorrentFileCompleted(torrentId, paths) {
         if(!torrentId || !path) throw Error('torrentId or path is null')

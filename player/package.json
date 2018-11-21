@@ -1,0 +1,11 @@
+{
+  "name": "player",
+  "version": "1.0.0",
+  "description": "Standalon Player Client",
+  "main": "index.js",
+  "author": {
+    "name": "Andrii Pivovarov",
+    "email": "andro999b@gmail.com"
+  },
+  "license": "GPL-2.0+",
+}

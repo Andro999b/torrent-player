@@ -80,10 +80,12 @@ class Provider {
             .gather() 
             .then(this._postProcessResult.bind(this))
             .then((results) =>
-                results.map((item) => {
-                    item.provider = name
-                    return item
-                })
+                results
+                    .filter((item) => item.id != null)
+                    .map((item) => {
+                        item.provider = name
+                        return item
+                    })
             )
     }
 

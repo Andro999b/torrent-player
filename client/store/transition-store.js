@@ -88,15 +88,13 @@ class TransitionStore {
         playlist, 
         startIndex, 
         startTime, 
-        device, 
-        result
+        device
     }) {
         playerStore.openPlaylist(
             device ? remoteControl.getRemoteDevice(device) : new LocalDevice(), 
             playlist, 
             startIndex,
-            startTime, 
-            result.type == 'torrent' ? result : null
+            startTime
         )
 
         this.castDialog = null
@@ -139,7 +137,7 @@ class TransitionStore {
     downloadPlaylist(result, item) {
         if(result.type == 'torrent') {
             if(result.magnetUrl || result.torrentUrl) {
-                return this
+                return libraryStore
                     .addTorrent(result)
                     .then((torrent) => 
                         this.downloadTorrentPlaylist(torrent, item)

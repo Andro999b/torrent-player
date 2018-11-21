@@ -11,9 +11,10 @@ const database = require('./database')
 const { TORRENTS_DIR, TORRENTS_DATA_DIR } = require('../../config')
 const debug = require('debug')('torrents')
 
-const { stopTranscoding } = require('../transcode')
+const transcode = require('../transcode')
 const trackers = require('../trackers')
 const bookmarks =  require('../bookmarks')
+const remote =  require('../remote')
 
 const torrentClient = new WebTorrent()
 
@@ -40,12 +41,21 @@ function setTorrentDownloadStatus(torrent, download) {
 }
 
 function waitCompletion(torrent) {
-    torrent.once('done', () => {
-        const paths = torrent.files
+    torrent.once('done', () => checkFilesStatus(torrent))
+}
+
+function checkFilesStatus(torrent) {
+    let paths
+
+    if(torrent.downloaded == torrent.length) {
+        paths = torrent.files.map((file) => file.path)
+    } else {
+        paths = torrent.files
             .filter((file) => file.progress > 0.99)
             .map((file) => file.path)
-        database.setTorrentFileCompleted(torrent.infoHash, paths)
-    })
+    }
+
+    database.setTorrentFileCompleted(torrent.infoHash, paths)
 }
 
 module.exports = {
@@ -110,6 +120,7 @@ module.exports = {
 
         // cleanup torrent databases
         torrentClient.remove(torrentId)
+        remote.stopPlayTorrent(torrentId)
         database.wipeTorrentData(torrentId)
         bookmarks.removeByTorrentInfoHash(torrentId)
 
@@ -117,7 +128,7 @@ module.exports = {
 
         //remove downloader data
         if (removeData) {
-            stopTranscoding(torrent)
+            transcode.stopTranscoding(torrent)
 
             const downloadName = path.join(TORRENTS_DATA_DIR, torrent.name)
             if (await fs.exists(downloadName)) {

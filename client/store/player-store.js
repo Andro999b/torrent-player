@@ -56,13 +56,13 @@ export class LocalDevice extends Device {
     }
 
     @action setSource(source) {
-        if (source.url != this.url) {
+        if (source.browserUrl != this.url) {
             this.source = source
             this.sourceType = 'direct'
             this.keepAliveUrl = null
 
-            if(source.url) {
-                this.url = source.url
+            if(source.browserUrl) {
+                this.url = source.browserUrl
             } else if(source.hlsUrl) {
                 this.source = 'hls'
                 this.url = source.hlsUrl
@@ -147,7 +147,6 @@ export class LocalDevice extends Device {
 
 class PlayerStore {
     @observable device = null
-    torrent = null
 
     @action loadDevice(device) {
         const prevDevice = this.device
@@ -157,10 +156,8 @@ class PlayerStore {
         this.device.connect()
     }
 
-    @action openPlaylist(device, playlist, fileIndex, startTime, torrent) {
+    @action openPlaylist(device, playlist, fileIndex, startTime) {
         if(playlist.files.length === 0) return
-
-        this.torrent = torrent
 
         const prevDevice = this.device
         if(prevDevice) prevDevice.disconnect()
@@ -206,12 +203,6 @@ class PlayerStore {
             this.device.disconnect()
         }
         this.device = null
-    }
-
-    @action closeTorrent(torrent) {
-        if(this.torrent && this.torrent.infoHash === torrent.infoHash) {
-            this.closePlaylist()
-        }
     }
 
     getPlayerTitle() {

@@ -13,7 +13,10 @@ class NNMClubProvider extends Provider {
             selectors: {
                 id: { 
                     selector: '.topictitle', 
-                    transform: ($el) => $el.attr('href').split('=')[1]
+                    transform: ($el) => {
+                        const href = $el.attr('href')
+                        href ? href.split('=')[1] : null
+                    }
                 },
                 name: '.topictitle>b',
                 size: { 

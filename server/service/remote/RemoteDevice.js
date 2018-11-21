@@ -29,15 +29,19 @@ class RemoteDevice extends EventEmitter {
         }
     }
 
-    clearState() {
+    clearState(emitEvents = true) {
         this.state = {}
         this.playlistName = null
-        this.emit(RemoteDevice.Events.Sync, this.state)
-        this.emit(RemoteDevice.Events.Clear)
+        if(emitEvents) {
+            this.emit(RemoteDevice.Events.Sync, this.state)
+            this.emit(RemoteDevice.Events.Clear)
+        }
     }
 
     // eslint-disable-next-line
     doAction(action, payload) {}
+
+    destroy() {}
 }
 
 RemoteDevice.counter = 0

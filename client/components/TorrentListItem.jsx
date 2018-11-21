@@ -64,10 +64,17 @@ class TorrentListItem extends Component {
         const { torrent, onDelete, onSetBackgroudDownload } = this.props
         const { showDetails } = this.state
 
+        let downloadSize
+        if(torrent.downloaded == torrent.length) {
+            downloadSize = filesize(torrent.downloaded).human()
+        } else {
+            downloadSize = `${filesize(torrent.downloaded).human()} (${filesize(torrent.length).human()})`
+        }
+
         const subtitle = (
             <div style={{ color: grey[600] }}>
                 <span style={{ paddingRight: 4 }}>
-                    {filesize(torrent.downloaded).human()}
+                    {downloadSize}
                     {torrent.downloadedSpeed && ` (${filesize(torrent.downloadedSpeed).human()}/sec)`}
                     <DownloadIcon style={{ verticalAlign: 'middle' }} />
                 </span>

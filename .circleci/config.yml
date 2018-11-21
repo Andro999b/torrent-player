@@ -21,6 +21,7 @@ jobs:
           command: |
             yarn
             cd client && yarn
+            zip -r dist
             cd ../server && yarn
 
       - run:
@@ -54,12 +55,20 @@ jobs:
           key: v1-dependencies-server-{{ checksum "server/package.json" }}
       
       - store_artifacts:
+          name: Store Server Binaries
           path: build/out/zip
           destination: server
       
       - store_artifacts:
+          name: Store Electorn Build
           path: build/out/electron/torrent-player-1.0.0.zip
           destination: electron.zip
+
+      - store_artifacts:
+          name: Store Client JS
+          path: client/dist.zip
+          destination: client.zip
+
 
 
 

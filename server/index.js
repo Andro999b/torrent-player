@@ -4,7 +4,9 @@ const {
     TORRENTS_DATA_DIR,
     TORRENTS_DIR,
     TOOLS_DIR,
-    HLS_DIRECTORY
+    HLS_DIRECTORY,
+    DNLA_ENABLED,
+    DNLA_RENDERERS_ENABLED
 } = require('./config')
 
 //ensure directories
@@ -13,7 +15,7 @@ fs.ensureDirSync(TORRENTS_DATA_DIR)
 fs.ensureDirSync(HLS_DIRECTORY)
 
 const dlna = require('./dlna')
-// const dlnaRenderers = require('./dlna/renderers')
+const dlnaRenderers = require('./dlna/renderers')
 const torrentsService = require('./service/torrents')
 const web = require('./web')
 const os = require('os')
@@ -30,8 +32,11 @@ if(fs.existsSync(ffprobePath)) Ffmpeg.setFfprobePath(ffprobePath)
 //start services
 torrentsService.restoreTorrents()
 web()
-dlna()
-// dlnaRenderers()
+
+if(DNLA_ENABLED) {
+    dlna()
+    DNLA_RENDERERS_ENABLED && dlnaRenderers()
+}
 
 process.on('uncaughtException', (e) => console.error(e))
 process.on('SIGPIPE', () => { /* noop for electron */ })

@@ -1,9 +1,15 @@
 const mimeLookup = require('mime-types').lookup
 const { isAudio, isVideo, fileDirectory } = require('../../utils')
+const { TRANSCODING_ENABLED } = require('../../config')
 
 function getTorrentFileContentLink(infoHash, fileIndex) {
+    return `/api/torrents/${infoHash}/files/${fileIndex}`
+}
+
+function getTorrentFileBrowser(infoHash, fileIndex) {
     return `/api/torrents/${infoHash}/files/${fileIndex}/browserVideo`
 }
+
 
 function getTorrentFileHLSLink(infoHash, fileIndex) {
     return `/api/torrents/${infoHash}/files/${fileIndex}/hls`
@@ -22,16 +28,22 @@ module.exports = function(torrent) {
         .map((file, fileIndex) => { 
             if(!isAudio(file.name) && !isVideo(file.name)) return null
 
-            return {
+            const source = {
                 id: fileIndex,
                 name: file.name,
                 path: fileDirectory(file.path),
                 mimeType: mimeLookup(file.name),
                 url: getTorrentFileContentLink(torrent.infoHash, fileIndex),
-                hlsUrl: getTorrentFileHLSLink(torrent.infoHash, fileIndex),
-                transcodedUrl: getTorrentTranscodedLink(torrent.infoHash, fileIndex),
-                keepAliveUrl: getTorrentHLSKeepAliveLink(torrent.infoHash, fileIndex)
+                browserUrl: getTorrentFileBrowser(torrent.infoHash, fileIndex)
             }
+
+            if(TRANSCODING_ENABLED) {
+                source['hlsUrl'] = getTorrentFileHLSLink(torrent.infoHash, fileIndex)
+                source['transcodedUrl'] = getTorrentTranscodedLink(torrent.infoHash, fileIndex)
+                source['keepAliveUrl'] = getTorrentHLSKeepAliveLink(torrent.infoHash, fileIndex)
+            }
+
+            return source
         })
         .filter((f) => f != null)
         .sort((f1, f2) => f1.name.localeCompare(f2.name))

@@ -3,7 +3,7 @@ import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
 import { observer, inject } from 'mobx-react'
 import PropTypes from 'prop-types'
 
-import { Typography } from '@material-ui/core'
+import { CircularProgress } from '@material-ui/core'
 import LocalPlayer from '../components/LocalPlayer'
 import RemotePlayer from '../components/RemotePlayer'
 
@@ -34,9 +34,7 @@ class PlayerView extends Component {
         return (
             <MuiThemeProvider theme={playerTheme}>
                 <div className="player__screen">
-                    {!device && <Typography className="center" align="center" variant="h4">
-                        Waiting for video to be ready
-                    </Typography>}
+                    {!device && <CircularProgress  color="secondary" className="center"/>}
                     {device &&
                         <Fragment>
                             {device.isLocal() && <LocalPlayer />}
