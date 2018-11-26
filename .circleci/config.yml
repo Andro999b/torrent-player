@@ -21,7 +21,6 @@ jobs:
           command: |
             yarn
             cd client && yarn && yarn run build
-            zip -r dist
             cd ../server && yarn
       
       - persist_to_workspace:
