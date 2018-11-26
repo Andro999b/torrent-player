@@ -15,17 +15,11 @@ jobs:
 
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "package.json" }}
           - v1-dependencies-client-{{ checksum "client/package.json" }}
-          - v1-dependencies-server-{{ checksum "server/package.json" }}
-          - v1-dependencies-
 
       - run: 
           name: Install Dependencies
-          command: |
-            yarn
-            cd client && yarn && yarn run build && zip -r dist dist
-            cd ../server && yarn
+          command: cd client && yarn && yarn run build && zip -r dist dist
       
       - persist_to_workspace:
           root: /tmp/repo
@@ -33,22 +27,10 @@ jobs:
             - "*/**"    
 
       - save_cache:
-          name: Save Cache
-          paths:
-            - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
-
-      - save_cache:
           name: Save Client Cache
           paths:
             - client/node_modules
           key: v1-dependencies-client-{{ checksum "client/package.json" }}
-
-      - save_cache:
-          name: Save Server Cache
-          paths:
-            - server/node_modules
-          key: v1-dependencies-server-{{ checksum "server/package.json" }}
 
       - store_artifacts:
           name: Store Client JS
@@ -62,9 +44,19 @@ jobs:
       - attach_workspace:
           at: /tmp/repo
 
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "package.json" }}
+
       - run:
           name: Build Electron
-          command: yarn build
+          command: yarn && yarn build
+
+      - save_cache:
+          name: Save Cache
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
 
       - store_artifacts:
           name: Store Electorn Build
@@ -78,13 +70,25 @@ jobs:
       - attach_workspace:
           at: /tmp/repo
 
+      - restore_cache:
+          keys:
+          - v1-dependencies-server-{{ checksum "server/package.json" }}
+
       - run:
           name: Build Binaries
           command: |
+            cd server && yarn
+            cd ..
             sudo npm i -g pkg
             pkg --version
             chmod +x build/package-bin.sh
             cd build && sudo ./package-bin.sh
+
+      - save_cache:
+          name: Save Server Cache
+          paths:
+            - server/node_modules
+          key: v1-dependencies-server-{{ checksum "server/package.json" }}
 
       - store_artifacts:
           name: Store Server Binaries

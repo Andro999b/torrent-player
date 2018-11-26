@@ -52,7 +52,7 @@
     "debug": "concurrently -n \"SERVER,ELECTRON,WEBPACK\" -c \"black.bold,white,blue.bold\" \"cd server && yarn start\" \"electron ./electron --debug\" \"cd client && yarn start\"",
     "server-debug": "concurrently -n \"SERVER,WEBPACK\" -c \"black.bold,blue.bold\" \"cd server && yarn start\" \"cd client && yarn start\"",
     "server": "cd client && yarn build && cd ../server && yarn start",
-    "build": "cd client && yarn build && cd .. && electron-builder",
+    "build": "electron-builder",
     "build:dir": "electron-builder --dir"
   },
   "devDependencies": {
