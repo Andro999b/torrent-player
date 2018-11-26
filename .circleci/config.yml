@@ -51,7 +51,11 @@ jobs:
 
       - run:
           name: Build Electron
-          command: yarn && yarn build
+          command: |
+            yarn && yarn build
+            cd build/out/electron
+            mkdir zip
+            mv *.zip zip
 
       - save_cache:
           name: Save Cache
@@ -61,8 +65,7 @@ jobs:
 
       - store_artifacts:
           name: Store Electorn Build
-          path: build/out/electron/torrent-player-1.0.0.zip
-          destination: electron.zip
+          path: build/out/electron/zip
 
   build-server-binaries:
     executor: node-x86
