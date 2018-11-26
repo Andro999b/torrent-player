@@ -24,6 +24,7 @@ jobs:
       - persist_to_workspace:
           root: /tmp/repo
           paths: 
+            - "*.*"
             - "*/**"    
 
       - save_cache:
@@ -103,8 +104,8 @@ workflows:
       - build-electron:
           requires:
             - prepare
-    #   - build-server-binaries:
-    #       requires:
-    #         - prepare
+      - build-server-binaries:
+          requires:
+            - prepare
 
 
