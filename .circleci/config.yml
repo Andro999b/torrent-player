@@ -26,7 +26,8 @@ jobs:
       
       - persist_to_workspace:
           root: workspace
-          paths: */**    
+          paths: 
+            - */**    
     #   - run:
     #       name: Build Electron
     #       command: yarn build
