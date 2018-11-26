@@ -94,9 +94,8 @@ jobs:
           destination: server
 
 workflows:
-  version: 2.1
-
-  btd:
+  version: 2
+  build:
     jobs:
       - prepare
       - build-electron:
