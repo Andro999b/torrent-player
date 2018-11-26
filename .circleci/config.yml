@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  build:
+  prepare:
     docker:
       - image: circleci/node:8.12.0
 
@@ -27,17 +27,6 @@ jobs:
           root: /tmp/repo
           paths: 
             - "*/**"    
-    #   - run:
-    #       name: Build Electron
-    #       command: yarn build
-
-    #   - run:
-    #       name: Build Binaries
-    #       command: |
-    #         sudo npm i -g pkg
-    #         pkg --version
-    #         chmod +x build/package-bin.sh
-    #         cd build && sudo ./package-bin.sh
 
       - save_cache:
           name: Save Cache
@@ -56,22 +45,65 @@ jobs:
           paths:
             - server/node_modules
           key: v1-dependencies-server-{{ checksum "server/package.json" }}
-      
-      - store_artifacts:
-          name: Store Server Binaries
-          path: build/out/zip
-          destination: server
-      
-      - store_artifacts:
-          name: Store Electorn Build
-          path: build/out/electron/torrent-player-1.0.0.zip
-          destination: electron.zip
 
       - store_artifacts:
           name: Store Client JS
           path: client/dist.zip
           destination: client.zip
 
+  build-electron:
+    docker:
+      - image: circleci/node:8.12.0
+    
+    working_directory: /tmp/repo
+    
+    steps:
+      - attach_workspace:
+          at: /tmp/repo
 
+      - run:
+          name: Build Electron
+          command: yarn build
+
+      - store_artifacts:
+          name: Store Electorn Build
+          path: build/out/electron/torrent-player-1.0.0.zip
+          destination: electron.zip
+
+  build-server-binaries:
+    docker:
+      - image: circleci/node:8.12.0
+    
+    working_directory: /tmp/repo
+    
+    steps:
+      - attach_workspace:
+          at: /tmp/repo
+
+      - run:
+          name: Build Binaries
+          command: |
+            sudo npm i -g pkg
+            pkg --version
+            chmod +x build/package-bin.sh
+            cd build && sudo ./package-bin.sh
+
+      - store_artifacts:
+          name: Store Server Binaries
+          path: build/out/zip
+          destination: server
+
+workflows:
+  version: 2.1
+
+  btd:
+    jobs:
+      - prepare
+      - build-electron:
+          requires:
+            - prepare
+      - build-server-binaries:
+          requires:
+            - prepare
 
 
