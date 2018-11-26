@@ -42,6 +42,9 @@
     "linux": {
       "target": "zip",
       "category": "Video"
+    },
+    "win": {
+      "target": "zip"
     }
   },
   "scripts": {
