@@ -20,7 +20,7 @@ jobs:
           name: Install Dependencies
           command: |
             yarn
-            cd client && yarn && yarn run build
+            cd client && yarn && yarn run build && zip -r dist dist
             cd ../server && yarn
       
       - persist_to_workspace:
