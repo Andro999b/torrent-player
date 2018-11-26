@@ -172,7 +172,7 @@ function listenIncomeControls(socket) {
 
 function listenNameUpdate(socket) {
     socket.on('updateName', (newName) => deviceName.set(newName))
-    socket.emit('getName')
+    socket.on('connect', () => socket.emit('getName'))
 }
 
 let setAvailability = () => {}

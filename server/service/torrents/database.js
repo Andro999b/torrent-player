@@ -6,7 +6,7 @@ const path = require('path')
 const torrentDb = lowdb(new FileSync(path.join(ROOT_DIR, 'torrents.db.json')))
 
 module.exports = {
-    getTorrentFileCompleteStatus(torrentId, path) {
+    isTorrentFileCompleted(torrentId, path) {
         return torrentDb.get([ torrentId, path, 'complete' ]) == true
     },
     getTorrentFileMetadata(torrentId, path) {

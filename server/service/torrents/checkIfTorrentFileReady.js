@@ -2,7 +2,7 @@ const database = require('./database')
 
 module.exports = function (file) {
     const torrentId = file._torrent.infoHash
-    if (database.getTorrentFileCompleteStatus(torrentId, file.path)) {
+    if (database.isTorrentFileCompleted(torrentId, file.path)) {
         return true
     }
 

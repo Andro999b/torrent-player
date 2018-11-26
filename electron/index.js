@@ -1,14 +1,22 @@
 const { app, BrowserWindow, globalShortcut } = require('electron')
 const { fork } = require('child_process')
+const path = require('path')
 
-const fullscreen = 
-    process.argv.indexOf('--cast-screen') != -1 ||
-    process.argv.indexOf('--fullscreen') != -1
-    
+const appArgs = process.argv
+const fullscreen = appArgs.indexOf('--cast-screen') != -1 || appArgs.indexOf('--fullscreen') != -1
+const noMpv = appArgs.indexOf('--no-mpv') != -1
+const debug = appArgs.indexOf('--debug') != -1
+const devTools = appArgs.indexOf('--dev-tools') != -1 || debug
+
 let serverProcess
 
 function appReady() {
-    serverProcess = fork('./server/index.js', process.argv)
+    if (debug) {
+        createMainWindow()
+        return
+    }
+
+    serverProcess = fork('./server/index.js', appArgs)
         .on('exit', (code, signal) => {
             console.error(`Server process exited. code: ${code}, signal: ${signal}`)
             process.exit()
@@ -20,19 +28,35 @@ function appReady() {
         .on('message', createMainWindow)
 }
 
-function createMainWindow () {
-    const win = new BrowserWindow({ 
+function getMPVPluginEntry() {
+    const platform = process.platform
+    const arch = process.arch
+    
+    const pluginDir = path.join(__dirname, 'plugins', 'mpv')
+    const fullPluginPath = path.join(pluginDir, `${platform}-${arch}`)
+    
+    let pluginPath = path.relative(process.cwd(), fullPluginPath)
+
+    return `${pluginPath};application/x-mpvjs`
+}
+
+function createMainWindow() {
+    const win = new BrowserWindow({
         allowRunningInsecureContent: true,
         fullscreen,
         webPreferences: {
-            additionalArguments: process.argv.slice(2),
-            webSecurity: false
+            additionalArguments: appArgs.slice(2),
+            webSecurity: false,
+            plugins: true,
+            devTools
         },
         show: false,
-        backgroundThrottling: false
+        backgroundThrottling: false,
     })
-    win.loadURL('http://localhost:8080')
-    win.setMenu(null)
+
+    !devTools && win.setMenu(null)
+
+    win.loadURL(`http://localhost:${debug ? 3000 : 8080}`)
     win.on('ready-to-show', () => {
         !fullscreen && win.maximize()
         win.show()
@@ -43,9 +67,15 @@ function createMainWindow () {
     })
 }
 
-app.commandLine.appendSwitch('--autoplay-policy','no-user-gesture-required')
+app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required')
+
+if(!noMpv) {
+    app.commandLine.appendSwitch('ignore-gpu-blacklist')
+    app.commandLine.appendSwitch('register-pepper-plugins', getMPVPluginEntry())
+}
+
 app.on('ready', appReady)
 app.on('window-all-closed', () => {
     console.log('All windows closed. Shutdown server') // eslint-disable-line 
-    serverProcess.kill()
+    serverProcess && serverProcess.kill()
 })

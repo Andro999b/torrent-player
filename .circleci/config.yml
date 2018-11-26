@@ -20,21 +20,24 @@ jobs:
           name: Install Dependencies
           command: |
             yarn
-            cd client && yarn
+            cd client && yarn && yarn run build
             zip -r dist
             cd ../server && yarn
+      
+      - persist_to_workspace:
+          root: workspace
+          paths: */**    
+    #   - run:
+    #       name: Build Electron
+    #       command: yarn build
 
-      - run:
-          name: Build Electron
-          command: yarn build
-
-      - run:
-          name: Build Binaries
-          command: |
-            sudo npm i -g pkg
-            pkg --version
-            chmod +x build/package-bin.sh
-            cd build && sudo ./package-bin.sh
+    #   - run:
+    #       name: Build Binaries
+    #       command: |
+    #         sudo npm i -g pkg
+    #         pkg --version
+    #         chmod +x build/package-bin.sh
+    #         cd build && sudo ./package-bin.sh
 
       - save_cache:
           name: Save Cache

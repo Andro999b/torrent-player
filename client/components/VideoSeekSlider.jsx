@@ -4,8 +4,6 @@ import { toHHMMSS } from '../utils'
 
 /**
  * Origin source: https://github.com/egorovsa/react-video-seek-slider
- * 
- * TODO: investigate: why 2 flags for seeking
  */
 class VideoSeekSlider extends Component {
     constructor(props, context) {

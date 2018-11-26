@@ -1,6 +1,7 @@
-const mimeLookup = require('mime-types').lookup
+const path = require('path')
 const { isAudio, isVideo, fileDirectory } = require('../../utils')
-const { TRANSCODING_ENABLED } = require('../../config')
+const { TRANSCODING_ENABLED, TORRENTS_DATA_DIR } = require('../../config')
+const checkIfTorrentFileReady = require('./checkIfTorrentFileReady')
 
 function getTorrentFileContentLink(infoHash, fileIndex) {
     return `/api/torrents/${infoHash}/files/${fileIndex}`
@@ -32,15 +33,19 @@ module.exports = function(torrent) {
                 id: fileIndex,
                 name: file.name,
                 path: fileDirectory(file.path),
-                mimeType: mimeLookup(file.name),
                 url: getTorrentFileContentLink(torrent.infoHash, fileIndex),
-                browserUrl: getTorrentFileBrowser(torrent.infoHash, fileIndex)
+                browserUrl: getTorrentFileBrowser(torrent.infoHash, fileIndex),
+                preferMpv: true
             }
 
             if(TRANSCODING_ENABLED) {
                 source['hlsUrl'] = getTorrentFileHLSLink(torrent.infoHash, fileIndex)
                 source['transcodedUrl'] = getTorrentTranscodedLink(torrent.infoHash, fileIndex)
                 source['keepAliveUrl'] = getTorrentHLSKeepAliveLink(torrent.infoHash, fileIndex)
+            }
+
+            if(checkIfTorrentFileReady(file)) {
+                source['fsPath'] = path.join(TORRENTS_DATA_DIR, file.path)
             }
 
             return source

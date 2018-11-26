@@ -142,7 +142,7 @@ module.exports = {
     getTorrent(torrentId) {
         const torrent = torrentClient.get(torrentId)
         torrent.downloadInBackground = 
-            database.isEnabledDownloadInBackground(torrent.infoHash)
+            database.isEnabledDownloadInBackground(torrentId)
 
         return torrent
     },

@@ -1,6 +1,5 @@
 import remoteControl from './remote-control'
 import { observable, action } from 'mobx'
-import request from 'superagent'
 import localStore from 'store'
 
 export class Device {
@@ -39,7 +38,6 @@ export class Device {
 export class LocalDevice extends Device {
     @observable url = null
     keepAliveUrl = null
-    @observable sourceType = 'direct'
     @observable seekTime = null
 
     keepAliveInterval = 0
@@ -48,31 +46,13 @@ export class LocalDevice extends Device {
     constructor() {
         super()
         this.volume = localStore.get('volume') || 1
-        this.keepAliveInterval= setInterval(() => {
-            if(this.keepAliveUrl) {
-                request.get(this.keepAliveUrl).end()
-            }
-        }, 5000) // each 5 sec call server keep alive
     }
 
     @action setSource(source) {
-        if (source.browserUrl != this.url) {
-            this.source = source
-            this.sourceType = 'direct'
-            this.keepAliveUrl = null
-
-            if(source.browserUrl) {
-                this.url = source.browserUrl
-            } else if(source.hlsUrl) {
-                this.source = 'hls'
-                this.url = source.hlsUrl
-                this.keepAliveUrl = source.keepAliveUrl
-            }
-
-            this.currentTime = 0
-            this.duration = 0
-            this.buffered = 0
-        }
+        this.source = source
+        this.currentTime = 0
+        this.duration = 0
+        this.buffered = 0
     }
 
     @action play(currentTime) {
@@ -95,9 +75,9 @@ export class LocalDevice extends Device {
     }
 
     @action onUpdate({ duration, buffered, currentTime }) {
-        this.duration = duration
-        this.buffered = buffered
-        this.currentTime = currentTime
+        if(duration) this.duration = duration
+        if(buffered) this.buffered = buffered
+        if(currentTime) this.currentTime = currentTime
     }
 
     @action setPlaylist(playlist, fileIndex, startTime) {
@@ -117,13 +97,7 @@ export class LocalDevice extends Device {
     }
 
     @action setError(error) {
-        if(error && this.sourceType != 'hls' && this.source.hlsUrl) { //switch to hls in case of error
-            this.sourceType = 'hls'
-            this.url = this.source.hlsUrl
-            this.keepAliveUrl = this.source.keepAliveUrl
-        } else {
-            this.error = error
-        }
+        this.error = error
     }
 
     @action setVolume(volume) {
@@ -140,7 +114,7 @@ export class LocalDevice extends Device {
     }
 
     disconnect() {
-        clearInterval(this.keepAliveInterval)
+        // clearInterval(this.keepAliveInterval)
         remoteControl.setAvailability(false)
     }
 }

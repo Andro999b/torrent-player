@@ -7,12 +7,13 @@ import MediaControls from './MediaControls'
 import PlayerFilesList from './PlayerPlayList'
 import PlayerTitle from './PlayerTitle'
 import VideoScrean from './VideoScrean'
+import MPVScrean from './MPVScrean'
 import PlayBackSeekZones from './PlayBackSeekZones'
 
 import { Typography, CircularProgress } from '@material-ui/core'
 import { observer, inject } from 'mobx-react'
 
-import { isMobile } from '../utils'
+import { isMobile, isElectron, hasArgv } from '../utils'
 
 const IDLE_TIMEOUT = 3000
 
@@ -119,7 +120,11 @@ class LocalPlayer extends Component {
         const { playerStore } = this.props
         const { playlistOpen, idle, fullScreen } = this.state
         const { device } = playerStore
-        const { isLoading, error } = device
+        const { isLoading, error, source } = device
+
+        const useMpv = isElectron() && 
+            !hasArgv('no-mpv') && 
+            source.preferMpv
 
         return (
             <Fullscreen
@@ -127,7 +132,8 @@ class LocalPlayer extends Component {
                 onChange={this.handleSetFullScreen}
             >
                 <div className={idle ? 'idle': ''}>
-                    <VideoScrean device={device} onEnded={playerStore.nextFile} />
+                    { useMpv && <MPVScrean device={device} onEnded={playerStore.nextFile} /> }
+                    { !useMpv && <VideoScrean device={device} onEnded={playerStore.nextFile} /> }
                     { isLoading && <div className="center"><CircularProgress color="secondary"/></div> }
                     { error && <Typography className="center" variant="h4">{error}</Typography> }
                     <PlayBackSeekZones playerStore={playerStore}/>
