@@ -52,7 +52,7 @@ jobs:
       - run:
           name: Build Electron
           command: |
-            yarn && yarn build
+            yarn && yarn build:linux
             cd build/out/electron
             mkdir zip
             mv *.zip zip
