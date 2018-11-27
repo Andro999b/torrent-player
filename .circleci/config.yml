@@ -20,7 +20,12 @@ jobs:
 
       - run: 
           name: Install Dependencies
-          command: cd client && yarn && yarn run build && zip -r dist dist
+          command: |
+            cd client && yarn
+            cd ../server && yarn 
+      - run:
+          name: Build client
+          command: yarn run build && zip -r dist dist
       
       - persist_to_workspace:
           root: /tmp/repo
@@ -33,7 +38,7 @@ jobs:
           paths:
             - client/node_modules
           key: v1-dependencies-client-{{ checksum "client/package.json" }}
-          
+
       - save_cache:
           name: Save Server Cache
           paths:
@@ -85,8 +90,6 @@ jobs:
       - run:
           name: Build Binaries
           command: |
-            cd server && yarn
-            cd ..
             sudo npm i -g pkg
             pkg --version
             chmod +x build/server-binaries.sh
