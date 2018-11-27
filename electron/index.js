@@ -32,10 +32,9 @@ function getMPVPluginEntry() {
     const platform = process.platform
     const arch = process.arch
     
-    const pluginDir = path.join(__dirname, 'plugins', 'mpv')
-    const fullPluginPath = path.join(pluginDir, `${platform}-${arch}`)
-    
-    let pluginPath = path.relative(process.cwd(), fullPluginPath)
+    const pluginPath = path.join(process.cwd(), 'plugins', `mpv-${platform}-${arch}`)
+
+    console.log('MPV Plugin path:', pluginPath) // eslint-disable-line
 
     return `${pluginPath};application/x-mpvjs`
 }

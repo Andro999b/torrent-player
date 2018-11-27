@@ -85,8 +85,8 @@ jobs:
             cd ..
             sudo npm i -g pkg
             pkg --version
-            chmod +x build/package-bin.sh
-            cd build && sudo ./package-bin.sh
+            chmod +x build/server-binaries.sh
+            cd build && sudo ./server-binaries.sh
 
       - save_cache:
           name: Save Server Cache

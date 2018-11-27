@@ -20,6 +20,7 @@
     "files": [
       "electron"
     ],
+    "afterPack": "./build/electron-hooks/afterPack.js",
     "extraFiles": [
       {
         "from": "server",
@@ -33,10 +34,6 @@
       {
         "from": "client/dist",
         "to": "client"
-      },
-      {
-        "from": "electron/plugins",
-        "to": "plugins"
       }
     ],
     "linux": {

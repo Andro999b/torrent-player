@@ -37,11 +37,8 @@ export class Device {
 
 export class LocalDevice extends Device {
     @observable url = null
-    keepAliveUrl = null
     @observable seekTime = null
-
-    keepAliveInterval = 0
-    source = null
+    @observable source = null
 
     constructor() {
         super()

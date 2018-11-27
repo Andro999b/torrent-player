@@ -30,7 +30,9 @@ class MPVScrean extends BaseScrean {
     }
 
     onSource(source, startTime=0) {
-        const { mpv } = this
+        const { mpv, props: { device } } = this
+
+        device.setLoading(true)
 
         if(source.fsPath) {
             mpv.command('loadfile', 
@@ -79,7 +81,7 @@ class MPVScrean extends BaseScrean {
                 device.onUpdate({ duration: value })
                 break
             case 'eof-reached':
-                onEnded()
+                if(value) onEnded()
                 break
         }
     }

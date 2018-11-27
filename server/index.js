@@ -22,12 +22,14 @@ const os = require('os')
 const Ffmpeg = require('fluent-ffmpeg')
 
 //init tools path
-const platformExt = os.platform() == 'win32' ? '.exe' : ''
-const ffmpegPath = path.join(TOOLS_DIR, `${os.platform()}-${os.arch()}-ffmpeg${platformExt}`)
-const ffprobePath = path.join(TOOLS_DIR, `${os.platform()}-${os.arch()}-ffprobe${platformExt}`)
+if(TOOLS_DIR) {
+    const platformExt = os.platform() == 'win32' ? '.exe' : ''
+    const ffmpegPath = path.join(TOOLS_DIR, `${os.platform()}-${os.arch()}-ffmpeg${platformExt}`)
+    const ffprobePath = path.join(TOOLS_DIR, `${os.platform()}-${os.arch()}-ffprobe${platformExt}`)
 
-if(fs.existsSync(ffmpegPath)) Ffmpeg.setFfmpegPath(ffmpegPath)
-if(fs.existsSync(ffprobePath)) Ffmpeg.setFfprobePath(ffprobePath)
+    if(fs.existsSync(ffmpegPath)) Ffmpeg.setFfmpegPath(ffmpegPath)
+    if(fs.existsSync(ffprobePath)) Ffmpeg.setFfprobePath(ffprobePath)
+}
 
 //start services
 torrentsService.restoreTorrents()
