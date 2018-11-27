@@ -96,47 +96,49 @@ class VideoScrean extends BaseScrean {
         this.restoreVideoState()
     }
 
-    startHlsVide() {
+    startHlsVideo() {
         this.hlsMode = true
 
         const { props: { device }} = this   
         const { source } = device
 
-        if (source.hlsUrl && Hls.isSupported()) {
-            const hls = new Hls({
-                startPosition: device.currentTime,
-                xhrSetup: (xhr) => xhr.timeout = 0
-            })
-            
-            hls.attachMedia(this.video)
-            hls.on(Hls.Events.MANIFEST_PARSED, () => this.restoreVideoState())
-            hls.on(Hls.Events.ERROR, (_, data) => {
-                if (data.fatal) {
-                    switch(data.type) {
-                        case Hls.ErrorTypes.NETWORK_ERROR:
-                            // try to recover network error
-                            console.log('fatal network error encountered, try to recover') // eslint-disable-line 
-                            hls.startLoad()
-                            break
-                        case Hls.ErrorTypes.MEDIA_ERROR:
-                            console.log('fatal media error encountered, try to recover') // eslint-disable-line
-                            hls.recoverMediaError()
-                            break
-                        default:
-                            // cannot recover
-                            device.setError('Can`t play media')
-                            hls.destroy()
-                            break
-                    }
+        const hls = new Hls({
+            startPosition: device.currentTime,
+            xhrSetup: (xhr) => xhr.timeout = 0
+        })
+        
+        hls.attachMedia(this.video)
+        hls.on(Hls.Events.MANIFEST_PARSED, () => this.restoreVideoState())
+        hls.on(Hls.Events.ERROR, (_, data) => {
+            if (data.fatal) {
+                switch(data.type) {
+                    case Hls.ErrorTypes.NETWORK_ERROR:
+                        // try to recover network error
+                        console.log('fatal network error encountered, try to recover') // eslint-disable-line 
+                        hls.startLoad()
+                        break
+                    case Hls.ErrorTypes.MEDIA_ERROR:
+                        console.log('fatal media error encountered, try to recover') // eslint-disable-line
+                        hls.recoverMediaError()
+                        break
+                    default:
+                        // cannot recover
+                        device.setError('Can`t play media')
+                        hls.destroy()
+                        break
                 }
-            })
+            }
+        })
 
-            hls.loadSource(source.hlsUrl)
+        hls.loadSource(source.hlsUrl)
 
-            this.hls = hls
-        } else {
-            this.handleError()
-        }
+        this.hls = hls
+    }
+
+    isHlsAvaliable() {
+        const { props: { device: { source } }} = this  
+
+        return source.hlsUrl && Hls.isSupported()
     }
 
     keepHlsAlive() {
@@ -188,8 +190,8 @@ class VideoScrean extends BaseScrean {
     handleError = () => {
         const { device } = this.props
 
-        if(this.hlsMode) {
-            this.startHlsVide()
+        if(!this.hlsMode && this.isHlsAvaliable()) { // retry with hls
+            this.startHlsVideo()
             return
         }
 

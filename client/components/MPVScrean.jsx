@@ -40,7 +40,7 @@ class MPVScrean extends BaseScrean {
             )
         } else {
             mpv.command('loadfile', 
-                location.protocol + location.host + source.url, 
+                location.protocol + '//' + location.host + source.url, 
                 'replace', 
                 `start=${startTime}` 
             )

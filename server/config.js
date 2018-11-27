@@ -9,7 +9,7 @@ const ROOT_DIR = firstExistPath([
 ])
 
 module.exports = {
-    VIDEO_ENCODER: argv['video-encoder'] || 'libx264',
+    VIDEO_ENCODER: argv['transcode-video-encoder'] || 'libx264',
     CLIENT_DIR: firstExistPath([
         path.join('client', 'dist'),
         path.join('..', 'client', 'dist'),
@@ -40,7 +40,7 @@ module.exports = {
         audio: ['acc', 'mp3'],
         video: ['h264'],
     },
-    TRANSCODING_ENABLED: argv['no-trascoding'] !== true,
+    TRANSCODING_ENABLED: argv['no-transcoding'] !== true,
     DNLA_ENABLED: argv['no-dnla'] !== true,
     DNLA_RENDERERS_ENABLED: argv['no-dnla-renderers'] !== true,
 }
