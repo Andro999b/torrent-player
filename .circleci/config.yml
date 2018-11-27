@@ -25,7 +25,10 @@ jobs:
             cd ../server && yarn 
       - run:
           name: Build client
-          command: yarn run build && zip -r dist dist
+          command: |
+            cd client
+            yarn run build
+            zip -r dist dist
       
       - persist_to_workspace:
           root: /tmp/repo
