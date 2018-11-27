@@ -66,6 +66,7 @@ jobs:
       - store_artifacts:
           name: Store Electorn Build
           path: build/out/electron/zip
+          destination: electron
 
   build-server-binaries:
     executor: node-x86

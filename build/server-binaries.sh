@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ARCHIVE_NAME="package"
+ARCHIVE_NAME="server"
 NODE_VERSION="8"
 TARGETS="win linux"
 ARCHS="x64"
