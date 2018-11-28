@@ -55,7 +55,11 @@ class BookmarkItem extends Component {
                     <ListItemIcon className="hide-on-mobile">
                         <PlayableIcon />
                     </ListItemIcon>
-                    <ListItemText primary={name} secondary={fileName}/>
+                    <ListItemText primary={name} secondary={
+                        <div style={{ wordBreak: 'break-all' }}>
+                            {fileName}
+                        </div>
+                    }/>
                     <ListItemSecondaryAction>
                         <IconButton onClick={this.handleOpenMenu}>
                             <MoreIcon />

@@ -10,10 +10,12 @@ exports.default = async function(context) {
     const arch = ['x64', 'arm'][context.arch - 1]  
 
     const pluginsDir = path.join(outDir, '../../../plugins')
+    const toolsDir = path.join(outDir, '../../../tools')
     const libsDir = path.join(outDir, '../../../libs', `${platform}-${arch}`)
 
-    console.log(pluginsDir)
-    console.log(libsDir)
+    // console.log(pluginsDir)
+    // console.log(toolsDir)
+    // console.log(libsDir)
 
     //copy mpv plugin
     const mpvPluginName = `mpv-${platform}-${arch}`
@@ -34,5 +36,22 @@ exports.default = async function(context) {
 
     if(await exists(libMpvPath)) {
         await cp(libMpvPath, path.join(appOutDir, libMpvName))
+    }
+
+    //copy ffmpeg and ffprobe
+    const exeEnding = platform == 'win32'?'.exe':''
+    const ffmpegName = `${platform}-${arch}-ffmpeg${exeEnding}`
+    const ffprobeName = `${platform}-${arch}-ffprobe${exeEnding}`
+    const ffmpegPath = path.join(toolsDir, ffmpegName)
+    const ffprobePath = path.join(toolsDir, ffprobeName)
+
+    if(await exists(ffmpegPath) && await exists(ffprobePath)) {
+        const appOutToolsDir = path.join(appOutDir, 'tools')
+
+        if(!await exists(appOutToolsDir))
+            await mkdir(appOutToolsDir)
+
+        await cp(ffmpegPath, path.join(appOutToolsDir, ffmpegName))
+        await cp(ffprobePath, path.join(appOutToolsDir, ffprobeName))
     }
 }
