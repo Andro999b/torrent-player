@@ -23,10 +23,13 @@ class CastAwaitView extends Component {
 
         return (
             <div  className="screan-view" ref={(node) => (this.node = node)}>
-                <Typography className="center" align="center" variant="h4">
-                    { toJS(deviceName) }<br/>
-                    Awaiting connection
-                </Typography>
+                <div className="center">
+                    <img className="screan-view_qr-code" src='/remoteQrCode'/>
+                    <Typography align="center" variant="h4">
+                        { toJS(deviceName) }<br/>
+                        Scan QR code for remote control
+                    </Typography>
+                </div>
             </div>
         )
     }

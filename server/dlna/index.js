@@ -2,7 +2,7 @@ const uuid = require('uuid')
 const UPNPServer = require('./upnp-server/Server')
 const { toXML } = require('jstoxml')
 const torrentsService = require('../service/torrents')
-const { DLNA_PORT, TRANSCODING_ENABLED } = require('../config')
+const { DLNA_PORT, TRANSCODING_ENABLED, DLNA_UUID } = require('../config')
 const getMediaResource = require('./resources')
 const getTorrentFs = require('./torrentFs')
 const debug = require('debug')('dlna')
@@ -160,7 +160,7 @@ module.exports = function () {
     })
 
     const device = server.createDevice({
-        uuid: 1,//uuid(),
+        uuid: DLNA_UUID,
         productName: 'Torrents',
         productVersion: '0.0.1',
         domain: 'schemas-upnp-org',

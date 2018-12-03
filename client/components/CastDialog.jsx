@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import PropTypes from 'prop-types'
 import { inject, observer } from 'mobx-react'
 import {
@@ -25,14 +25,15 @@ class CastDialog extends Component {
 
     render() {
         const { options, devices, closeCastDailog } = this.props
-        const filter = options && options.filter
-        const filtered = 
-            typeof filter == 'function' ? 
-                devices.filter(filter) :
-                devices
+        
+        if(options != null) {
+            const filter =  options.filter
+            const filtered = 
+                typeof filter == 'function' ? 
+                    devices.filter(filter) :
+                    devices
 
-        return (
-            <Dialog open={options != null} onClose={closeCastDailog}>
+            this.renderedContent =  <Fragment>
                 {filtered.length == 0 && <DialogTitle>No avaliable devices</DialogTitle>}
                 {filtered.length > 0 &&
                     <div>
@@ -51,6 +52,12 @@ class CastDialog extends Component {
                         </List>
                     </div>
                 }
+            </Fragment>
+        }
+
+        return (
+            <Dialog open={options != null} onClose={closeCastDailog}>
+                {this.renderedContent}
             </Dialog>
         )
     }

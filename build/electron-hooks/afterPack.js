@@ -13,10 +13,6 @@ exports.default = async function(context) {
     const toolsDir = path.join(outDir, '../../../tools')
     const libsDir = path.join(outDir, '../../../libs', `${platform}-${arch}`)
 
-    // console.log(pluginsDir)
-    // console.log(toolsDir)
-    // console.log(libsDir)
-
     //copy mpv plugin
     const mpvPluginName = `mpv-${platform}-${arch}`
     const mpvPluginPath = path.join(pluginsDir, mpvPluginName)

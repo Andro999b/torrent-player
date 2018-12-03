@@ -1,3 +1,4 @@
+const uuid = require('uuid')
 const os = require('os')
 const path = require('path')
 const argv = require('minimist')(process.argv.slice(2))
@@ -23,6 +24,7 @@ module.exports = {
         path.join('tools'),
         path.join('..', 'tools'),
     ]),
+    DLNA_UUID: argv['dlna-uid'] || uuid(),
     DLNA_PORT: argv['dlna-port'] || 5004,
     WEB_PORT: argv['web-port'] || 8080,
     TRANSCODER_IDLE_TIMEOUT: 60 * 1000,

@@ -86,7 +86,11 @@ class PlayerPlayList extends Component {
                             const style = currentFileIndex === file.index ? { background: grey[600] } : {}
                             return (
                                 <ListItem button key={file.id} style={style} onClick={() => onFileSelected(file.index)}>
-                                    <ListItemText primary={file.name} />
+                                    <ListItemText primary={
+                                        <div style={{ wordBreak: 'break-all' }}>
+                                            {file.name}
+                                        </div>
+                                    } />
                                 </ListItem>
                             )
                         })}

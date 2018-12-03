@@ -8,6 +8,7 @@ const libraryApi = require('./library')
 const proxyMedia = require('./proxyMedia')
 const extractVideo = require('./extractVideo')
 const remote = require('./remote')
+const remoteQrCode = require('./remoteQrCode')
 
 const { WEB_PORT, CLIENT_DIR } = require('../config')
 
@@ -24,6 +25,7 @@ module.exports = function () {
     expressServer.use('/api/suggestions', suggestionsApi)
     expressServer.use('/proxyMedia', proxyMedia)
     expressServer.use('/extractVideo', extractVideo)
+    expressServer.use('/remoteQrCode', remoteQrCode)
 
     // eslint-disable-next-line no-unused-vars
     expressServer.use((err, req, res, next) => {
