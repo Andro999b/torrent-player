@@ -1,7 +1,8 @@
 const ResponseError = require('../../utils/ResponseError')
 
 const extractors = {
-    'stormTv': require('./stormTVExtractor')
+    'stormTv': require('./stormTVExtractor'),
+    'animevost': require('./animevostExtractor')
 }
 
 module.exports = async (type, url) => {

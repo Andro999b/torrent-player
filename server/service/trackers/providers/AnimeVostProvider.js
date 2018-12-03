@@ -7,7 +7,6 @@ class AnimeVostProvider extends DataLifeProvider {
         super({
             baseUrl: 'http://animevost.org',
             searchUrl: 'http://animevost.org/index.php?do=search',
-            videoHostUrl: 'http://video.aniland.org',
             scope: '.shortstory',
             pageSize: 50,
             selectors: {
@@ -53,12 +52,15 @@ class AnimeVostProvider extends DataLifeProvider {
                         const episodesData = JSON.parse(episodesDataStr.replace(',}', '}'))
 
                         return Object.keys(episodesData)
-                            .map((key, index) => ({
-                                index,
-                                id: index,
-                                name: key,
-                                url: `${this.config.videoHostUrl}/${episodesData[key]}.mp4`
-                            }))
+                            .map((key, index) => {
+                                const playerUrl = `http://play.aniland.org/${episodesData[key]}`
+                                return {
+                                    index,
+                                    id: index,
+                                    name: key,
+                                    url: `/extractVideo?type=animevost&url=${urlencode(playerUrl)}`
+                                }
+                            })
                     }
                 }
             }
