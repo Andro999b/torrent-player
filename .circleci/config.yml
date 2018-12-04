@@ -53,11 +53,6 @@ jobs:
             - server/node_modules
           key: v1-dependencies-server-{{ checksum "server/package.json" }}
 
-      # - store_artifacts:
-      #     name: Store Client JS
-      #     path: client/dist.zip
-      #     destination: client.zip
-
   build-electron:
     executor: node-x86
     
@@ -74,8 +69,6 @@ jobs:
           command: |
             yarn && yarn build
             cd build/out/electron
-            # mkdir zip
-            # mv *.zip zip
 
       - save_cache:
           name: Save Cache
@@ -83,10 +76,6 @@ jobs:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
 
-      # - store_artifacts:
-      #     name: Store Electorn Build
-      #     path: build/out/electron/zip
-      #     destination: electron
 
       - persist_to_workspace:
           root: /tmp/repo
@@ -107,11 +96,6 @@ jobs:
             pkg --version
             chmod +x build/server-binaries.sh
             cd build && sudo ./server-binaries.sh
-
-      # - store_artifacts:
-      #     name: Store Server Binaries
-      #     path: build/out/zip
-      #     destination: server
 
       - persist_to_workspace:
           root: /tmp/repo
