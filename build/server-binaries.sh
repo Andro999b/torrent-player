@@ -25,7 +25,7 @@ for target in $TARGETS; do
         pkg --target node$NODE_VERSION-$target-$arch --output $OUT-$arch ../server/index.js
     done
 
-    zip -r $OUT_ZIP/$ARCHIVE_NAME-$target-$VERSION \
+    zip -r $OUT_ZIP/$ARCHIVE_NAME-$target-$VERSION.zip \
         $OUT_BIN/*$target*\
         $OUT_BIN/tools/*$target*\
         $OUT_BIN/resources/*\
