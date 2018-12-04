@@ -1,6 +1,6 @@
 {
   "name": "torrent-player",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Video player for popular torrent trackers",
   "author": {
     "name": "Andrii Pivovarov",
@@ -12,38 +12,6 @@
     "type": "git",
     "url": "https://github.com/Andro999b/torrent-player"
   },
-  "build": {
-    "directories": {
-      "output": "build/out/electron"
-    },
-    "electronVersion": "3.0.5",
-    "files": [
-      "electron"
-    ],
-    "afterPack": "./build/electron-hooks/afterPack.js",
-    "extraFiles": [
-      {
-        "from": "server",
-        "to": "server",
-        "filter": [
-          "*.js",
-          "*/**"
-        ]
-      },
-      "resources",
-      {
-        "from": "client/dist",
-        "to": "client"
-      }
-    ],
-    "linux": {
-      "target": "zip",
-      "category": "Video"
-    },
-    "win": {
-      "target": "zip"
-    }
-  },
   "scripts": {
     "use-system-ffmpeg": "gcc -Wl,--no-as-needed -shared -lavformat -o node_modules/electron/dist/libffmpeg.so",
     "cast-screen": "electron ./electron --cast-screen",
@@ -52,9 +20,7 @@
     "debug": "concurrently -n \"SERVER,ELECTRON,WEBPACK\" -c \"black.bold,white,blue.bold\" \"cd server && yarn start\" \"electron ./electron --debug\" \"cd client && yarn start\"",
     "server-debug": "concurrently -n \"SERVER,WEBPACK\" -c \"black.bold,blue.bold\" \"cd server && yarn start\" \"cd client && yarn start\"",
     "server": "cd client && yarn build && cd ../server && yarn start",
-    "build": "yarn build:linux && yarn build:win",
-    "build:linux": "electron-builder --linux --x64 --armv7l",
-    "build:win": "electron-builder --win",
+    "build": "electron-builder --win --linux",
     "build:dir": "electron-builder --dir"
   },
   "devDependencies": {
