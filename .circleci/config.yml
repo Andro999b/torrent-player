@@ -129,6 +129,7 @@ jobs:
           command: |
             go get github.com/tcnksm/ghr
             VERSION="1.0.$CIRCLE_BUILD_NUM"
+            echo "Release version ${VERSION}"
             ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} /tmp/repo/build/out/
 
 
