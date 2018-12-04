@@ -1,11 +1,15 @@
 # Torrent player
 
-Pear play that able to search on popular russian torrent trackers download and play Movies / TV show / Cartoons / Anime.
+Pear player that able to search on popular russian torrent trackers download and play Movies / TV show / Cartoons / Anime.
 In addional to this it able to cast video using dlna protocol or serve as dlna media server. 
-It also support remote controle from mobile or a browser and automaticaly transcode video stream using ffmpeg.
+It also support remote controle from mobile or browser and automaticaly transcode video stream using ffmpeg.
 Can be runned as web server or desktop application(electron version)
 
-# How to run
+# Download
+
+Checkout [Release](https://github.com/Andro999b/torrent-player/releases) for prebuilded binaries 
+
+# Build and run
 
 install dependencies
 ```
@@ -42,7 +46,7 @@ build/out/electron
 
 # Transcoding
 
-Player use ffmpeg for transcoding. Binaries already included in repo and contains in tools directory. If you want use system ffmpeg just remove this directory.
+Player use ffmpeg for transcoding. Binaries already included in a repo and contains in a tools directory. If you want use system ffmpeg just remove this directory.
 
 # RuTracker setup
 
