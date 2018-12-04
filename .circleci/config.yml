@@ -89,9 +89,9 @@ jobs:
       #     destination: electron
 
       - persist_to_workspace:
-          root: /tmp/repo/build/out
+          root: /tmp/repo
           paths: 
-            - "electron/*.zip" 
+            - "build/out/electron/*.zip" 
 
   build-server:
     executor: node-x86
