@@ -5,7 +5,8 @@ NODE_VERSION="8"
 TARGETS="win linux"
 ARCHS="x64"
 OUT_BIN="out/bin"
-OUT_ZIP="out/zip"
+OUT_ZIP="out/server"
+VERSION=1.0.${CIRCLE_BUILD_NUM:-"0"}
 
 rm -rf $OUT_BIN
 mkdir -p $OUT_BIN
@@ -24,7 +25,7 @@ for target in $TARGETS; do
         pkg --target node$NODE_VERSION-$target-$arch --output $OUT-$arch ../server/index.js
     done
 
-    zip -r $OUT_ZIP/$ARCHIVE_NAME-$target \
+    zip -r $OUT_ZIP/$ARCHIVE_NAME-$target-$VERSION \
         $OUT_BIN/*$target*\
         $OUT_BIN/tools/*$target*\
         $OUT_BIN/resources/*\

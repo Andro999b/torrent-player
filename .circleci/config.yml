@@ -53,10 +53,10 @@ jobs:
             - server/node_modules
           key: v1-dependencies-server-{{ checksum "server/package.json" }}
 
-      - store_artifacts:
-          name: Store Client JS
-          path: client/dist.zip
-          destination: client.zip
+      # - store_artifacts:
+      #     name: Store Client JS
+      #     path: client/dist.zip
+      #     destination: client.zip
 
   build-electron:
     executor: node-x86
@@ -74,8 +74,8 @@ jobs:
           command: |
             yarn && yarn build
             cd build/out/electron
-            mkdir zip
-            mv *.zip zip
+            # mkdir zip
+            # mv *.zip zip
 
       - save_cache:
           name: Save Cache
@@ -83,12 +83,17 @@ jobs:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
 
-      - store_artifacts:
-          name: Store Electorn Build
-          path: build/out/electron/zip
-          destination: electron
+      # - store_artifacts:
+      #     name: Store Electorn Build
+      #     path: build/out/electron/zip
+      #     destination: electron
 
-  build-server-binaries:
+      - persist_to_workspace:
+          root: /tmp/repo
+          paths: 
+            - "build/out/electron/*.zip" 
+
+  build-server:
     executor: node-x86
     
     steps:
@@ -103,10 +108,29 @@ jobs:
             chmod +x build/server-binaries.sh
             cd build && sudo ./server-binaries.sh
 
-      - store_artifacts:
-          name: Store Server Binaries
-          path: build/out/zip
-          destination: server
+      # - store_artifacts:
+      #     name: Store Server Binaries
+      #     path: build/out/zip
+      #     destination: server
+
+      - persist_to_workspace:
+          root: /tmp/repo
+          paths: 
+            - "build/out/server/*.zip" 
+
+  publish:
+    docker:
+      - image: circleci/golang:1.8
+    steps:
+      - attach_workspace:
+          at: /tmp/repo
+      - run:
+          name: "Publish Release on GitHub"
+          command: |
+            go get github.com/tcnksm/ghr
+            VERSION=1.0.$CIRCLE_BUILD_NUM
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} build/out/
+
 
 workflows:
   version: 2.1
@@ -116,8 +140,10 @@ workflows:
       - build-electron:
           requires:
             - prepare
-      - build-server-binaries:
+      - build-server:
           requires:
             - prepare
-
-
+      - publish:
+          requires:
+            - build-electron
+            - build-server
