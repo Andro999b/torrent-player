@@ -123,7 +123,7 @@ jobs:
       - image: cibuilds/github:0.10
     steps:
       - attach_workspace:
-          at: /tmp/repo/build/out
+          at: /tmp/repo
       - run:
           name: "Publish Release on GitHub"
           command: |
