@@ -20,7 +20,7 @@ jobs:
 
       - run:
           name: Set Version
-          command: yarn version --new-version 1.0.$CIRCLE_BUILD_NUM
+          command: yarn version --no-git-tag-version --new-version 1.0.$CIRCLE_BUILD_NUM
 
       - run: 
           name: Install Dependencies
