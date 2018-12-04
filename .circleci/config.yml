@@ -91,7 +91,7 @@ jobs:
       - persist_to_workspace:
           root: /tmp/repo/build/out
           paths: 
-            - "electron/*.zip" 
+            - "build/out/electron/*.zip" 
 
   build-server:
     executor: node-x86
@@ -114,9 +114,9 @@ jobs:
       #     destination: server
 
       - persist_to_workspace:
-          root: /tmp/repo/build/out
+          root: /tmp/repo
           paths: 
-            - "server/*.zip" 
+            - "build/out/server/*.zip" 
 
   publish:
     docker:
