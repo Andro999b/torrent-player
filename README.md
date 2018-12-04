@@ -1,7 +1,7 @@
 # Torrent player
 
 Pear play that able to search on popular russian torrent trackers download and play Movies / TV show / Cartoons / Anime.
-In addional to this it able to cast video using dnla protocol or serve as dnla media server. 
+In addional to this it able to cast video using dlna protocol or serve as dlna media server. 
 It also support remote controle from mobile or a browser and automaticaly transcode video stream using ffmpeg.
 Can be runned as web server or desktop application(electron version)
 
@@ -48,19 +48,19 @@ Player use ffmpeg for transcoding. Binaries already included in repo and contain
 
 # MPV Integration
 
-Electron version use NPV.js plugin see repo https://github.com/Kagami/mpv.js/ for information about how to install mpvlib
+Electron version use MPV.js plugin see repo https://github.com/Kagami/mpv.js/ for information about how to install mpvlib
 
 # Arguments
 
 --root-dir - path to directory configuration store. default: `$HOME/webtorrents`
 
---no-dnla - disable dlna media server 
+--no-dlna - disable dlna media server 
 
---no-dnla-renderers - disable lookup for dlna media rendrers
+--no-dlna-renderers - disable lookup for dlna media rendrers
 
---dlna-port - dnla media server port
+--dlna-port - dlna media server port
 
---dlan-uuid - dnla media server uuid: defult: random 
+--dlan-uuid - dlna media server uuid: defult: random 
 
 --web-port - web server port: defualt: 8080
 
