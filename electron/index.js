@@ -2,11 +2,13 @@ const { app, BrowserWindow, globalShortcut } = require('electron')
 const { fork } = require('child_process')
 const path = require('path')
 
-const appArgs = process.argv
-const fullscreen = appArgs.indexOf('--cast-screen') != -1 || appArgs.indexOf('--fullscreen') != -1
-const noMpv = appArgs.indexOf('--no-mpv') != -1
-const debug = appArgs.indexOf('--debug') != -1
-const devTools = appArgs.indexOf('--dev-tools') != -1 || debug
+const argv = require('minimist')(process.argv.slice(2))
+
+const fullscreen = argv['cast-screen'] || argv['fullscreen']
+const noMpv = argv['no-mpv']
+const debug = argv['debug']
+const devTools = argv['dev-tools'] || debug
+const webPort = argv['web-port'] || 8080
 
 let serverProcess
 
@@ -16,7 +18,7 @@ function appReady() {
         return
     }
 
-    serverProcess = fork('./server/index.js', appArgs)
+    serverProcess = fork('./server/index.js', process.argv)
         .on('exit', (code, signal) => {
             console.error(`Server process exited. code: ${code}, signal: ${signal}`)
             process.exit()
@@ -44,7 +46,7 @@ function createMainWindow() {
         allowRunningInsecureContent: true,
         fullscreen,
         webPreferences: {
-            additionalArguments: appArgs.slice(2),
+            additionalArguments: process.argv.slice(2),
             webSecurity: false,
             plugins: true,
             devTools
@@ -55,7 +57,7 @@ function createMainWindow() {
 
     !devTools && win.setMenu(null)
 
-    win.loadURL(`http://localhost:${debug ? 3000 : 8080}`)
+    win.loadURL(`http://localhost:${debug ? 3000 : webPort}`)
     win.on('ready-to-show', () => {
         !fullscreen && win.maximize()
         win.show()

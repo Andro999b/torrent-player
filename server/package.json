@@ -31,7 +31,7 @@
     "parse-torrent": "^6.1.2",
     "qr-image": "^3.2.0",
     "rimraf": "^2.6.2",
-    "socket.io": "^2.1.1",
+    "socket.io": "^2.2.0",
     "sprintf-js": "^1.1.1",
     "superagent": "^4.0.0",
     "superagent-charset": "^1.2.0",

@@ -20,7 +20,7 @@ module.exports = {
         path.join('resources'),
         path.join('..', 'resources'),
     ]),
-    TOOLS_DIR: firstExistPath([
+    TOOLS_DIR: !argv['system-ffmpeg'] && firstExistPath([
         path.join('tools'),
         path.join('..', 'tools'),
     ]),

@@ -28,12 +28,11 @@ class FastTorrentsProvider extends Provider {
                         .map((i, node) => {
                             const { baseUrl } = this.config
                             const $node = $(node)
-                            const isHd = $node.find('.c1 .qa-hd').length == 1
+                            const hd = $node.find('.c1 .qa-hd').length == 1 && 'HD'
                             const episode = $node.find('.c9').text()
-                            const trasnlation = $node.find('.c10').text()
+                            const trasnlation = $node.find('.c2,.c10').text()
                             const size = $node.find('.c3').text()
-                            const name = 
-                                `${isHd?'[HD] ':''}${episode}${trasnlation?', ' + trasnlation:''}${size?', ' + size:''}`
+                            const name = [episode, trasnlation, size, hd].filter((it) => it).join(', ')
                             return {
                                 type: 'torrent',
                                 torrentUrl: baseUrl + $node.find('.download-event').attr('href'),

@@ -34,9 +34,9 @@ class SearchResultsItemDetails extends Component {
                 onPlay={() => onPlayFile(details, file)}
                 onCast={() => onCastFile(details, file)}
             > 
-                <ListItemText primary={<div style={{ wordBreak: 'break-all' }}>
+                <ListItemText primary={<span style={{ wordBreak: 'break-all' }}>
                     {file.name}
-                </div>}/>
+                </span>}/>
             </CastOrPlayListItem>
         )
     }
@@ -52,9 +52,9 @@ class SearchResultsItemDetails extends Component {
             > 
                 <ListItemText
                     primary={
-                        <div style={{ wordBreak: 'break-all' }}>
+                        <span style={{ wordBreak: 'break-all' }}>
                             {torrent.name}
-                        </div>
+                        </span>
                     } 
                     style={{ paddingLeft: 0 }} 
                 />

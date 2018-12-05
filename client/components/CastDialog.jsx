@@ -57,7 +57,7 @@ class CastDialog extends Component {
 
         return (
             <Dialog open={options != null} onClose={closeCastDailog}>
-                {this.renderedContent}
+                <div>{this.renderedContent}</div>
             </Dialog>
         )
     }

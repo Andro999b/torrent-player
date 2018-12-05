@@ -37,9 +37,9 @@ class BookmarkItem extends Component {
                     { title: 'Clean', action: this.handleRemove }
                 ]}>
                     <ListItemText primary={name} secondary={
-                        <div style={{ wordBreak: 'break-all' }}>
+                        <span style={{ wordBreak: 'break-all' }}>
                             {fileName}
-                        </div>
+                        </span>
                     }/>
                 </CastOrPlayListItem>
             </Paper>

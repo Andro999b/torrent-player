@@ -27,7 +27,7 @@ exports.default = async function(context) {
     }
 
     //copy lib mpv
-    const libMpvName = 'libmpv.so.1'
+    const libMpvName = platform == 'win32'? 'mpv-1.dll' : 'libmpv.so.1'
     const libMpvPath = path.join(libsDir, libMpvName)
 
     if(await exists(libMpvPath)) {
