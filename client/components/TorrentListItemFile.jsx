@@ -1,32 +1,13 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
-import {
-    IconButton,
-    ListItem,
-    ListItemIcon,
-    ListItemSecondaryAction,
-    ListItemText,
-    Menu,
-    MenuItem
-} from '@material-ui/core'
-import {
-    PlayArrow as PlayableIcon,
-    InsertDriveFile as NotPlayableIcon,
-    MoreVert as MoreIcon
-} from '@material-ui/icons'
+import { ListItemText} from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
 import { isPlayable, getTorrentFileContentLink } from '../utils'
 import filesize from 'file-size'
+import CastOrPlayListItem from './CastOrPlayListItem'
 
 class TorrentListItemFile extends Component {
-
-    constructor(props, context) {
-        super(props, context)
-        this.state = { anchorEl: null }
-    }
-    
-
     handleDownload = () => {
         const { torrent, file } = this.props
         const downloadUrl = getTorrentFileContentLink(torrent.infoHash, file.id)
@@ -34,18 +15,8 @@ class TorrentListItemFile extends Component {
         window.open(downloadUrl, '_blank')
     }
 
-
-    handleOpenMenu = (event) => {
-        this.setState({ anchorEl: event.currentTarget })
-    }
-
-    handleCloseMenu = () => {
-        this.setState({ anchorEl: null })
-    }
-
     render() {
         const { torrent, file, fileIndex, onPlayFile, onCastFile } = this.props
-        const { anchorEl } = this.state
 
         const playable = isPlayable(file.name)
         const fileProgress = Math.max(file.progress, 0)
@@ -60,25 +31,16 @@ class TorrentListItemFile extends Component {
         </div>
 
         return (
-            <ListItem key={fileIndex} button={playable} onClick={() => onPlayFile(torrent, file)}>
-                <ListItemIcon className="hide-on-mobile">
-                    {playable ? <PlayableIcon /> : <NotPlayableIcon />}
-                </ListItemIcon>
+            <CastOrPlayListItem  key={fileIndex} 
+                playable={playable} 
+                onPlay={() => onPlayFile(torrent, file)}
+                onCast={() => onCastFile(torrent, file)}
+                secondaryActions={[
+                    { title: 'Download', action: this.handleDownload }
+                ]} 
+            >
                 <ListItemText primary={text} />
-                <ListItemSecondaryAction>
-                    <IconButton onClick={this.handleOpenMenu}>
-                        <MoreIcon />
-                    </IconButton>
-                    <Menu anchorEl={anchorEl} open={anchorEl != null} onClose={this.handleCloseMenu}>
-                        {playable && <MenuItem onClick={() => onCastFile(torrent, file)}>
-                            Cast
-                        </MenuItem>}
-                        <MenuItem onClick={this.handleDownload}>
-                            Download
-                        </MenuItem>
-                    </Menu>
-                </ListItemSecondaryAction>
-            </ListItem>
+            </CastOrPlayListItem>
         )
     }
 }

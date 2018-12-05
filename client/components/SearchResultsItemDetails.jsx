@@ -1,25 +1,18 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
-
 import {
     Typography,
     List,
-    ListItem,
-    ListItemIcon,
-    ListItemSecondaryAction,
     ListItemText,
-    IconButton,
-    Grid,
+    Grid
 } from '@material-ui/core'
 
 import { isPlayable } from '../utils'
 
 import GroupFiles from './GroupFiles'
-import PlayableIcon from '@material-ui/icons/PlayArrow'
-import NotPlayableIcon from '@material-ui/icons/InsertDriveFile'
-import CastIcon from '@material-ui/icons/Cast'
 import { inject } from 'mobx-react'
+import CastOrPlayListItem from './CastOrPlayListItem'
 
 @inject(({ transitionStore }) => ({
     onPlayFile: transitionStore.downloadAndPlay,
@@ -36,19 +29,15 @@ class SearchResultsItemDetails extends Component {
         const playable = details.type == 'directMedia' || isPlayable(file.name)
 
         return (
-            <ListItem key={file.id} button={playable} onClick={() => onPlayFile(details, file)}>
-                <ListItemIcon className="hide-on-mobile">
-                    {playable ? <PlayableIcon /> : <NotPlayableIcon />}
-                </ListItemIcon>
-                <ListItemText primary={<div style={{ wordBreak: 'break-all' }}>{file.name}</div>}/>
-                {playable &&
-                    <ListItemSecondaryAction>
-                        <IconButton onClick={() => onCastFile(details, file)}>
-                            <CastIcon />
-                        </IconButton>
-                    </ListItemSecondaryAction>
-                }
-            </ListItem>
+            <CastOrPlayListItem key={file.id} 
+                playable={playable} 
+                onPlay={() => onPlayFile(details, file)}
+                onCast={() => onCastFile(details, file)}
+            > 
+                <ListItemText primary={<div style={{ wordBreak: 'break-all' }}>
+                    {file.name}
+                </div>}/>
+            </CastOrPlayListItem>
         )
     }
 
@@ -56,17 +45,20 @@ class SearchResultsItemDetails extends Component {
         const { onPlayFile, onCastFile } = this.props
 
         return (
-            <ListItem key={index} button onClick={() => onPlayFile(torrent)}>
-                <ListItemIcon className="hide-on-mobile">
-                    <PlayableIcon />
-                </ListItemIcon>
-                <ListItemText primary={<div style={{ wordBreak: 'break-all' }}>{torrent.name}</div>} style={{ paddingLeft: 0 }} />
-                <ListItemSecondaryAction>
-                    <IconButton onClick={() => onCastFile(torrent)}>
-                        <CastIcon />
-                    </IconButton>
-                </ListItemSecondaryAction>
-            </ListItem>
+            <CastOrPlayListItem key={index} 
+                playable
+                onPlay={() => onPlayFile(torrent)}
+                onCast={() => onCastFile(torrent)}
+            > 
+                <ListItemText
+                    primary={
+                        <div style={{ wordBreak: 'break-all' }}>
+                            {torrent.name}
+                        </div>
+                    } 
+                    style={{ paddingLeft: 0 }} 
+                />
+            </CastOrPlayListItem>
         )
     }
 
@@ -75,7 +67,6 @@ class SearchResultsItemDetails extends Component {
         if (!details) return null
 
         const { files, description, torrents } = details
-
 
         return (
             <Grid container spacing={24}>
