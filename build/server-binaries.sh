@@ -6,7 +6,7 @@ TARGETS="win linux"
 ARCHS="x64"
 OUT_BIN="out/bin"
 OUT_ZIP="out/server"
-VERSION=1.0.${CIRCLE_BUILD_NUM:-"0"}
+VERSION=1.0.${CIRCLE_BUILD_NUM}
 
 rm -rf $OUT_BIN
 mkdir -p $OUT_BIN
