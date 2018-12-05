@@ -1,6 +1,6 @@
 # Torrent player
 
-Pear player that able to search on popular russian torrent trackers download and play Movies / TV show / Cartoons / Anime.
+Torrents peer player that able to search on popular russian torrent trackers download and play Movies / TV show / Cartoons / Anime.
 In addional to this it able to cast video using dlna protocol or serve as dlna media server. 
 It also support remote controle from mobile or browser and automaticaly transcode video stream using ffmpeg.
 Can be runned as web server or desktop application(electron version)
