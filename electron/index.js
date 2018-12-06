@@ -11,12 +11,12 @@ const devTools = argv['dev-tools'] || debug
 const webPort = argv['web-port'] || 8080
 
 let serverProcess
+let win
 
 function appReady() {
-    if (debug) {
-        createMainWindow()
-        return
-    }
+    createMainWindow()
+
+    if (debug) return // server started outside
 
     serverProcess = fork('./server/index.js', process.argv)
         .on('exit', (code, signal) => {
@@ -27,7 +27,7 @@ function appReady() {
             console.error('Server process exited with error')
             process.exit(127)
         })
-        .on('message', createMainWindow)
+        .on('message', loadUI)
 }
 
 function getMPVPluginEntry() {
@@ -42,7 +42,7 @@ function getMPVPluginEntry() {
 }
 
 function createMainWindow() {
-    const win = new BrowserWindow({
+    win = new BrowserWindow({
         allowRunningInsecureContent: true,
         fullscreen,
         webPreferences: {
@@ -55,9 +55,10 @@ function createMainWindow() {
         backgroundThrottling: false,
     })
 
+    win.loadFile(path.join(__dirname, 'loading.html'))
+
     !devTools && win.setMenu(null)
 
-    win.loadURL(`http://localhost:${debug ? 3000 : webPort}`)
     win.on('ready-to-show', () => {
         !fullscreen && win.maximize()
         win.show()
@@ -66,6 +67,10 @@ function createMainWindow() {
     globalShortcut.register('F11', () => {
         win.setFullScreen(!win.isFullScreen())
     })
+}
+
+function loadUI() {
+    win.loadURL(`http://localhost:${debug ? 3000 : webPort}`)
 }
 
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required')
@@ -79,4 +84,5 @@ app.on('ready', appReady)
 app.on('window-all-closed', () => {
     console.log('All windows closed. Shutdown server') // eslint-disable-line 
     serverProcess && serverProcess.kill()
+    app.quit()
 })
