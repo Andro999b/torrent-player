@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ARCHIVE_NAME="server"
-NODE_VERSION="8"
+NODE_VERSION="10"
 TARGETS="win linux"
 ARCHS="x64"
 OUT_BIN="out/bin"

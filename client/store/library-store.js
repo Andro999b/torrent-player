@@ -41,7 +41,6 @@ class LibraryStore {
             .then(() => {
                 this.updateLibrary()
                 notificationStore.showMessage(`Torrent ${torrent.name} was removed`)
-                playerStore.closeTorrent(torrent)
             })
             .catch((err) => {
                 this.loading = false
