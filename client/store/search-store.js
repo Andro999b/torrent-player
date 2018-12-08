@@ -35,6 +35,13 @@ class SearchReusltItem {
             (this.details.magnetUrl || this.details.torrentUrl)
     }
 
+
+    hasFiles() {
+        return this.details && 
+            this.details.files && 
+            this.details.files.length > 0
+    }
+
     @action loadDetails() {
         if(!this.needLoadDetails()) return
 

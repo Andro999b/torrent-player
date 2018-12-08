@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import PropTypes from 'prop-types'
 import watchLater from '../store/watchLater'
 
@@ -76,18 +76,20 @@ class SearchResultsItem extends Component {
                         <ExpansionPanelDetails>
                             <SearchResultsItemDetails details={item.details} />
                         </ExpansionPanelDetails>
-                        {item.isDownlodableTorrent() && <ExpansionPanelActions>
-                            <Button onClick={() => onDownload(item.details)} variant="contained">
-                                <AddToLibraryIcon className="button-icon__left" />
+                        {item.hasFiles() && <Fragment>
+                            {item.isDownlodableTorrent() && <ExpansionPanelActions>
+                                <Button onClick={() => onDownload(item.details)} variant="contained">
+                                    <AddToLibraryIcon className="button-icon__left" />
                                 Add to Library
-                            </Button>
-                        </ExpansionPanelActions>}
-                        {!item.isTorrent() && <ExpansionPanelActions>
-                            <Button onClick={() => watchLater(item.details)} variant="contained">
-                                <WatchLaterIcon className="button-icon__left"/>
-                                Watch Later
-                            </Button>
-                        </ExpansionPanelActions>}
+                                </Button>
+                            </ExpansionPanelActions>}
+                            {!item.isTorrent() && <ExpansionPanelActions>
+                                <Button onClick={() => watchLater(item.details)} variant="contained">
+                                    <WatchLaterIcon className="button-icon__left"/>
+                                    Watch Later
+                                </Button>
+                            </ExpansionPanelActions>}
+                        </Fragment>}
                     </div>
             )
 

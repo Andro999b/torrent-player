@@ -3,6 +3,7 @@ const { pick } = require('lodash')
 const FileSync = require('lowdb/adapters/FileSync')
 const { ROOT_DIR } = require('../../config')
 const path = require('path')
+const ResponseError = require('../../utils/ResponseError')
 
 const db = lowdb(new FileSync(path.join(ROOT_DIR, 'bookmarks.db.json')))
 
@@ -23,7 +24,12 @@ module.exports = {
             currentFileIndex: 0,
             playlist
         }
+
+        if(!playlist.files || playlist.files.length == 0)
+            throw new ResponseError('No files', 400)
+        
         this.update(playlist.name, state)
+        
         return state
     },
     update(playlistName, rawState) {

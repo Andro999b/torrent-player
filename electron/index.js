@@ -1,7 +1,6 @@
 const { app, BrowserWindow, globalShortcut } = require('electron')
 const { fork } = require('child_process')
 const path = require('path')
-
 const argv = require('minimist')(process.argv.slice(2))
 
 const fullscreen = argv['cast-screen'] || argv['fullscreen']
@@ -16,7 +15,10 @@ let win
 function appReady() {
     createMainWindow()
 
-    if (debug) return // server started outside
+    if (debug) { 
+        loadUI()
+        return // server started outside
+    }
 
     serverProcess = fork('./server/index.js', process.argv)
         .on('exit', (code, signal) => {
@@ -52,7 +54,7 @@ function createMainWindow() {
             devTools
         },
         show: false,
-        backgroundThrottling: false,
+        backgroundThrottling: false
     })
 
     win.loadFile(path.join(__dirname, 'loading.html'))

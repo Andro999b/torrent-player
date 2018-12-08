@@ -102,12 +102,10 @@ class RemoteDevice extends Device {
     }
 
     @action sendAction(action, payload) {
-        this.isLoading = true
         this.socket.emit('action', { action, payload })
     }
 
     @action.bound onSync(state) {
-        this.isLoading = false
         const filteredState = pick(state, ALLOWED_STATE_FIELDS)
         Object.keys(filteredState).forEach((key) => {
             this[key] = filteredState[key]
