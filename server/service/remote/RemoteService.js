@@ -37,6 +37,7 @@ class RemoteService extends EventEmitter {
             .forEach((device) => {
                 device.clearState(false)
                 device.doAction(RemoteControl.Actions.ClosePlaylist)
+                this.removeDevice(device.id)
             })
     }
 

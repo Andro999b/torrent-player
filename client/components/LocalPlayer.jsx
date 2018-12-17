@@ -66,14 +66,21 @@ class LocalPlayer extends Component {
     }
 
     handleKeyUp = (e) => {
-        if(e.which == 32) { //spacebar
-            const { props: { playerStore: {device}}} = this
+        const { props: { playerStore }} = this
 
+        const step = e.ctrlKey ? 5 : (e.shiftKey ? 30 : 10)
+
+        if(e.which == 32) { //spacebar
+            const { device } = playerStore
             if (device.isPlaying) {
                 device.pause()
             } else {
                 device.play()
             }
+        } else if(e.which == 37) {
+            playerStore.seekIncremetal(-step)
+        } else if(e.which == 39) {
+            playerStore.seekIncremetal(step)
         }
     }
 

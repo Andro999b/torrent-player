@@ -76,7 +76,7 @@ Electron version use MPV.js plugin see repo https://github.com/Kagami/mpv.js/ fo
 
 --cast-screen - start with ui that can be controlet only remote
 
---fullscreen - start in fullscrean
+--windowed - start in windowed mode
 
 --no-mpv - disable mpv plugin
 

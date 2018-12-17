@@ -38,13 +38,13 @@ class MPVScrean extends BaseScrean {
             mpv.command('loadfile', 
                 source.fsPath, 
                 'replace', 
-                `start=${startTime}` 
+                `start=${startTime},video-sync=display-resample` 
             )
         } else {
             mpv.command('loadfile', 
                 location.protocol + '//' + location.host + source.url, 
                 'replace', 
-                `start=${startTime}` 
+                `start=${startTime},video-sync=display-resample` 
             )
         }
 

@@ -74,7 +74,10 @@ class PlayerPlayList extends Component {
                             {groups.map((group) => (
                                 <MenuItem 
                                     key={group.name} 
-                                    selected={group == selectedGroup}
+                                    style={group == currentGroup ? 
+                                        { background: grey[600] } : 
+                                        {}
+                                    }
                                     onClick={() => this.handleSelectGroup(group)}>
                                     {group.name}
                                 </MenuItem>
@@ -85,11 +88,15 @@ class PlayerPlayList extends Component {
                         {sortedFiles.map((file) => {
                             const style = currentFileIndex === file.index ? { background: grey[600] } : {}
                             return (
-                                <ListItem button key={file.id} style={style} onClick={() => onFileSelected(file.index)}>
+                                <ListItem 
+                                    button 
+                                    key={file.id} 
+                                    style={style} 
+                                    onClick={() => onFileSelected(file.index)}>
                                     <ListItemText primary={
-                                        <div style={{ wordBreak: 'break-all' }}>
+                                        <span style={{ wordBreak: 'break-all' }}>
                                             {file.name}
-                                        </div>
+                                        </span>
                                     } />
                                 </ListItem>
                             )

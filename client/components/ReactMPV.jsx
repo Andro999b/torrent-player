@@ -7,7 +7,7 @@ import PropTypes from 'prop-types'
  * @see: https://github.com/Kagami/mpv.js
  */
 
-const PLUGIN_MIME_TYPE = "application/x-mpvjs";
+const PLUGIN_MIME_TYPE = 'application/x-mpvjs';
 
 class ReactMPV extends React.PureComponent {
     /**
@@ -126,7 +126,8 @@ class ReactMPV extends React.PureComponent {
         const defaultStyle = { display: 'block', width: '100%', height: '100%' }
         const props = Object.assign({}, this.props, {
             ref: (el) => {
- this.plugin = el },
+                this.plugin = el 
+},
             type: PLUGIN_MIME_TYPE,
             style: Object.assign(defaultStyle, this.props.style),
         })

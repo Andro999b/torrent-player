@@ -3,7 +3,7 @@ const { fork } = require('child_process')
 const path = require('path')
 const argv = require('minimist')(process.argv.slice(2))
 
-const fullscreen = argv['cast-screen'] || argv['fullscreen']
+const fullscreen = !argv['windowed']
 const noMpv = argv['no-mpv']
 const debug = argv['debug']
 const devTools = argv['dev-tools'] || debug
