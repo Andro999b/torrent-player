@@ -74,12 +74,11 @@ class PlayerPlayList extends Component {
                             {groups.map((group) => (
                                 <MenuItem 
                                     key={group.name} 
-                                    style={group == currentGroup ? 
-                                        { background: grey[600] } : 
-                                        {}
-                                    }
+                                    style={group == selectedGroup ? { background: grey[600] } : {}}
                                     onClick={() => this.handleSelectGroup(group)}>
-                                    {group.name}
+                                    <span style={{ wordBreak: 'break-all' }}>
+                                        {group.name}
+                                    </span>
                                 </MenuItem>
                             ))}
                         </Menu>

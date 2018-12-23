@@ -92,7 +92,6 @@ class MPVScrean extends BaseScrean {
                 className="player__player-screen" 
                 onReady={this.handleMPVReady}
                 onPropertyChange={this.handlePropertyChange}
-                onMouseDown={this.handleClick}
             />
         )
     }

@@ -161,7 +161,6 @@ class VideoScrean extends BaseScrean {
         }
 
         this.video = document.createElement('video')
-        this.video.addEventListener('click', this.handleClick)
         this.video.addEventListener('durationchange', this.handleUpdate)
         this.video.addEventListener('loadedmetadata', this.handleLoadedMetadata)
         this.video.addEventListener('progress', this.handleUpdate)

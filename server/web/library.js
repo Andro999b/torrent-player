@@ -11,7 +11,9 @@ router.get('/', (req, res) => {
 
     res.json({
         bookmarks,
-        torrents: torrentsService.getTorrents().map(mapTorrent)
+        torrents: torrentsService
+            .getTorrents()
+            .map((torrent) => mapTorrent(torrent, true))
     })
 })
 

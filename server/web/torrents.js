@@ -16,7 +16,10 @@ const router = express.Router()
 
 // get all torrent
 router.get('/', (req, res) => {
-    res.json(torrentsService.getTorrents().map(mapTorrent))
+    res.json(
+        torrentsService.getTorrents()
+            .map((torrent) => res.json(mapTorrent(torrent, true)))
+    )
 })
 
 // add torrents
@@ -25,7 +28,7 @@ router.post('/', (req, res, next) => {
         throw new ResponseError('magnetUrl or torrentUrl reuired')
 
     torrentsService.addTorrent(req.body)
-        .then((torrent) => res.json(mapTorrent(torrent)))
+        .then((torrent) => res.json(mapTorrent(torrent, true)))
         .catch(next)
 })
 
@@ -33,7 +36,16 @@ router.post('/', (req, res, next) => {
 router.get('/:id', (req, res) => {
     const torrent = torrentsService.getTorrent(req.params.id)
     if(torrent)
-        res.json(mapTorrent(torrent))
+        res.json((torrent) => res.json(mapTorrent(torrent, true)))
+    else
+        throw new ResponseError('Torrent not found', 404)
+})
+
+// get torrent by id
+router.get('/:id/progress', (req, res) => {
+    const torrent = torrentsService.getTorrent(req.params.id)
+    if(torrent)
+        res.json(mapTorrent(torrent, false))
     else
         throw new ResponseError('Torrent not found', 404)
 })

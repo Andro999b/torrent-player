@@ -1,4 +1,5 @@
 import remoteControl from './remote-control'
+import superagent from 'superagent'
 import { observable, action } from 'mobx'
 import localStore from 'store'
 
@@ -39,6 +40,7 @@ export class LocalDevice extends Device {
     @observable url = null
     @observable seekTime = null
     @observable source = null
+    @observable progress = null
 
     constructor() {
         super()
@@ -81,6 +83,23 @@ export class LocalDevice extends Device {
         this.playlist = playlist
         this.selectFile(fileIndex)
         this.play(startTime)
+
+        //check progress
+        console.log(playlist);
+        if(playlist.torrentInfoHash) {
+            this.clearProgressInterval()
+            this.progressInterval = setInterval(() => {
+                superagent
+                    .get(`/api/torrents/${playlist.torrentInfoHash}/progress`)
+                    .then((res) => {
+                        this.progress = res.body
+                        const { downloaded, length } = this.progress
+                        if(downloaded == length) {
+                            this.clearProgressInterval()
+                        }
+                    })
+            }, 2000)
+        }
     }
 
     @action selectFile(fileIndex) {
@@ -106,12 +125,18 @@ export class LocalDevice extends Device {
         this.isMuted = !this.isMuted
     }
 
+    clearProgressInterval() {
+        if(this.progressInterval) {
+            clearInterval(this.progressInterval)
+        }
+    }
+
     connect() {
         remoteControl.setAvailability(true)
     }
 
     disconnect() {
-        // clearInterval(this.keepAliveInterval)
+        this.clearProgressInterval()
         remoteControl.setAvailability(false)
     }
 }

@@ -36,16 +36,6 @@ class MPVScrean extends Component {
     onVolume(volume) {} // eslint-disable-line
     onSource(source) {} // eslint-disable-line
 
-    handleClick = () => {
-        const { props: { device } } = this
-
-        if (device.isPlaying) {
-            device.pause()
-        } else {
-            device.play()
-        }
-    }
-
     componentWillUnmount() {
         this.disposeReactions()
     }

@@ -12,6 +12,7 @@ import PlayBackSeekZones from './PlayBackSeekZones'
 
 import { Typography, CircularProgress } from '@material-ui/core'
 import { observer, inject } from 'mobx-react'
+import filesize from 'file-size'
 
 import { isMobile, isElectron, hasArgv } from '../utils'
 
@@ -127,7 +128,7 @@ class LocalPlayer extends Component {
         const { playerStore } = this.props
         const { playlistOpen, idle, fullScreen } = this.state
         const { device } = playerStore
-        const { isLoading, error, source } = device
+        const { isLoading, error, source, progress } = device
 
         const useMpv = isElectron() && 
             !hasArgv('no-mpv') && 
@@ -141,7 +142,14 @@ class LocalPlayer extends Component {
                 <div className={idle ? 'idle': ''}>
                     { useMpv && <MPVScrean device={device} onEnded={playerStore.nextFile} /> }
                     { !useMpv && <VideoScrean device={device} onEnded={playerStore.nextFile} /> }
-                    { isLoading && <div className="center"><CircularProgress color="secondary"/></div> }
+                    { isLoading && 
+                        <div className="center">
+                            <CircularProgress color="secondary"/>
+                            {progress && <Typography variant="h5">
+                                {filesize(progress.downloaded).human()}/{filesize(progress.length).human()}
+                            </Typography>}
+                        </div> 
+                    }
                     { error && <Typography className="center" variant="h4">{error}</Typography> }
                     <PlayBackSeekZones playerStore={playerStore}/>
                     { (!idle) && (
