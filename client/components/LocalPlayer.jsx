@@ -45,6 +45,17 @@ class LocalPlayer extends Component {
         }))
     }
 
+
+    handleClick = () => {
+        const { props: { playerStore: { device } } } = this
+
+        if (device.isPlaying) {
+            device.pause()
+        } else {
+            device.play()
+        }
+    }
+
     handleIdle = (idle) => {
         this.setState({ idle })
     }
@@ -151,6 +162,7 @@ class LocalPlayer extends Component {
                         </div> 
                     }
                     { error && <Typography className="center" variant="h4">{error}</Typography> }
+                    <div className="player__pause-zone" onMouseDown={this.handleClick}></div>
                     <PlayBackSeekZones playerStore={playerStore}/>
                     { (!idle) && (
                         <Fragment>

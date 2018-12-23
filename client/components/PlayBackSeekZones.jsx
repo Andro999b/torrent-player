@@ -12,20 +12,9 @@ class PlayBackSeekZones extends Component {
         playerStore.seekIncremetal(-10)
     }
 
-    handleClick = () => {
-        const { props: { playerStore: { device } } } = this
-
-        if (device.isPlaying) {
-            device.pause()
-        } else {
-            device.play()
-        }
-    }
-
     render() {
         return (
             <Fragment>
-                <div className="playback-seek__pause" onMouseDown={this.handleClick}></div>
                 <div className="playback-seek backward" onClick={this.handleSeekBackward}></div>
                 <div className="playback-seek forward" onClick={this.handleSeekFroward}></div>
             </Fragment>
