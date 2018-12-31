@@ -4,10 +4,7 @@ const path = require('path')
 const argv = require('minimist')(process.argv.slice(2))
 const firstExistPath = require('./utils/firstExistPath')
 
-const ROOT_DIR = firstExistPath([
-    argv['root-dir'],
-    path.join(os.homedir(), 'webtorrents')
-])
+const ROOT_DIR = argv['root-dir'] || path.join(os.homedir(), 'webtorrents')
 
 module.exports = {
     VIDEO_ENCODER: argv['transcode-video-encoder'] || 'libx264',
@@ -24,7 +21,7 @@ module.exports = {
         path.join('tools'),
         path.join('..', 'tools'),
     ]),
-    DLNA_UUID: argv['dlna-uid'] || uuid(),
+    DLNA_UUID: argv['dlna-uid'] || '0',// uuid(),
     DLNA_PORT: argv['dlna-port'] || 5004,
     WEB_PORT: argv['web-port'] || 8080,
     TRANSCODER_IDLE_TIMEOUT: 60 * 1000,

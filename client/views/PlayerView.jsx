@@ -18,6 +18,11 @@ const playerTheme = (mainTheme) => createMuiTheme({
             colorSecondary: {
                 backgroundColor: 'transparent'
             }
+        },
+        MuiMenuItem: {
+            root: {
+                height: 'initial'
+            }
         }
     },
     typography: {

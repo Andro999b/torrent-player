@@ -47,15 +47,17 @@ class PlayerPlayList extends Component {
     )   
 
     render() {
-        const { selectedGroup, anchorEl } = this.state
+        let { selectedGroup, anchorEl } = this.state
         const { device: { playlist, currentFileIndex }, open, onFileSelected } = this.props
         const { files } = playlist
 
         const groups = this.getGroups(files)
 
-        const currentGroup = selectedGroup || this.getFileGroup(currentFileIndex, groups)
+        const currentGroup = this.getFileGroup(currentFileIndex, groups)
         const groupFiles = groups.length > 1 ? currentGroup.files : files
         const sortedFiles = groupFiles
+
+        selectedGroup = selectedGroup || currentGroup
 
         return (
             <Slide direction="left" in={open} mountOnEnter unmountOnExit>
@@ -63,7 +65,7 @@ class PlayerPlayList extends Component {
                     {groups.length > 1 && <Fragment>
                         <List>
                             <ListItem  button style={{ background: grey[600] }} onClick={this.handleOpenGroupsMenu}>
-                                <ListItemText primary={currentGroup.name} />
+                                <ListItemText primary={selectedGroup.name} />
                                 <ExpandMore nativeColor="white" />
                             </ListItem>
                         </List>
@@ -74,9 +76,9 @@ class PlayerPlayList extends Component {
                             {groups.map((group) => (
                                 <MenuItem 
                                     key={group.name} 
-                                    style={group == selectedGroup ? { background: grey[600] } : {}}
+                                    style={group.name == currentGroup.name ? { background: grey[600] } : {}}
                                     onClick={() => this.handleSelectGroup(group)}>
-                                    <span style={{ wordBreak: 'break-all' }}>
+                                    <span style={{ wordBreak: 'break-all', whiteSpace: 'normal' }}>
                                         {group.name}
                                     </span>
                                 </MenuItem>

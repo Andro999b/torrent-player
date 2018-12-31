@@ -33,7 +33,7 @@ function browseTorrentsList(inputs) {
     const didl = toDIDLXml(
         sliced
             .map((tor) => ({
-                id: tor.infoHash,
+                infoHash: tor.infoHash,
                 parentId: '0',
                 title: tor.name,
                 count: tor.files.length
@@ -50,11 +50,11 @@ function browseTorrentsList(inputs) {
 }
 
 async function browseTorrentFs(inputs, req) {
-    const parts = inputs.ObjectID.split(':')
-    const infoHash = parts[0]
+    const { infoHash, torrentFsId, transcoded } = parseObjetcId(inputs)
+
     const torrent = torrentsService.getTorrent(infoHash)
     const torrentFs = getTorrentFs(torrent)
-    const parentEntry = torrentFs.getById(inputs.ObjectID)
+    const parentEntry = torrentFs.getById(torrentFsId)
 
     const begin = parseInt(inputs.StartingIndex)
     const end = begin + parseInt(inputs.RequestedCount)
@@ -66,10 +66,26 @@ async function browseTorrentFs(inputs, req) {
                 fsEntry, 
                 infoHash, 
                 clientId: getClientId(req), 
-                transcoded: TRANSCODING_ENABLED 
+                transcoded
             }):
-            toDIDLContainer(fsEntry)
+            toDIDLContainer(fsEntry, transcoded)
     ))
+
+    // add folder with transcoded files
+    if(torrentFsId == '0' && TRANSCODING_ENABLED && !transcoded) {
+        didl.unshift(
+            toDIDLContainer(
+                {
+                    infoHash,
+                    id: parentEntry.id,
+                    parentId: '0',
+                    title: 'Transcode',
+                    count: parentEntry.children.length
+                }, 
+                true
+            )
+        )
+    }
 
     return {
         Result: toDIDLXml(didl),
@@ -94,12 +110,11 @@ async function browseMetadata(inputs, req) {
         }
     }
 
-    const parts = inputs.ObjectID.split(':')
-    const infoHash = parts[0]
+    const { infoHash, torrentFsId, transcoded } = parseObjetcId(inputs)
 
     const torrent = torrentsService.getTorrent(infoHash)
     const torrentFs = getTorrentFs(torrent)
-    const fsEntry = torrentFs.getById(inputs.ObjectID)
+    const fsEntry = torrentFs.getById(torrentFsId)
 
     
     const didl = fsEntry.type == 'file' ? 
@@ -108,9 +123,9 @@ async function browseMetadata(inputs, req) {
             infoHash, 
             clientId: getClientId(req), 
             metadata: true,
-            transcoded: TRANSCODING_ENABLED
+            transcoded
         }):
-        toDIDLContainer(fsEntry)
+        toDIDLContainer(fsEntry, transcoded)
 
     return {
         Result: toDIDLXml([didl]),
@@ -120,17 +135,27 @@ async function browseMetadata(inputs, req) {
     }
 }
 
-function toDIDLContainer(item) {
+function parseObjetcId(inputs) {
+    const parts = inputs.ObjectID.split(':')
+
+    return {
+        infoHash: parts[0],
+        torrentFsId: parts[1],
+        transcoded: TRANSCODING_ENABLED && parts[2] == 't'
+    }
+}
+
+function toDIDLContainer({infoHash, id, parentId, count, title}, transcoded) {
     return {
         _name: 'container',
         _attrs: {
-            id: `${item.id}`,
-            parentID: `${item.parentId}`,
-            childCount: `${item.count}`,
+            id: `${infoHash}:${id || '0'}${transcoded?':t':''}`,
+            parentID: `${parentId}`,
+            childCount: `${count}`,
             restricted: '1'
         },
         _content: {
-            'dc:title': item.title,
+            'dc:title': title,
             'upnp:class': 'object.container.storageFolder'
         }
     }

@@ -20,7 +20,7 @@ function appReady() {
         return // server started outside
     }
 
-    serverProcess = fork('./server/index.js', process.argv)
+    serverProcess = fork(path.join(process.cwd(), 'server', 'index.js'), process.argv)
         .on('exit', (code, signal) => {
             console.error(`Server process exited. code: ${code}, signal: ${signal}`)
             process.exit()

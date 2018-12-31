@@ -4,9 +4,9 @@ class TorrentFs {
     constructor(infoHash) {
         this.infoHash = infoHash
         this.maxId = 0
-        this.root = { id: infoHash, children: [] }
+        this.root = { id: 0, children: [] }
         this.flatTree = {
-            [infoHash]: this.root
+            '0': this.root
         }
     }
 
@@ -37,7 +37,7 @@ class TorrentFs {
             if(lastEntry == null) {
                 lastEntry = { 
                     title: currentItem, 
-                    id: `${this.infoHash}:${++this.maxId}`, 
+                    id: `${++this.maxId}`, 
                     parentId: currentParent.id 
                 }
                 currentParent.children.push(lastEntry)

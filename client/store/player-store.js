@@ -85,7 +85,6 @@ export class LocalDevice extends Device {
         this.play(startTime)
 
         //check progress
-        console.log(playlist);
         if(playlist.torrentInfoHash) {
             this.clearProgressInterval()
             this.progressInterval = setInterval(() => {

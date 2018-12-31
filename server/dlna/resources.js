@@ -79,7 +79,7 @@ async function videoResource({ infoHash, upnpClass, fsEntry, clientId, transcode
     return {
         _name: 'item',
         _attrs: {
-            id: `${id}`,
+            id: `${infoHash}:${id}${transcoded?':t':''}`,
             parentID: `${parentId}`,
             restricted: '1'
         },
