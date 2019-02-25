@@ -20,7 +20,7 @@ function appReady() {
         return // server started outside
     }
 
-    const isPackaged = process.mainModule.filename.indexOf('app.asar') !== -1;
+    const isPackaged = process.mainModule.filename.indexOf('app.asar') !== -1
     let rootPath = process.cwd()
     
     if(isPackaged) {
