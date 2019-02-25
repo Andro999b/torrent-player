@@ -20,7 +20,14 @@ function appReady() {
         return // server started outside
     }
 
-    serverProcess = fork(path.join(process.cwd(), 'server', 'index.js'), process.argv)
+    const isPackaged = process.mainModule.filename.indexOf('app.asar') !== -1;
+    let rootPath = process.cwd()
+    
+    if(isPackaged) {
+        rootPath = path.resolve(__dirname, '..', '..', '..')
+    }
+    
+    serverProcess = fork(path.join(rootPath, 'server', 'index.js'), process.argv)
         .on('exit', (code, signal) => {
             console.error(`Server process exited. code: ${code}, signal: ${signal}`)
             process.exit()
