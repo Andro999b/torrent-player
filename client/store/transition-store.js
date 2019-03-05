@@ -105,22 +105,40 @@ class TransitionStore {
     }
 
     @action.bound openCastDialog(result, item, startTime) {
-        this.castDialog = { 
-            onDeviceSelected: (device) => {
-                this.downloadAndPlayMediaOnDevice(
-                    result, 
-                    item, 
-                    device, 
-                    startTime
-                )
-            }
+        const onDeviceSelected = (device) => {
+            this.downloadAndPlayMediaOnDevice(
+                result, 
+                item, 
+                device, 
+                startTime
+            )
         }
+
+        //do not show dialog if only one device avaliable
+        if(remoteControl.devices.length == 1) {
+            onDeviceSelected(remoteControl.devices[0])
+            return
+        }
+
+        this.castDialog = { onDeviceSelected }
     }
 
     showConnectToDeviceDialog() {
+        const deviceFilter = (device) => device.playlistName != null
+
+        //do not show dialog if only one device avaliable
+        const devices = remoteControl
+            .devices
+            .filter(deviceFilter)
+
+        if(devices.length == 1) {
+            this.connectToDevice(devices[0])
+            return
+        }
+
         this.castDialog = {
-            filter: (device) => device.playlistName != null,
-            onDeviceSelected: (device) => this.connectToDevice(device)
+            filter: deviceFilter,
+            onDeviceSelected: this.connectToDevice
         }
     }
 

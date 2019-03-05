@@ -7,7 +7,7 @@ const defaultArgc = {
 const uuid = require('uuid')
 const os = require('os')
 const path = require('path')
-const argv = require('minimist')(process.argv.slice(2), { default: defaultArgc})
+const argv = require('minimist')(process.argv.slice(2), { default: defaultArgc })
 const firstExistPath = require('./utils/firstExistPath')
 
 const ROOT_DIR = argv['root-dir'] || path.join(os.homedir(), 'webtorrents')
@@ -47,7 +47,7 @@ module.exports = {
     /*
         timeout 2 times longer that time needted to play 1 fragment. 
         if during this time client not request any fragment we can pause transcoding
-     */
+    */
     HLS_TRANSCODER_IDLE_TIMEOUT: 10 * 1000 * 2,
     ROOT_DIR,
     HLS_DIRECTORY: path.join(ROOT_DIR, 'hls'),
