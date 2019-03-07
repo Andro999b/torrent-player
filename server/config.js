@@ -1,6 +1,6 @@
 const defaultArgc = {
-    'dnla': true,
-    'dnla-renderers': true,
+    'dlna': true,
+    'dlna-renderers': true,
     'transcoding': true
 }
 
@@ -58,6 +58,6 @@ module.exports = {
         video: ['h264'],
     },
     TRANSCODING_ENABLED: argv['transcoding'],
-    DNLA_ENABLED: argv['dnla'],
-    DNLA_RENDERERS_ENABLED: argv['dnla-renderers']
+    DLNA_ENABLED: argv['dlna'],
+    DLNA_RENDERERS_ENABLED: argv['dlna-renderers']
 }

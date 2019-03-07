@@ -5,8 +5,8 @@ const {
     TORRENTS_DIR,
     TOOLS_DIR,
     HLS_DIRECTORY,
-    DNLA_ENABLED,
-    DNLA_RENDERERS_ENABLED
+    DLNA_ENABLED,
+    DLNA_RENDERERS_ENABLED
 } = require('./config')
 
 //ensure directories
@@ -35,9 +35,9 @@ if(TOOLS_DIR) {
 torrentsService.restoreTorrents()
 web()
 
-if(DNLA_ENABLED) {
+if(DLNA_ENABLED) {
     dlna()
-    DNLA_RENDERERS_ENABLED && dlnaRenderers()
+    DLNA_RENDERERS_ENABLED && dlnaRenderers()
 }
 
 process.on('uncaughtException', (e) => console.error(e))
