@@ -40,7 +40,7 @@ class AnimeVostProvider extends DataLifeProvider {
                 files: {
                     selector: 'script',
                     transform: ($el) => {
-                        const script = $el.toArray()[2].children[0].data
+                        const script = $el.toArray()[1].children[0].data
                         const matches = script.match(/var data = ([^;]+);/)
 
                         if(!matches) return []

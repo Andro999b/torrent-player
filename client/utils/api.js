@@ -14,7 +14,7 @@ const superagentAbsolute = (agent) => {
                         return target[propertyName](absoluteUrl, ...params.slice(1))
                     }
                     return target[propertyName](...params)
-                };
+                }
             },
         })
     )

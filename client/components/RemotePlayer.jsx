@@ -92,7 +92,7 @@ class RemotePlayer extends Component {
                     }
                     <Button variant="contained" onClick={this.handleCloseDevice}>Close device</Button>
                 </Typography>
-                {!error && <Fragment>
+                <Fragment>
                     <PlayerTitle title={playerStore.getPlayerTitle()} onClose={this.handleCloseVideo} />
                     <PlayBackSeekZones playerStore={playerStore} />
                     <PlayerFilesList
@@ -107,7 +107,7 @@ class RemotePlayer extends Component {
                         onPlaylistToggle={this.handleTogglePlayList}
                         onFullScreenToggle={this.handleToggleFullscreen}
                     />
-                </Fragment>}
+                </Fragment>
             </Fragment>
         )
     }
