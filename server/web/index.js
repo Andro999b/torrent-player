@@ -27,7 +27,7 @@ module.exports = function () {
     expressServer.use('/extractVideo', extractVideo)
     expressServer.use('/remoteQrCode', remoteQrCode)
 
-    expressServer.get('/api/ping', (_, res) => res.send(200, 'pong'))
+    expressServer.get('/api/ping', (_, res) => res.status(200).send('pong'))
 
     // eslint-disable-next-line no-unused-vars
     expressServer.use((err, req, res, next) => {
