@@ -1,5 +1,5 @@
 import remoteControl from './remote-control'
-import superagent from 'superagent'
+import { request } from '../utils/api'
 import { observable, action } from 'mobx'
 import localStore from 'store'
 
@@ -88,7 +88,7 @@ export class LocalDevice extends Device {
         if(playlist.torrentInfoHash) {
             this.clearProgressInterval()
             this.progressInterval = setInterval(() => {
-                superagent
+                request
                     .get(`/api/torrents/${playlist.torrentInfoHash}/progress`)
                     .then((res) => {
                         this.progress = res.body

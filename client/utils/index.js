@@ -1,15 +1,4 @@
-import request from 'superagent'
 import playableExtensions from '../../resources/video-extensions.json'
-
-export function fetchOnce() {
-    let req
-
-    return function (url) {
-        if (req) req.abort()
-        req = request.get(url)
-        return req
-    }
-}
 
 export function isPlayable(fileName) {
     return playableExtensions.findIndex((ext) => {

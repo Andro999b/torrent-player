@@ -36,8 +36,8 @@ torrentsService.restoreTorrents()
 web()
 
 if(DLNA_ENABLED) {
-    dlna()
-    DLNA_RENDERERS_ENABLED && dlnaRenderers()
+    // dlna()
+    // DLNA_RENDERERS_ENABLED && dlnaRenderers()
 }
 
 process.on('uncaughtException', (e) => console.error(e))

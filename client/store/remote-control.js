@@ -1,7 +1,9 @@
 import { autorun, observable, action } from 'mobx'
 import playerStore, { Device, LocalDevice } from './player-store'
 import transitionStore from './transition-store'
+import urljoin from 'url-join'
 import { diff, isMobile } from '../utils'
+import { API_BASE_URL } from '../utils/api'
 import io from 'socket.io-client'
 import pick from 'lodash.pick'
 
@@ -114,7 +116,7 @@ class RemoteDevice extends Device {
 }
 
 function getRemoteDevice(device) {
-    const deviceSocket = io('/control')
+    const deviceSocket = io(urljoin(API_BASE_URL, '/control'))
     return new RemoteDevice(deviceSocket, device)
 }
 
@@ -176,7 +178,7 @@ function listenNameUpdate(socket) {
 let setAvailability = () => {}
 let isCastAvaliable = !isMobile()
 
-const deviceSocket = io('/device')
+const deviceSocket = io(urljoin(API_BASE_URL,'/device'))
 trackState(deviceSocket)
 
 if(isCastAvaliable) {
@@ -196,7 +198,7 @@ function listenDeviceList(socket) {
     })
 }
 
-listenDeviceList(io())
+listenDeviceList(io(API_BASE_URL))
 
 export default {
     devices,

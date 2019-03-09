@@ -5874,6 +5874,11 @@ style-loader@^0.23.1:
     loader-utils "^1.1.0"
     schema-utils "^1.0.0"
 
+superagent-absolute@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/superagent-absolute/-/superagent-absolute-1.0.1.tgz#781c76c54939d9a3371ff0f76f650a3be2eef5e5"
+  integrity sha1-eBx2xUk52aM3H/D3b2UKO+Lu9eU=
+
 superagent@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/superagent/-/superagent-4.0.0.tgz#b9de499c0363acb53879cc42bd14ec26751050bb"
@@ -6185,6 +6190,11 @@ uri-js@^4.2.2:
 urix@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/urix/-/urix-0.1.0.tgz#da937f7a62e21fec1fd18d49b35c2935067a6c72"
+
+url-join@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/url-join/-/url-join-4.0.0.tgz#4d3340e807d3773bda9991f8305acdcc2a665d2a"
+  integrity sha1-TTNA6AfTdzvamZH4MFrNzCpmXSo=
 
 url-parse@^1.4.3:
   version "1.4.3"

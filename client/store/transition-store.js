@@ -1,5 +1,5 @@
 import { action, observable } from 'mobx'
-import request from 'superagent'
+import { request } from '../utils/api'
 import pick from 'lodash.pick'
 import libraryStore from './library-store'
 import playerStore, { LocalDevice } from './player-store'

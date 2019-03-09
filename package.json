@@ -18,6 +18,7 @@
     "start": "electron ./electron",
     "build-start": "cd client && yarn build && cd .. && electron ./electron",
     "debug": "concurrently -n \"SERVER,ELECTRON,WEBPACK\" -c \"black.bold,white,blue.bold\" \"cd server && yarn start\" \"electron ./electron --debug\" \"cd client && yarn start\"",
+    "debug-web": "concurrently -n \"SERVER,WEBPACK\" -c \"black.bold,blue.bold\" \"cd server && yarn start\" \"cd client && yarn start\"",
     "server-debug": "concurrently -n \"SERVER,WEBPACK\" -c \"black.bold,blue.bold\" \"cd server && yarn start\" \"cd client && yarn start\"",
     "server": "cd client && yarn build && cd ../server && yarn start",
     "build": "electron-builder --win --linux",

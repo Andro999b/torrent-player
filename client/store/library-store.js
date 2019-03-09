@@ -1,8 +1,6 @@
 import { observable, action } from 'mobx'
-import superagent from 'superagent'
-
+import { request } from '../utils/api'
 import notificationStore from './notifications-store'
-import playerStore from './player-store'
 
 class LibraryStore {
     @observable library = {
@@ -14,11 +12,16 @@ class LibraryStore {
     updateId = 0
 
     updateLibrary() {
-        superagent
+        request
             .get('/api/library')
             .then((res) => {
                 this.library = res.body
                 this.loading = false
+            })
+            .catch((err) => {
+                this.loading = false
+                console.error(err)
+                notificationStore.showMessage('Failed to load library')
             })
     }
 
@@ -36,7 +39,7 @@ class LibraryStore {
 
     @action deleteTorrent(torrent) {
         this.loading = true
-        superagent
+        request
             .delete(`/api/torrents/${torrent.infoHash}`)
             .then(() => {
                 this.updateLibrary()
@@ -51,7 +54,7 @@ class LibraryStore {
 
     @action removeBookmark(item) {
         this.loading = true
-        superagent
+        request
             .delete(`/api/library/bookmarks/${encodeURIComponent(item.playlist.name)}`)
             .then(() => {
                 this.updateLibrary()
@@ -66,7 +69,7 @@ class LibraryStore {
 
     @action setBackgroudDownload(torrent) {
         const enabled = !torrent.downloadInBackground
-        superagent
+        request
             .post(`/api/torrents/${torrent.infoHash}/backgroundDownload`)
             .send({ enabled })
             .then(() => {
@@ -82,7 +85,7 @@ class LibraryStore {
         const { magnetUrl, torrentUrl, provider } = result
 
         this.loading = true
-        return superagent
+        return request
             .post('/api/torrents', { magnetUrl, torrentUrl, provider })
             .then((res) => {
                 this.updateLibrary()

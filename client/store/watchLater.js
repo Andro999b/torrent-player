@@ -1,8 +1,8 @@
-import superagent from 'superagent'
+import { request } from '../utils/api'
 import notificationsStore from './notifications-store'
 
 export default function(playlist) {
-    return superagent
+    return request
         .post('/api/library/bookmarks')
         .send(playlist)
         .then(() => {

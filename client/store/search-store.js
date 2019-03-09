@@ -1,6 +1,5 @@
 import { observable, action } from 'mobx'
-import { fetchOnce } from '../utils'
-import request from 'superagent'
+import { request, fetchOnce } from '../utils/api'
 import notificationStore from './notifications-store'
 import { SEARCH_RPVODERS, SEARCH_HISTORY_MAX_SIZE } from '../constants'
 import localStore from 'store'
