@@ -66,12 +66,15 @@ class MobileMediaControls extends Component {
             reaction(
                 () => device.currentFileIndex,
                 this.update.bind(this)
+            ),
+            reaction(
+                () => device.playlist,
+                this.update.bind(this)
             )
         )
 
         MusicControls.subscribe(this.listenEvents.bind(this))
         MusicControls.listen()
-        this.update()
     }
 
     updateIsPlaying() {
@@ -91,7 +94,7 @@ class MobileMediaControls extends Component {
     update() {
         const { playerStore } = this.props
         const { device } = playerStore
-        const { playlist: { name, files, image }, currentFileIndex, currentTime, duration } = device
+        const { playlist: { name, files, image }, currentFileIndex, currentTime, duration, isPlaying } = device
         const hasNext = currentFileIndex < files.length - 1
         const hasPrev = currentFileIndex > 0
         const fileName = `${currentFileIndex + 1} - ${files[currentFileIndex].name}`
@@ -100,6 +103,7 @@ class MobileMediaControls extends Component {
             track: fileName,
             artist: name,
             cover: image,
+            isPlaying,
             hasNext,
             hasPrev,
             duration, 
