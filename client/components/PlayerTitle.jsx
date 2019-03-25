@@ -10,7 +10,7 @@ class PlayerTitle extends Component {
 
         return (
             <div className="player__title">
-                <Button onClick={onClose} variant="fab" style={{minHeight: 46, minWidth: 46}}>
+                <Button onClick={onClose} variant="fab" style={{height: 46, minWidth: 46, width: 46}}>
                     <CloseIcon />
                 </Button>
                 <Typography variant="h6" style={{ wordBreak: 'break-all', marginLeft: '10px' }}>
