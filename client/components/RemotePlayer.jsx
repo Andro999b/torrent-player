@@ -72,7 +72,7 @@ class RemotePlayer extends Component {
 
     render() {
         const { playlistOpen } = this.state
-        const { playerStore } = this.props
+        const { playerStore, transitionStore } = this.props
         const { device } = playerStore
         const { isLoading, error, currentTime, duration, playlist: { image } } = device
 
@@ -108,7 +108,7 @@ class RemotePlayer extends Component {
                         onPlaylistToggle={this.handleTogglePlayList}
                         onFullScreenToggle={this.handleToggleFullscreen}
                     />
-                    { isCordova() && <MobileMediaControls playerStore={playerStore} /> }
+                    { isCordova() && <MobileMediaControls playerStore={playerStore} transitionStore={transitionStore}/> }
                 </Fragment>
             </div>
         )

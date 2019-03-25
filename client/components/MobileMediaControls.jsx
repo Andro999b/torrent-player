@@ -13,7 +13,7 @@ class MobileMediaControls extends Component {
         const action = JSON.parse(actionStr)
         const message = action.message
 
-        const { playerStore } = this.props
+        const { playerStore, transitionStore } = this.props
 
         switch(message) {
             case 'music-controls-next':
@@ -29,7 +29,7 @@ class MobileMediaControls extends Component {
                 playerStore.device.resume()
                 break
             case 'music-controls-destroy':
-                //nothing for now
+                transitionStore.stopPlayMedia()
                 break
 
             // External controls (iOS only)
@@ -123,7 +123,8 @@ class MobileMediaControls extends Component {
 }
 
 MobileMediaControls.propTypes = {
-    playerStore: PropTypes.object
+    playerStore: PropTypes.object,
+    transitionStore: PropTypes.object
 }
 
 export default MobileMediaControls
