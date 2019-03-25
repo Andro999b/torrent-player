@@ -185,6 +185,10 @@ html {
     }
 }
 
+.text-border {
+    text-shadow: 0px 0px 2px rgba(0, 0, 0, 0.75);
+}
+
 .player__title {
     position: absolute;
     z-index: 1;
@@ -195,7 +199,7 @@ html {
     padding: 5px;
 
     h6 {
-        text-shadow: 0px 0px 20px rgba(0, 0, 0, 0.75);
+        @extend .text-border 
     }
 }
 
@@ -244,6 +248,19 @@ html {
 .idle {
     cursor: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=), none;
 	user-select: none;
+}
+
+.player__background-cover{
+    background: no-repeat center center fixed; 
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
 }
 
 @media (min-width: 576px) {

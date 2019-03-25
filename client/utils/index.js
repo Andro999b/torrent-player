@@ -37,6 +37,10 @@ export function isMobile() {
     return false
 }
 
+export function isCordova() {
+    return window.cordova != null
+}
+
 export function diff(oldObject, newObject) {
     const result = {}
     Object.keys(newObject).forEach((key) => {

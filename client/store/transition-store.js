@@ -167,7 +167,7 @@ class TransitionStore {
 
         return Promise.resolve({
             startIndex: item.index,
-            playlist: pick(result, 'name', 'files', 'torrentInfoHash')
+            playlist: pick(result, 'name', 'files', 'torrentInfoHash', 'image')
         })
     }
 

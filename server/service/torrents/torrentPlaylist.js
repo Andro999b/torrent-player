@@ -2,6 +2,7 @@ const path = require('path')
 const { isAudio, isVideo, fileDirectory } = require('../../utils')
 const { TRANSCODING_ENABLED, TORRENTS_DATA_DIR } = require('../../config')
 const checkIfTorrentFileReady = require('./checkIfTorrentFileReady')
+const database = require('./database')
 
 function getTorrentFileContentLink(infoHash, fileIndex) {
     return `/api/torrents/${infoHash}/files/${fileIndex}`
@@ -60,6 +61,7 @@ module.exports = function(torrent) {
     return {
         name: torrent.name,
         torrentInfoHash: torrent.infoHash,
-        files
+        files,
+        image: database.getImageCover(torrent.infoHash)
     }
 }

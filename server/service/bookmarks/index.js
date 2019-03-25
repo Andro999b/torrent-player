@@ -40,6 +40,7 @@ module.exports = {
             'playlist.name', 
             'playlist.files', 
             'playlist.torrentInfoHash', 
+            'playlist.image', 
             'currentFileIndex'
         ])
 

@@ -6,6 +6,12 @@ const path = require('path')
 const torrentDb = lowdb(new FileSync(path.join(ROOT_DIR, 'torrents.db.json')))
 
 module.exports = {
+    setImageCover(torrentId, image) {
+        return torrentDb.set([ torrentId, 'image' ], image).write()
+    },
+    getImageCover(torrentId) {
+        return torrentDb.get([ torrentId, 'image' ])
+    },
     isTorrentFileCompleted(torrentId, path) {
         return torrentDb.get([ torrentId, path, 'complete' ]) == true
     },

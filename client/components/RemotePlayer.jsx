@@ -2,6 +2,7 @@ import React, { Component, Fragment } from 'react'
 import PropTypes from 'prop-types'
 
 import MediaControls from './MediaControls'
+import MobileMediaControls from './MobileMediaControls'
 import PlayerTitle from './PlayerTitle'
 import PlayerFilesList from './PlayerPlayList'
 import PlayBackSeekZones from './PlayBackSeekZones'
@@ -9,7 +10,7 @@ import PlayBackSeekZones from './PlayBackSeekZones'
 import { Typography, LinearProgress, Button } from '@material-ui/core'
 import { observer, inject } from 'mobx-react'
 
-import { toHHMMSS } from '../utils'
+import { toHHMMSS, isCordova } from '../utils'
 
 @inject('playerStore', 'transitionStore')
 @observer
@@ -73,14 +74,14 @@ class RemotePlayer extends Component {
         const { playlistOpen } = this.state
         const { playerStore } = this.props
         const { device } = playerStore
-        const { isLoading, error, currentTime, duration } = device
+        const { isLoading, error, currentTime, duration, playlist: { image } } = device
 
         return (
-            <Fragment>
+            <div className="player__background-cover" style={{ backgroundImage: image ? `url(${image})` : 'none'}}>
                 <Typography className="center" align="center" variant="h4" style={{ width: '100%' }}>
                     {error && <div>{error}</div>}
                     {!error && 
-                        <div style={{ cursor: 'pointer' }} onClick={this.handleTogglePlaying}>
+                        <div style={{ cursor: 'pointer' }} className="text-border" onClick={this.handleTogglePlaying}>
                             <div>{device.getName()}</div>
                             {isLoading && <div style={{padding: '18px 0 17px'}}>
                                 <LinearProgress color="secondary" />
@@ -107,8 +108,9 @@ class RemotePlayer extends Component {
                         onPlaylistToggle={this.handleTogglePlayList}
                         onFullScreenToggle={this.handleToggleFullscreen}
                     />
+                    { isCordova() && <MobileMediaControls playerStore={playerStore} /> }
                 </Fragment>
-            </Fragment>
+            </div>
         )
     }
 }

@@ -82,11 +82,9 @@ class LibraryStore {
     }
 
     @action addTorrent(result) {
-        const { magnetUrl, torrentUrl, provider } = result
-
         this.loading = true
         return request
-            .post('/api/torrents', { magnetUrl, torrentUrl, provider })
+            .post('/api/torrents', result)
             .then((res) => {
                 this.updateLibrary()
                 notificationStore.showMessage(`Torrent ${result.name} added`)

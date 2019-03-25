@@ -78,7 +78,7 @@ module.exports = {
             }
         })
     },
-    async addTorrent({ magnetUrl, torrentUrl, provider }) {
+    async addTorrent({ magnetUrl, torrentUrl, provider, image }) {
         let parsedTorrent = null
         
         if(torrentUrl) {
@@ -102,12 +102,13 @@ module.exports = {
 
         let torrent = torrentClient.get(parsedTorrent.infoHash)
 
-        if(torrent) return torrent
+        if(torrent) return torrent // alreday downloading
 
         torrent = await addTorrent(parsedTorrent, { path: TORRENTS_DATA_DIR })
 
         setTorrentDownloadStatus(torrent)
         waitCompletion(torrent)
+        database.setImageCover(parsedTorrent.infoHash, image)
 
         await fs.writeFile(torrentFileName(torrent), torrent.torrentFile)
 

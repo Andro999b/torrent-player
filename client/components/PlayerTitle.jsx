@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
-import { IconButton, Typography } from '@material-ui/core'
+import { Button, Typography } from '@material-ui/core'
 import { Close as CloseIcon } from '@material-ui/icons'
 
 class PlayerTitle extends Component {
@@ -10,10 +10,10 @@ class PlayerTitle extends Component {
 
         return (
             <div className="player__title">
-                <IconButton onClick={onClose}>
+                <Button onClick={onClose} variant="fab">
                     <CloseIcon />
-                </IconButton>
-                <Typography variant="h6" style={{ wordBreak: 'break-all' }}>
+                </Button>
+                <Typography variant="h6" style={{ wordBreak: 'break-all', marginLeft: '10px' }}>
                     {title}
                 </Typography>
             </div>

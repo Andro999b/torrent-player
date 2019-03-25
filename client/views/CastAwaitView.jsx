@@ -22,7 +22,7 @@ class CastAwaitView extends Component {
         const { remoteControl: { deviceName } } = this.props
 
         return (
-            <div  className="screan-view" ref={(node) => (this.node = node)}>
+            <div style={{textAlign: 'center'}} className="screan-view" ref={(node) => (this.node = node)}>
                 <img className="screan-view_qr-code" src='/remoteQrCode'/>
                 <Typography align="center" variant="h4">
                     { toJS(deviceName) }<br/>
