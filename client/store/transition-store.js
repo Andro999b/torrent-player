@@ -31,55 +31,51 @@ class TransitionStore {
         }
     }
 
-    @action.bound download(result) {
+    @action.bound download(results) {
         this.goToScreen('library')
         libraryStore
-            .addTorrent(result)
+            .addTorrent(results)
             .catch(console.error)
     }
 
-    @action.bound downloadAndPlay(result, item, startTime) {
+    @action.bound downloadAndPlay(results, selectedItem) {
         this.goToScreen('player')
-        this.downloadPlaylist(result, item)
+        this.downloadPlaylist(results, selectedItem)
             .then((params) => this.playMediaOnDevice({ 
                 ...params, 
-                result, 
-                startTime 
+                results 
             }))
             .catch(console.error)
     }
 
         
-    @action.bound downloadAndPlayMediaOnDevice(result, item, device, startTime) {
+    @action.bound downloadAndPlayMediaOnDevice(results, selectedItem, device) {
         this.goToScreen('player')
-        this.downloadPlaylist(result, item)
+        this.downloadPlaylist(results, selectedItem)
             .then((params) => this.playMediaOnDevice({
                 ...params, 
                 device, 
-                result, 
-                startTime
+                results
             }))
             .catch(console.error)
     }
 
-    playTorrentMedia = (result, item, startTime) => {
+    playTorrentMedia = (results, selectedItem) => {
         this.playMedia(
             {
-                ...result, 
+                ...results, 
                 type: 'torrent' 
             }, 
-            item, 
-            startTime
+            selectedItem
         )
     }
 
-    @action.bound playMedia(result, item, startTime) {
+    @action.bound playMedia(results, selectedItem) {
         this.goToScreen('player')
-        this.downloadPlaylist(result, item)
+        this.downloadPlaylist(results, selectedItem)
             .then((params) => this.playMediaOnDevice({ 
                 ...params, 
-                result, 
-                startTime 
+                results 
             }))
             .catch(console.error)
     }
@@ -87,30 +83,27 @@ class TransitionStore {
     @action.bound playMediaOnDevice({ 
         playlist, 
         startIndex, 
-        startTime, 
         device
     }) {
         playerStore.openPlaylist(
             device ? remoteControl.getRemoteDevice(device) : new LocalDevice(), 
             playlist, 
-            startIndex,
-            startTime
+            startIndex
         )
 
         this.castDialog = null
     }
 
-    openCastTorrentDialog = (result, item) => {
-        this.openCastDialog({...result, type: 'torrent' }, item)
+    openCastTorrentDialog = (results, selectedItem) => {
+        this.openCastDialog({...results, type: 'torrent' }, selectedItem)
     }
 
-    @action.bound openCastDialog(result, item, startTime) {
+    @action.bound openCastDialog(results, selectedItem) {
         const onDeviceSelected = (device) => {
             this.downloadAndPlayMediaOnDevice(
-                result, 
-                item, 
-                device, 
-                startTime
+                results, 
+                selectedItem, 
+                device
             )
         }
 
@@ -152,22 +145,22 @@ class TransitionStore {
         this.castDialog = null
     }
 
-    downloadPlaylist(result, item) {
-        if(result.type == 'torrent') {
-            if(result.magnetUrl || result.torrentUrl) {
+    downloadPlaylist(results, selectedItem) {
+        if(results.type == 'torrent') {
+            if(results.magnetUrl || results.torrentUrl) {
                 return libraryStore
-                    .addTorrent(result)
+                    .addTorrent(results)
                     .then((torrent) => 
-                        this.downloadTorrentPlaylist(torrent, item)
+                        this.downloadTorrentPlaylist(torrent, selectedItem)
                     )
   
             }
-            return this.downloadTorrentPlaylist(result, item)
+            return this.downloadTorrentPlaylist(results, selectedItem)
         }
 
         return Promise.resolve({
-            startIndex: item.index,
-            playlist: pick(result, 'name', 'files', 'torrentInfoHash', 'image')
+            startIndex: selectedItem.index,
+            playlist: pick(results, 'name', 'files', 'torrentInfoHash', 'image')
         })
     }
 
@@ -180,11 +173,11 @@ class TransitionStore {
                 let startIndex = 0
         
                 if(tragetItem) {
-                    startIndex = files.findIndex((item) => item.id == tragetItem.id)
+                    startIndex = files.findIndex((selectedItem) => selectedItem.id == tragetItem.id)
                     if(startIndex < 0) startIndex = 0
                 }
 
-                return { playlist, startIndex, result: torrent }
+                return { playlist, startIndex, results: torrent }
             })
     }
 

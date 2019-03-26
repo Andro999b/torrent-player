@@ -93,10 +93,10 @@ class RemoteDevice extends Device {
         this.sendAction('toggleMute')
     }
 
-    @action setPlaylist(playlist, fileIndex, startTime) {
+    @action setPlaylist(playlist, fileIndex) {
         this.playlist = playlist
         this.currentFileIndex = fileIndex
-        this.sendAction('openPlaylist', { playlist, fileIndex, startTime })
+        this.sendAction('openPlaylist', { playlist, fileIndex })
     }
 
     closePlaylist() {
@@ -153,9 +153,9 @@ function listenIncomeControls(socket) {
 
         switch (action) {
             case 'openPlaylist': {
-                const { playlist, fileIndex, startTime } = payload
+                const { playlist, fileIndex } = payload
                 transitionStore.goToScreen('player')
-                playerStore.openPlaylist(new LocalDevice(), playlist, fileIndex, startTime)
+                playerStore.openPlaylist(new LocalDevice(), playlist, fileIndex)
                 return
             }
             case 'closePlaylist':

@@ -36,7 +36,6 @@ module.exports = {
         if(!playlistName) return
 
         const state = pick(rawState, [
-            'currentTime', 
             'playlist.name', 
             'playlist.files', 
             'playlist.torrentInfoHash', 
@@ -45,7 +44,12 @@ module.exports = {
         ])
 
         if(Object.keys(state).length == 0) return
+
+
         state.ts = Date.now()
+
+        const { currentTime, currentFileIndex } = rawState
+        state.playlist.files[currentFileIndex].currentTime = currentTime
 
         if(db.has(['bookmarks', playlistName]).value()){
             db.get(['bookmarks', playlistName])
@@ -53,7 +57,6 @@ module.exports = {
                 .write()
         } else {
             db.set(['bookmarks', playlistName], {
-                currentTime: 0,
                 currentFileIndex: 0,
                 playlist: {
                     name: playlistName,

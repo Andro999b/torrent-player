@@ -7,7 +7,7 @@ const torrentDb = lowdb(new FileSync(path.join(ROOT_DIR, 'torrents.db.json')))
 
 module.exports = {
     setImageCover(torrentId, image) {
-        return torrentDb.set([ torrentId, 'image' ], image).write()
+        torrentDb.set([ torrentId, 'image' ], image).write()
     },
     getImageCover(torrentId) {
         return torrentDb.get([ torrentId, 'image' ])
@@ -24,7 +24,7 @@ module.exports = {
     setDownLoadInBackgroundStatus(torrentId, status) {
         if(!torrentId) throw Error('torrentId')
 
-        return torrentDb.set([ torrentId, 'bownloadInBackground' ], status).write()
+        torrentDb.set([ torrentId, 'bownloadInBackground' ], status).write()
     },
     setTorrentFileCompleted(torrentId, paths) {
         if(!torrentId || !path) throw Error('torrentId or path is null')
@@ -42,7 +42,7 @@ module.exports = {
     storeTorrentFileMetadata(torrentId, path, metadata) {
         if(!torrentId || !path) throw Error('torrentId or path is null')
 
-        return torrentDb.set([ torrentId, path, 'metadata' ], metadata).write()
+        torrentDb.set([ torrentId, path, 'metadata' ], metadata).write()
     },
     wipeTorrentData(torrentId) {
         torrentDb.unset(torrentId).write()

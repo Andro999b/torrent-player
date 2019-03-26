@@ -32,7 +32,7 @@ export class Device {
     disconnect() { }
     setVolume(volume) {}
     selectFile(fileIndex) {}
-    setPlaylist(playlist, fileIndex, starTime) {} 
+    setPlaylist(playlist, fileIndex) {} 
     /* eslint-enable */
 }
 
@@ -49,7 +49,7 @@ export class LocalDevice extends Device {
 
     @action setSource(source) {
         this.source = source
-        this.currentTime = 0
+        this.currentTime = source.currentTime || 0
         this.duration = 0
         this.buffered = 0
     }
@@ -76,13 +76,16 @@ export class LocalDevice extends Device {
     @action onUpdate({ duration, buffered, currentTime }) {
         if(duration) this.duration = duration
         if(buffered) this.buffered = buffered
-        if(currentTime) this.currentTime = currentTime
+        if(currentTime) {
+            this.currentTime = currentTime
+            this.source.currentTime = currentTime
+        }
     }
 
-    @action setPlaylist(playlist, fileIndex, startTime) {
+    @action setPlaylist(playlist, fileIndex) {
         this.playlist = playlist
         this.selectFile(fileIndex)
-        this.play(startTime)
+        this.play()
 
         //check progress
         if(playlist.torrentInfoHash) {
@@ -151,7 +154,7 @@ class PlayerStore {
         this.device.connect()
     }
 
-    @action openPlaylist(device, playlist, fileIndex, startTime) {
+    @action openPlaylist(device, playlist, fileIndex) {
         if(playlist.files.length === 0) return
 
         const prevDevice = this.device
@@ -159,7 +162,7 @@ class PlayerStore {
 
         this.device = device
         this.device.connect()
-        this.device.setPlaylist(playlist, fileIndex, startTime)
+        this.device.setPlaylist(playlist, fileIndex)
     }
 
     @action.bound seekIncremetal(inc) {

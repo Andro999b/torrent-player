@@ -289,13 +289,22 @@ concat-map@0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/concat-map/-/concat-map-0.0.1.tgz#d8a96bd77fd68df7793a73036a3ba0d5405d477b"
 
-concat-stream@^1.4.8, concat-stream@^1.6.2:
+concat-stream@^1.4.8:
   version "1.6.2"
   resolved "https://registry.yarnpkg.com/concat-stream/-/concat-stream-1.6.2.tgz#904bdf194cd3122fc675c77fc4ac3d4ff0fd1a34"
   dependencies:
     buffer-from "^1.0.0"
     inherits "^2.0.3"
     readable-stream "^2.2.2"
+    typedarray "^0.0.6"
+
+concat-stream@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/concat-stream/-/concat-stream-2.0.0.tgz#414cf5af790a48c60ab9be4527d56d5e41133cb1"
+  dependencies:
+    buffer-from "^1.0.0"
+    inherits "^2.0.3"
+    readable-stream "^3.0.2"
     typedarray "^0.0.6"
 
 content-disposition@0.5.2:
@@ -375,6 +384,12 @@ debug@^3.1.0:
 debug@^4.0.0, debug@^4.1.0, debug@~4.1.0:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/debug/-/debug-4.1.0.tgz#373687bffa678b38b1cd91f861b63850035ddc87"
+  dependencies:
+    ms "^2.1.1"
+
+debug@^4.1.1:
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/debug/-/debug-4.1.1.tgz#3b72260255109c6b589cee050f1d516139664791"
   dependencies:
     ms "^2.1.1"
 
@@ -768,9 +783,9 @@ jsonfile@^4.0.0:
   optionalDependencies:
     graceful-fs "^4.1.6"
 
-jstoxml@^1.4.3:
-  version "1.4.3"
-  resolved "https://registry.yarnpkg.com/jstoxml/-/jstoxml-1.4.3.tgz#c5ee5851e14bbee1d69091b94bdeae2f4b43577c"
+jstoxml@^1.4.4:
+  version "1.4.4"
+  resolved "https://registry.yarnpkg.com/jstoxml/-/jstoxml-1.4.4.tgz#b6476bec75007fd01df965b1a82d653685d269e8"
 
 junk@^2.1.0:
   version "2.1.0"
@@ -890,9 +905,13 @@ mime@1.4.1:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/mime/-/mime-1.4.1.tgz#121f9ebc49e3766f311a76e1fa1c8003c4b03aa6"
 
-mime@^2.0.3, mime@^2.2.0:
+mime@^2.0.3:
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/mime/-/mime-2.3.1.tgz#b1621c54d63b97c47d3cfe7f7215f7d64517c369"
+
+mime@^2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/mime/-/mime-2.4.0.tgz#e051fd881358585f3279df333fe694da0bcffdd6"
 
 mimic-response@^1.0.0:
   version "1.0.1"
@@ -1330,9 +1349,9 @@ split@^1.0.0:
   dependencies:
     through "2"
 
-sprintf-js@^1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/sprintf-js/-/sprintf-js-1.1.1.tgz#36be78320afe5801f6cea3ee78b6e5aab940ea0c"
+sprintf-js@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/sprintf-js/-/sprintf-js-1.1.2.tgz#da1765262bf8c0f571749f2ad6c26300207ae673"
 
 "statuses@>= 1.4.0 < 2":
   version "1.5.0"
@@ -1547,9 +1566,9 @@ videostream@^2.5.1:
     pump "^3.0.0"
     range-slice-stream "^2.0.0"
 
-webtorrent@^0.102.4:
-  version "0.102.4"
-  resolved "https://registry.yarnpkg.com/webtorrent/-/webtorrent-0.102.4.tgz#0902f5dddb244c4ca8137d5d678546b733adeb2f"
+webtorrent@^0.103.0:
+  version "0.103.1"
+  resolved "https://registry.yarnpkg.com/webtorrent/-/webtorrent-0.103.1.tgz#18ead369bbcaa60dc8ea138784c33451edd34479"
   dependencies:
     addr-to-ip-port "^1.4.2"
     bitfield "^2.0.0"
@@ -1557,13 +1576,13 @@ webtorrent@^0.102.4:
     bittorrent-protocol "^3.0.0"
     chunk-store-stream "^3.0.1"
     create-torrent "^3.33.0"
-    debug "^3.1.0"
+    debug "^4.1.0"
     end-of-stream "^1.1.0"
     fs-chunk-store "^1.6.2"
     immediate-chunk-store "^2.0.0"
     load-ip-set "^2.1.0"
     memory-chunk-store "^1.2.0"
-    mime "^2.2.0"
+    mime "^2.4.0"
     multistream "^2.0.5"
     package-json-versionify "^1.0.2"
     parse-numeric-range "^0.0.2"
@@ -1572,7 +1591,7 @@ webtorrent@^0.102.4:
     random-iterate "^1.0.1"
     randombytes "^2.0.3"
     range-parser "^1.2.0"
-    readable-stream "^3.0.2"
+    readable-stream "^3.0.6"
     render-media "^3.0.0"
     run-parallel "^1.1.6"
     run-parallel-limit "^1.0.3"
