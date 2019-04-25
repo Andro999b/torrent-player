@@ -3,6 +3,7 @@ import { observable, action } from 'mobx'
 import { Device } from '../player-store'
 import { ALLOWED_REMOTE_STATE_FIELDS } from '../../constants'
 import pick from 'lodash.pick'
+import transitionStore from '../transition-store'
 
 const devices = observable.array([])
 const deviceName = null
@@ -24,7 +25,7 @@ class MobileAppRemoteDevice extends Device {
     }
 
     disconnect() {
-        mobileApp.disconnectDevice()
+        setTimeout(() => mobileApp.disconnectDevice(), 200)
     }
 
     resume() {
@@ -92,7 +93,7 @@ let currentRemoteDevice
 
 const getRemoteDevice = (device) => {
     currentRemoteDevice = new MobileAppRemoteDevice(device)
-    mobileApp.connectToDevice(device.id)
+    mobileApp.connectToDevice(JSON.stringify(device))
     return currentRemoteDevice
 }
 
@@ -103,6 +104,10 @@ if(window.mobileApp != null) {
         switch(command) {
             case 'devicesList' : {
                 devices.replace(data)
+                return
+            }
+            case 'restoreDevice': {
+                transitionStore.connectToDevice(data)
                 return
             }
         }

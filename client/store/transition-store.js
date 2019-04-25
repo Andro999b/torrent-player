@@ -14,6 +14,7 @@ class TransitionStore {
     prevScreen = this.screen
 
     @action.bound goToScreen(screen) {
+        console.log(`requested screan ${screen}`)
         if(this.screen == screen) return
         
         if(MAIN_SCREENS.has(this.screen))

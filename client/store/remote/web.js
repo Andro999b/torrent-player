@@ -40,7 +40,7 @@ class RemoteDevice extends Device {
     }
 
     disconnect() {
-        this.socket.disconnect()
+        setTimeout(() => this.socket.disconnect(), 200)
     }
 
     @action.bound onConnected(state) {

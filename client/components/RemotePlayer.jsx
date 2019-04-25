@@ -26,7 +26,7 @@ class RemotePlayer extends Component {
     handleCloseVideo = () => {
         const { playerStore: { device }, transitionStore } = this.props
         device.closePlaylist()
-        setTimeout(() => transitionStore.stopPlayMedia(), 200)
+        transitionStore.stopPlayMedia()
     }
 
     handleCloseDevice = () => {
