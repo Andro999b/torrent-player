@@ -37,8 +37,8 @@ export function isMobile() {
     return false
 }
 
-export function isCordova() {
-    return window.cordova != null
+export function isMobileApp() {
+    return window.mobileApp != null
 }
 
 export function diff(oldObject, newObject) {

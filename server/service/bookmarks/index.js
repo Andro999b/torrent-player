@@ -45,7 +45,6 @@ module.exports = {
 
         if(Object.keys(state).length == 0) return
 
-
         state.ts = Date.now()
 
         const { currentTime, currentFileIndex } = rawState

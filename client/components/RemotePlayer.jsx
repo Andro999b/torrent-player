@@ -2,7 +2,6 @@ import React, { Component, Fragment } from 'react'
 import PropTypes from 'prop-types'
 
 import MediaControls from './MediaControls'
-import MobileMediaControls from './MobileMediaControls'
 import PlayerTitle from './PlayerTitle'
 import PlayerFilesList from './PlayerPlayList'
 import PlayBackSeekZones from './PlayBackSeekZones'
@@ -10,7 +9,7 @@ import PlayBackSeekZones from './PlayBackSeekZones'
 import { Typography, LinearProgress, Button } from '@material-ui/core'
 import { observer, inject } from 'mobx-react'
 
-import { toHHMMSS, isCordova } from '../utils'
+import { toHHMMSS } from '../utils'
 
 @inject('playerStore', 'transitionStore')
 @observer
@@ -27,7 +26,7 @@ class RemotePlayer extends Component {
     handleCloseVideo = () => {
         const { playerStore: { device }, transitionStore } = this.props
         device.closePlaylist()
-        transitionStore.goBack()
+        setTimeout(() => transitionStore.stopPlayMedia(), 200)
     }
 
     handleCloseDevice = () => {
@@ -108,7 +107,6 @@ class RemotePlayer extends Component {
                         onPlaylistToggle={this.handleTogglePlayList}
                         onFullScreenToggle={this.handleToggleFullscreen}
                     />
-                    { isCordova() && <MobileMediaControls playerStore={playerStore} transitionStore={transitionStore}/> }
                 </Fragment>
             </div>
         )

@@ -35,9 +35,15 @@ class RemoteService extends EventEmitter {
                 }
             )
             .forEach((device) => {
+                // clear connections
+                this._doWithControlConnection(device.id, (control) => control.disconnect())
+                this.connections.deleteValue(device.id)
+
+                // clear device state
                 device.clearState(false)
                 device.doAction(RemoteControl.Actions.ClosePlaylist)
-                this.removeDevice(device.id)
+
+                this._invalidateDeviceList()
             })
     }
 
@@ -58,15 +64,14 @@ class RemoteService extends EventEmitter {
         const device = this.devices[deviceId]
 
         if (device) {
-            this._removeDeviceListener(device)
-            delete this.devices[deviceId]
-            this._invalidateDeviceList()
-
-            //TODO: notify controll of dissconection
             this._doWithControlConnection(device.id, (control) => control.disconnect())
             this.connections.deleteValue(device.id)
+
+            this._removeDeviceListener(device)
+            delete this.devices[deviceId]
             device.destroy()
 
+            this._invalidateDeviceList()
             debug(`Device removed ${deviceId}`)
         }
     }
@@ -131,9 +136,8 @@ class RemoteService extends EventEmitter {
             const connectedDeviceId = this.connections.get(controlId)
             if (connectedDeviceId == deviceId) {
                 this.connections.delete(controlId)
-                this._invalidateDeviceList()
-
                 this.controls[controlId].disconnect()
+                this._invalidateDeviceList()
 
                 debug(`Connection removed: ${controlId} device: ${deviceId}`)
             }
@@ -230,7 +234,7 @@ class RemoteService extends EventEmitter {
 }
 
 RemoteService.Events = {
-    DeviceList: 'divicesList'
+    DeviceList: 'devicesList'
 }
 
 module.exports = RemoteService

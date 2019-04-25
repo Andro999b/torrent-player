@@ -12,6 +12,7 @@ import {
 } from '@material-ui/core'
 import PropTypes from 'prop-types'
 import { observer } from 'mobx-react'
+import { isCordova } from '../utils'
 
 const VOLUME_LEVELS = 15
 

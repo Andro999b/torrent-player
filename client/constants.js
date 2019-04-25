@@ -41,3 +41,16 @@ export const SEARCH_RPVODERS_PRESET_NAMES = {
     'anime-direct': 'Anime Online',   
 }
 export const SEARCH_HISTORY_MAX_SIZE = 100
+
+export const ALLOWED_REMOTE_STATE_FIELDS = [
+    'playlist',
+    'currentFileIndex',
+    'currentTime',
+    'duration',
+    'buffered',
+    'isPlaying',
+    'isLoading',
+    'error',
+    'volume',
+    'isMuted'
+]
