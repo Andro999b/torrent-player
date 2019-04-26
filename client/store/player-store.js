@@ -207,7 +207,7 @@ class PlayerStore {
         const { playlist: { name, files }, currentFileIndex } = this.device
 
         if(name && files)
-            return name + (files.length > 1 ? ' - ' + (files[currentFileIndex].index + 1) : '')
+            return name + (files.length > 1 ? ` - ${(files[currentFileIndex].index + 1)} / ${files.length}`: '')
     }
 }
 

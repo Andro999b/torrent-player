@@ -11,7 +11,7 @@ import { observer, inject } from 'mobx-react'
 
 import { toHHMMSS } from '../utils'
 
-@inject('playerStore', 'transitionStore')
+@inject('playerStore')
 @observer
 class RemotePlayer extends Component {
 
@@ -71,7 +71,7 @@ class RemotePlayer extends Component {
 
     render() {
         const { playlistOpen } = this.state
-        const { playerStore, transitionStore } = this.props
+        const { playerStore } = this.props
         const { device } = playerStore
         const { isLoading, error, currentTime, duration, playlist: { image } } = device
 
