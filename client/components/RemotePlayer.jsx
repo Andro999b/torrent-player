@@ -11,7 +11,7 @@ import { observer, inject } from 'mobx-react'
 
 import { toHHMMSS } from '../utils'
 
-@inject('playerStore')
+@inject('playerStore', 'transitionStore')
 @observer
 class RemotePlayer extends Component {
 
