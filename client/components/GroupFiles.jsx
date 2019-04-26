@@ -87,7 +87,7 @@ class GroupFiles extends Component {
             renderFiles(files)
     }
 }
-GroupFiles.MAX_FILES = 50
+GroupFiles.MAX_FILES = 10
 
 GroupFiles.propTypes = {
     files: PropTypes.array.isRequired,

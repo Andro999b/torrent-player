@@ -54,10 +54,10 @@ class PlayerPlayList extends Component {
         const groups = this.getGroups(files)
 
         const currentGroup = this.getFileGroup(currentFileIndex, groups)
-        const groupFiles = groups.length > 1 ? currentGroup.files : files
-        const sortedFiles = groupFiles
-
         selectedGroup = selectedGroup || currentGroup
+
+        const groupFiles = groups.length > 1 ? selectedGroup.files : files
+        const sortedFiles = groupFiles
 
         return (
             <Slide direction="left" in={open} mountOnEnter unmountOnExit>
@@ -76,7 +76,7 @@ class PlayerPlayList extends Component {
                             {groups.map((group) => (
                                 <MenuItem 
                                     key={group.name} 
-                                    style={group.name == currentGroup.name ? { background: grey[600] } : {}}
+                                    style={group.name == selectedGroup.name ? { background: grey[600] } : {}}
                                     onClick={() => this.handleSelectGroup(group)}>
                                     <span style={{ wordBreak: 'break-all', whiteSpace: 'normal' }}>
                                         {group.name}
