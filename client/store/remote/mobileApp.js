@@ -110,6 +110,10 @@ if(window.mobileApp != null) {
                 transitionStore.connectToDevice(data)
                 return
             }
+            case 'deviceClosed': {
+                transitionStore.stopPlayMedia()
+                return
+            }
         }
 
         if(currentRemoteDevice) {
