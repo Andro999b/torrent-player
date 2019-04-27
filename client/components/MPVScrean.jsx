@@ -29,7 +29,7 @@ class MPVScrean extends BaseScrean {
         this.mpv.property('ao-volume', volume * 100)
     }
 
-    onSource(source, startTime=0) {
+    onSource(source, startTime = 0) {
         const { mpv, props: { device } } = this
 
         device.setLoading(true)

@@ -1,6 +1,6 @@
 import remoteControl from './remote-control'
 import { request } from '../utils/api'
-import { observable, action } from 'mobx'
+import { observable, action, toJS } from 'mobx'
 import localStore from 'store'
 
 export class Device {
@@ -207,7 +207,7 @@ class PlayerStore {
         const { playlist: { name, files }, currentFileIndex } = this.device
 
         if(name && files)
-            return name + (files.length > 1 ? ` - ${(files[currentFileIndex].index + 1)} / ${files.length}`: '')
+            return name + (files.length > 1 ? ` - ${currentFileIndex + 1} / ${files.length}`: '')
     }
 }
 

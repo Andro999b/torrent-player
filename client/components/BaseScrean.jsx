@@ -25,7 +25,7 @@ class MPVScrean extends Component {
             ),
             reaction(
                 () => this.props.device.source,
-                this.onSource.bind(this)
+                (source) => this.onSource(source, this.props.device.currentTime)
             )
         )
     }
