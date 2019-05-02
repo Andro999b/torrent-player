@@ -165,16 +165,22 @@ function listenNameUpdate(socket) {
 }
 
 let setAvailability = () => {}
+
 let isCastAvaliable = !isMobile()
 
-const deviceSocket = io(urljoin(API_BASE_URL, '/device'))
-trackState(deviceSocket)
-
 if(isCastAvaliable) {
+    let lastAvaliable = false
+    const deviceSocket = io(urljoin(API_BASE_URL, '/device'))
+    
+    deviceSocket.on('reconnect', () => {
+        deviceSocket.emit('setAvailability', lastAvaliable)
+    })
+
     trackState(deviceSocket)
     listenIncomeControls(deviceSocket)
     listenNameUpdate(deviceSocket)
     setAvailability = (avaliable) => {
+        lastAvaliable = avaliable
         deviceSocket.emit('setAvailability', avaliable)
     }
 }

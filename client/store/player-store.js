@@ -1,6 +1,6 @@
 import remoteControl from './remote-control'
 import { request } from '../utils/api'
-import { observable, action, toJS } from 'mobx'
+import { observable, action } from 'mobx'
 import localStore from 'store'
 
 export class Device {
