@@ -40,8 +40,9 @@ module.exports = {
         }
     },
     performance: {
+        maxEntrypointSize: 300000,
         assetFilter: function (assetFilename) {
-            return !assetFilename.startsWith('vendor')
+            return !assetFilename.endsWith('.js')
         }
     },
     plugins: [

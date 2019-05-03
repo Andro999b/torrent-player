@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 import { BottomNavigation, BottomNavigationAction } from '@material-ui/core'
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
-import { indigo } from '@material-ui/core/colors'
+import { blue } from '@material-ui/core/colors'
 import { 
     Search as SearchIcon,
     ListRounded as LibraryIcon,
@@ -15,7 +15,7 @@ import { isMobile } from '../utils'
 const navBarTheme = (mainTheme) => createMuiTheme({
     palette: {
         primary: {
-            main: indigo[300]
+            main: blue[300]
         },
         secondary: mainTheme.palette.secondary,
         type: 'dark',

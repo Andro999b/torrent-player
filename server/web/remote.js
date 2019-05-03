@@ -13,9 +13,7 @@ class SocketRemoteDevice extends RemoteDevice {
         this.socket.on(SocketRemoteDevice.Events.SetAvailability, (available) => this.setAvailability(available))
         this.socket.on(SocketRemoteDevice.Events.Sync, (state) => this.updateState(state))
         this.socket.on(SocketRemoteDevice.Events.Clear, () => this.clearState())
-        this.socket.on(SocketRemoteDevice.Events.GetName, () => {
-            this.socket.emit(SocketRemoteDevice.Events.UpdateName, this.name)
-        })
+        this.socket.emit(SocketRemoteDevice.Events.UpdateName, this.name)
     }
 
     doAction(action, payload) {
@@ -28,7 +26,6 @@ SocketRemoteDevice.Events = {
     Sync: RemoteDevice.Events.Sync,
     Clear: 'clear',
     SetAvailability: 'setAvailability',
-    GetName: 'getName',
     UpdateName: 'updateName',
 }
 

@@ -61,7 +61,8 @@ function createMainWindow() {
             devTools
         },
         show: false,
-        backgroundThrottling: false
+        backgroundThrottling: false,
+        icon: path.join(__dirname, 'icon.png')
     })
 
     win.loadFile(path.join(__dirname, 'loading.html'))

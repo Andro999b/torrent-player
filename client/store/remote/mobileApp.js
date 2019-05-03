@@ -5,11 +5,6 @@ import { ALLOWED_REMOTE_STATE_FIELDS } from '../../constants'
 import pick from 'lodash.pick'
 import transitionStore from '../transition-store'
 
-const devices = observable.array([])
-const deviceName = null
-const setAvailability = () => {}
-const isCastAvaliable = false
-
 class MobileAppRemoteDevice extends Device {
     isLocal = () => false
 
@@ -29,7 +24,7 @@ class MobileAppRemoteDevice extends Device {
     }
 
     resume() {
-        this.sendAction('resume') 
+        this.sendAction('resume')
     }
 
     pause() {
@@ -89,56 +84,64 @@ class MobileAppRemoteDevice extends Device {
     }
 }
 
-let currentRemoteDevice
+export default () => {
+    const devices = observable.array([])
+    const deviceName = null
+    const setAvailability = () => { }
+    const isCastAvaliable = false
+    
+    let currentRemoteDevice
 
-const getRemoteDevice = (device) => {
-    currentRemoteDevice = new MobileAppRemoteDevice(device)
-    mobileApp.connectToDevice(JSON.stringify(device))
-    return currentRemoteDevice
-}
+    const getRemoteDevice = (device) => {
+        currentRemoteDevice = new MobileAppRemoteDevice(device)
+        mobileApp.connectToDevice(JSON.stringify(device))
+        return currentRemoteDevice
+    }
 
-if(window.mobileApp != null) {
-    mobileApp.setCommandListener('commandListener')
+    if (window.mobileApp != null) {
+        mobileApp.setCommandListener('commandListener')
 
-    window.commandListener = (command, data) => {
-        switch(command) {
-            case 'devicesList' : {
-                devices.replace(data)
-                return
-            }
-            case 'restoreDevice': {
-                transitionStore.connectToDevice(data)
-                return
-            }
-            case 'deviceClosed': {
-                transitionStore.stopPlayMedia()
-                return
-            }
-        }
-
-        if(currentRemoteDevice) {
-            switch(command) {
-                case 'deviceConnected': {
-                    currentRemoteDevice.onConnected(data)
+        window.commandListener = (command, data) => {
+            switch (command) {
+                case 'devicesList': {
+                    devices.replace(data)
                     return
                 }
-                case 'deviceDisconnected': {
-                    currentRemoteDevice.onDisconnected()
+                case 'restoreDevice': {
+                    transitionStore.connectToDevice(data)
                     return
                 }
-                case 'sync': {
-                    currentRemoteDevice.onSync(data)
+                case 'deviceClosed': {
+                    transitionStore.stopPlayMedia()
                     return
+                }
+            }
+
+            if (currentRemoteDevice) {
+                switch (command) {
+                    case 'deviceConnected': {
+                        currentRemoteDevice.onConnected(data)
+                        return
+                    }
+                    case 'deviceDisconnected': {
+                        currentRemoteDevice.onDisconnected()
+                        return
+                    }
+                    case 'sync': {
+                        currentRemoteDevice.onSync(data)
+                        return
+                    }
                 }
             }
         }
     }
+
+    return {
+        devices,
+        deviceName,
+        setAvailability,
+        getRemoteDevice,
+        isCastAvaliable
+    }
 }
 
-export default {
-    devices,
-    deviceName,
-    setAvailability,
-    getRemoteDevice,
-    isCastAvaliable
-}

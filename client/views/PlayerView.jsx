@@ -9,8 +9,8 @@ import RemotePlayer from '../components/RemotePlayer'
 
 const playerTheme = (mainTheme) => createMuiTheme({
     palette: {
-        primary: mainTheme.palette.secondary,
-        secondary: mainTheme.palette.primary,
+        primary: mainTheme.palette.primary,
+        secondary: mainTheme.palette.secondary,
         type: 'dark',
     },
     overrides: {

@@ -8,9 +8,6 @@ import io from 'socket.io-client'
 import pick from 'lodash.pick'
 import { ALLOWED_REMOTE_STATE_FIELDS } from '../../constants'
 
-const devices = observable([])
-const deviceName = observable.box('')
-
 class RemoteDevice extends Device {
     constructor(socket, device) {
         super()
@@ -104,101 +101,102 @@ class RemoteDevice extends Device {
     }
 }
 
-function getRemoteDevice(device) {
-    const deviceSocket = io(urljoin(API_BASE_URL, '/control'))
-    return new RemoteDevice(deviceSocket, device)
-}
+export default () => {
 
-function trackState(socket) {
-    let prevState = {}
-    autorun(() => {
-        const { device } = playerStore
-        if (device && device.isLocal()) {
-            let newState = pick(device, ALLOWED_REMOTE_STATE_FIELDS)
+    const devices = observable([])
+    const deviceName = observable.box('')
 
-            const stateDiff = diff(prevState, newState)
-            prevState = newState
-
-            socket.emit('sync', stateDiff)
-        } else {
-            prevState = {}
-            socket.emit('clear')
-        }
-    }, { delay: 1000 })
-
-    socket.on('reconnect', () => {
-        const { device } = playerStore
-        if (device && device.isLocal()) {
-            socket.emit('sync', pick(device, ALLOWED_REMOTE_STATE_FIELDS))
-        } else {
-            socket.emit('clear')
-        }
-    })
-}
-
-function listenIncomeControls(socket) {
-    socket.on('action', ({ action, payload }) => {
-        const { device } = playerStore
-
-        switch (action) {
-            case 'openPlaylist': {
-                const { playlist, fileIndex } = payload
-                transitionStore.goToScreen('player')
-                playerStore.openPlaylist(new LocalDevice(), playlist, fileIndex)
-                return
-            }
-            case 'closePlaylist':
-                transitionStore.stopPlayMedia()
-                return
-        }
-
-        if (!device || !device.isLocal()) return
-
-        if (typeof device[action] === 'function')
-            device[action](payload)
-    })
-}
-
-function listenNameUpdate(socket) {
-    socket.on('updateName', (newName) => deviceName.set(newName))
-    socket.on('connect', () => socket.emit('getName'))
-}
-
-let setAvailability = () => {}
-
-let isCastAvaliable = !isMobile()
-
-if(isCastAvaliable) {
-    let lastAvaliable = false
-    const deviceSocket = io(urljoin(API_BASE_URL, '/device'))
-    
-    deviceSocket.on('reconnect', () => {
-        deviceSocket.emit('setAvailability', lastAvaliable)
-    })
-
-    trackState(deviceSocket)
-    listenIncomeControls(deviceSocket)
-    listenNameUpdate(deviceSocket)
-    setAvailability = (avaliable) => {
-        lastAvaliable = avaliable
-        deviceSocket.emit('setAvailability', avaliable)
+    function getRemoteDevice(device) {
+        const deviceSocket = io(urljoin(API_BASE_URL, '/control'))
+        return new RemoteDevice(deviceSocket, device)
     }
-}
 
-function listenDeviceList(socket) {
-    socket.on('devicesList', (newDevices) => { 
-        devices.replace(
-            newDevices.filter((dev) =>  dev.id != newDevices.id)
-        ) 
-    })
-}
+    function trackState(socket) {
+        let prevState = {}
+        autorun(() => {
+            const { device } = playerStore
+            if (device && device.isLocal()) {
+                let newState = pick(device, ALLOWED_REMOTE_STATE_FIELDS)
 
-listenDeviceList(io(API_BASE_URL))
+                const stateDiff = diff(prevState, newState)
+                prevState = newState
 
-export default {
-    devices,
-    deviceName,
-    setAvailability,
-    getRemoteDevice,
-    isCastAvaliable
+                socket.emit('sync', stateDiff)
+            } else {
+                prevState = {}
+                socket.emit('clear')
+            }
+        }, { delay: 1000 })
+
+        socket.on('reconnect', () => {
+            const { device } = playerStore
+            if (device && device.isLocal()) {
+                socket.emit('sync', pick(device, ALLOWED_REMOTE_STATE_FIELDS))
+            } else {
+                socket.emit('clear')
+            }
+        })
+    }
+
+    function listenIncomeControls(socket) {
+        socket.on('action', ({ action, payload }) => {
+            const { device } = playerStore
+
+            switch (action) {
+                case 'openPlaylist': {
+                    const { playlist, fileIndex } = payload
+                    transitionStore.goToScreen('player')
+                    playerStore.openPlaylist(new LocalDevice(), playlist, fileIndex)
+                    return
+                }
+                case 'closePlaylist':
+                    transitionStore.stopPlayMedia()
+                    return
+            }
+
+            if (!device || !device.isLocal()) return
+
+            if (typeof device[action] === 'function')
+                device[action](payload)
+        })
+    }
+
+    let setAvailability = () => { }
+
+    let isCastAvaliable = !isMobile()
+
+    if (isCastAvaliable) {
+        let lastAvaliable = false
+        const deviceSocket = io(urljoin(API_BASE_URL, '/device'))
+
+        deviceSocket.on('updateName', (newName) => deviceName.set(newName))
+        deviceSocket.on('reconnect', () => {
+            deviceSocket.emit('setAvailability', lastAvaliable)
+        })
+
+        trackState(deviceSocket)
+        listenIncomeControls(deviceSocket)
+        setAvailability = (avaliable) => {
+            lastAvaliable = avaliable
+            deviceSocket.emit('setAvailability', avaliable)
+        }
+    }
+
+    function listenDeviceList(socket) {
+        socket.on('devicesList', (newDevices) => {
+            devices.replace(
+                newDevices.filter((dev) => dev.id != newDevices.id)
+            )
+        })
+    }
+
+    listenDeviceList(io(API_BASE_URL))
+
+    return {
+        devices,
+        deviceName,
+        setAvailability,
+        getRemoteDevice,
+        isCastAvaliable
+    }
 }
