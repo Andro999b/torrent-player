@@ -77,6 +77,10 @@ function createMainWindow() {
     globalShortcut.register('F11', () => {
         win.setFullScreen(!win.isFullScreen())
     })
+
+    globalShortcut.register('F5', () => {
+        win.reload()
+    })
 }
 
 function loadUI() {
