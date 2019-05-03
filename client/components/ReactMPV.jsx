@@ -127,7 +127,7 @@ class ReactMPV extends React.PureComponent {
         const props = Object.assign({}, this.props, {
             ref: (el) => {
                 this.plugin = el 
-},
+            },
             type: PLUGIN_MIME_TYPE,
             style: Object.assign(defaultStyle, this.props.style),
         })
