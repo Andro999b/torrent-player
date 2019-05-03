@@ -15,7 +15,7 @@ import { isMobile } from '../utils'
 const navBarTheme = (mainTheme) => createMuiTheme({
     palette: {
         primary: {
-            main: blue[300]
+            main: blue[400]
         },
         secondary: mainTheme.palette.secondary,
         type: 'dark',

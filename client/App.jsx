@@ -2,7 +2,7 @@ import './styles.scss'
 import { hot } from 'react-hot-loader'
 import React, { Component } from 'react'
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
-import { blue } from '@material-ui/core/colors'
+import { blue, red } from '@material-ui/core/colors'
 import { Provider } from 'mobx-react'
 
 import './store/remote-control'
@@ -26,9 +26,15 @@ const jss = create({
 const theme = createMuiTheme({
     palette: {
         secondary: {
+            light: red.A200,
+            main: red[500],
+            dark: red[900],
+            contrastText: '#fff'
+        },
+        primary: {
             light: blue.A200,
             main: blue[500],
-            dark: blue[900],
+            dark: blue[500],
             contrastText: '#fff'
         }
     },

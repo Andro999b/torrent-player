@@ -7,7 +7,7 @@ import PropTypes from 'prop-types'
  * @see: https://github.com/Kagami/mpv.js
  */
 
-const PLUGIN_MIME_TYPE = 'application/x-mpvjs';
+const PLUGIN_MIME_TYPE = 'application/x-mpvjs'
 
 class ReactMPV extends React.PureComponent {
     /**

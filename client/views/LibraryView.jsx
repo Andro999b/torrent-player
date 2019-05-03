@@ -141,7 +141,12 @@ class LibraryView extends Component {
                                         fullWidth
                                     />
                                 </div>
-                                <Tabs className="library__tabs" value={tab} onChange={this.handleSelectTab}>
+                                <Tabs 
+                                    className="library__tabs"
+                                    indicatorColor="primary" 
+                                    value={tab} 
+                                    onChange={this.handleSelectTab}
+                                >
                                     <Tab label="Continue Watching"/>
                                     <Tab label="Torrents"/>
                                 </Tabs>

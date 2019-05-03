@@ -111,7 +111,7 @@ class SearchBarSettings extends Component {
                                 {/* List of all providers */}
                                 {SEARCH_RPVODERS.map((provider) => (
                                     <MenuItem key={provider} onClick={() => this.toggleProvider(provider)}>
-                                        <Checkbox disableRipple checked={searchProviders.indexOf(provider) != -1} />
+                                        <Checkbox color="primary" disableRipple checked={searchProviders.indexOf(provider) != -1} />
                                         <ListItemText primary={SEARCH_RPVODERS_NAME[provider]} />
                                     </MenuItem>
                                 ))}
