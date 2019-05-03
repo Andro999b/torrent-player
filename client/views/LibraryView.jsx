@@ -14,7 +14,6 @@ import {
     Tab
 } from '@material-ui/core'
 
-import { isMobile } from '../utils'
 import { observer, inject } from 'mobx-react'
 import memoize from 'memoize-one'
 
@@ -39,8 +38,12 @@ class LibraryView extends Component {
         }
     }
 
-    componentDidMount() { this.props.libraryStore.startUpdate() }
-    componentWillUnmount() { this.props.libraryStore.stopUpdate() }
+    componentDidMount() { 
+        this.props.libraryStore.startUpdate() 
+    }
+    componentWillUnmount() { 
+        this.props.libraryStore.stopUpdate() 
+    }
     handleFilterChange = (e) => this.setState({ filter: e.target.value })
     handleRemoveBookmark = (item) => this.props.libraryStore.removeBookmark(item)
     handleAskDeleteToprrent = (torrent) => this.setState({ torrentToDelete: torrent })
