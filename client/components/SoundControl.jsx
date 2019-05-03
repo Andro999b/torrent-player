@@ -77,7 +77,7 @@ class SoundControl extends Component {
                             <IconButton onClick={this.handleVolumeDown}>
                                 <VolumeDownIcon/>
                             </IconButton>
-                            <Typography align="center">
+                            <Typography variant="body2" align="center">
                                 {Math.ceil(volume * VOLUME_LEVELS)}
                             </Typography>
                             <IconButton onClick={this.handleVolumeUp}>

@@ -85,12 +85,16 @@ html {
     width: 100%;
     padding: 5px 10px;
 
-    
     @media (min-width: 576px) {
         width: 350px;
         position: absolute;
-        right: 0
+        right: 0;
+        top: 12px;
     }
+}
+
+.library__tabs {
+    padding: 0 10px;
 }
 
 .expand-header {
@@ -284,6 +288,6 @@ html {
 }
 
 .screan-view_qr-code {
-    margin-top: 10%;
+    margin-top: 5%;
     max-height: 70%;
 }

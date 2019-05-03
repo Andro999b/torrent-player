@@ -9,9 +9,12 @@ import {
     Grid,
     CircularProgress,
     Typography,
-    TextField
+    TextField,
+    Tabs,
+    Tab
 } from '@material-ui/core'
 
+import { isMobile } from '../utils'
 import { observer, inject } from 'mobx-react'
 import memoize from 'memoize-one'
 
@@ -31,18 +34,13 @@ class LibraryView extends Component {
 
         this.state = {
             torrentToDelete: null,
-            filter: ''
+            filter: '',
+            tab: 0
         }
     }
 
-    componentDidMount() {
-        this.props.libraryStore.startUpdate()
-    }
-
-    componentWillUnmount() {
-        this.props.libraryStore.stopUpdate()
-    }
-
+    componentDidMount() { this.props.libraryStore.startUpdate() }
+    componentWillUnmount() { this.props.libraryStore.stopUpdate() }
     handleFilterChange = (e) => this.setState({ filter: e.target.value })
     handleRemoveBookmark = (item) => this.props.libraryStore.removeBookmark(item)
     handleAskDeleteToprrent = (torrent) => this.setState({ torrentToDelete: torrent })
@@ -52,6 +50,7 @@ class LibraryView extends Component {
         this.setState({ torrentToDelete: null })
         libraryStore.deleteTorrent(torrent)
     }
+    handleSelectTab = (_, tab) => this.setState({tab})
 
     filterBookmarks = memoize((bookmarks, filter) => {
         if(filter == '') return bookmarks
@@ -63,6 +62,7 @@ class LibraryView extends Component {
                 .search(filter) != -1
         )    
     })
+
     filterTorrents = memoize((torrents, filter) => {
         if(filter == '') return torrents
 
@@ -75,16 +75,16 @@ class LibraryView extends Component {
     })
 
     renderBookmarks(bookmarks) {
-        if(!bookmarks || bookmarks.length == 0) return
-
         const { transitionStore: { playMedia, openCastDialog }} = this.props
 
         return (
             <Fragment>
-                <Typography variant="h6" className="library__title">
-                    Continue Watching
-                </Typography>
-                {bookmarks.map((item) =>
+                {bookmarks.length == 0 && 
+                    <Typography variant="h5" className="center" align="center" >
+                        No results
+                    </Typography>
+                }
+                {bookmarks.length != 0 && bookmarks.map((item) =>
                     <Grid item xs={12} key={item.playlist.name}>
                         <BookmarkItem item={item} 
                             onPlay={playMedia} 
@@ -98,14 +98,14 @@ class LibraryView extends Component {
     }
 
     renderTorrents(torrents) {
-        if(!torrents || torrents.length == 0) return
-
         return (
             <Fragment>
-                <Typography variant="h6" className="library__title">
-                    Torrents
-                </Typography>
-                {torrents.map((torrent) =>
+                {torrents.length == 0 && 
+                    <Typography variant="h5" className="center" align="center" >
+                        No results
+                    </Typography>
+                }
+                {torrents.length != 0 && torrents.map((torrent) =>
                     <Grid item xs={12} key={torrent.infoHash}>
                         <TorrentListItem torrent={torrent} onDelete={this.handleAskDeleteToprrent.bind(this)} />
                     </Grid>
@@ -116,13 +116,12 @@ class LibraryView extends Component {
 
     render() {
         const { libraryStore: { library: { torrents, bookmarks }, loading }} = this.props
-        const { torrentToDelete, filter } = this.state
+        const { torrentToDelete, filter, tab } = this.state
         
         const filteredBookmarks = this.filterBookmarks(bookmarks, filter)
         const filteredTorrets = this.filterTorrents(torrents, filter)
 
         const emptyLibrary = torrents.length == 0 && bookmarks.length == 0
-        const noResults = filteredTorrets.length == 0 && filteredBookmarks.length == 0
 
         return (
             <div className="library">
@@ -139,13 +138,12 @@ class LibraryView extends Component {
                                         fullWidth
                                     />
                                 </div>
-                                {this.renderBookmarks(filteredBookmarks)}
-                                {this.renderTorrents(filteredTorrets)}
-                                {noResults && 
-                                    <Typography className="center" align="center" variant="h4">
-                                        No results
-                                    </Typography>
-                                }
+                                <Tabs className="library__tabs" value={tab} onChange={this.handleSelectTab}>
+                                    <Tab label="Continue Watching"/>
+                                    <Tab label="Torrents"/>
+                                </Tabs>
+                                {tab == 0 && this.renderBookmarks(filteredBookmarks)}
+                                {tab == 1 && this.renderTorrents(filteredTorrets)}
                             </Fragment>}
                             {emptyLibrary && 
                                 <Typography className="center" align="center" variant="h4">

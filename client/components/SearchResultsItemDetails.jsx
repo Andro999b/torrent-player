@@ -80,7 +80,7 @@ class SearchResultsItemDetails extends Component {
                 </Grid>}
                 <Grid item xs={12} md={5}>
                     {description && description.map((item, index) => (
-                        <Typography key={index}>
+                        <Typography variant="body2" key={index}>
                             {item.name && <b>{item.name}: </b>}{item.value}
                         </Typography>
                     ))}

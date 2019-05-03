@@ -71,7 +71,7 @@ class SearchResultsItem extends Component {
             (<div className="loading-center"><CircularProgress /></div>) :
             (
                 item.loadingError ?
-                    <Typography color='error'>{item.loadingError}</Typography> :
+                    <Typography variant="body2" color='error'>{item.loadingError}</Typography> :
                     <div>
                         <ExpansionPanelDetails>
                             <SearchResultsItemDetails details={item.details} />
