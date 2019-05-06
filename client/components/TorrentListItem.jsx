@@ -102,10 +102,7 @@ class TorrentListItem extends Component {
                         <Typography variant='subtitle1' className='expand-header__row'>{subtitle}</Typography>
                     </div>
                 </ExpansionPanelSummary>
-                <ExpansionPanelDetails className="files-list">
-                    {showDetails && <GroupFiles files={torrent.files} renderFiles={this.renderFiles} />}
-                </ExpansionPanelDetails>
-                <ExpansionPanelActions>
+                <div className="torrent-lits-item_actions">
                     <FormControlLabel
                         control={
                             <Checkbox 
@@ -120,7 +117,10 @@ class TorrentListItem extends Component {
                         <DeleteIcon className="button-icon__left"/>
                         Delete
                     </Button>
-                </ExpansionPanelActions>
+                </div>
+                <ExpansionPanelDetails className="files-list">
+                    {showDetails && <GroupFiles files={torrent.files} renderFiles={this.renderFiles} />}
+                </ExpansionPanelDetails>
             </ExpansionPanel>
         )
     }

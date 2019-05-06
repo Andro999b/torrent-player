@@ -291,3 +291,9 @@ html {
     margin-top: 5%;
     max-height: 70%;
 }
+
+.torrent-lits-item_actions {
+    display: flex;
+    padding: 0 24px;
+    justify-content: space-between;
+}
