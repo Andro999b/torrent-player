@@ -105,7 +105,9 @@ function registerSocket(socket) {
 }
 
 module.exports = function (htppServer) {
-    const io = Server(htppServer)
+    const io = Server(htppServer, {
+        pingTimeout: 30000
+    })
 
     io.on('connection', registerSocket)
     io.of('/control').on('connection', registerControl)

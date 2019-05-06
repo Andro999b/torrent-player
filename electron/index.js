@@ -20,6 +20,10 @@ function appReady() {
         return // server started outside
     }
 
+    startServer()
+}
+
+function startServer() {
     const isPackaged = process.mainModule.filename.indexOf('app.asar') !== -1
     let rootPath = process.cwd()
     
@@ -74,13 +78,8 @@ function createMainWindow() {
         win.show()
     })
 
-    globalShortcut.register('F11', () => {
-        win.setFullScreen(!win.isFullScreen())
-    })
-
-    globalShortcut.register('F5', () => {
-        win.reload()
-    })
+    globalShortcut.register('F11', () => win.setFullScreen(!win.isFullScreen()))
+    globalShortcut.register('F5', () => win.reload())
 }
 
 function loadUI() {

@@ -168,7 +168,8 @@ class Provider {
         return superagent
             .get(torrentUrl)
             .set(this.config.headers)
-            .buffer(true).parse(superagent.parse.image)
+            .parse(superagent.parse.image)
+            .buffer(true)
             .then((res) => parseTorrent(res.body))
     }
 }

@@ -15,7 +15,7 @@ class NNMClubProvider extends Provider {
                     selector: '.topictitle', 
                     transform: ($el) => {
                         const href = $el.attr('href')
-                        href ? href.split('=')[1] : null
+                        return href ? href.split('=')[1] : null
                     }
                 },
                 name: '.topictitle>b',
