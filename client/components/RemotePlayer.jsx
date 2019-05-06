@@ -73,7 +73,14 @@ class RemotePlayer extends Component {
         const { playlistOpen } = this.state
         const { playerStore } = this.props
         const { device } = playerStore
-        const { isLoading, error, currentTime, duration, playlist: { image } } = device
+        const { 
+            isLoading, 
+            isConnected, 
+            error, 
+            currentTime,
+            duration, 
+            playlist: { image }
+        } = device
 
         return (
             <div className="player__background-cover" style={{ backgroundImage: image ? `url(${image})` : 'none'}}>
@@ -92,22 +99,24 @@ class RemotePlayer extends Component {
                     }
                     <Button variant="contained" onClick={this.handleCloseDevice}>Close device</Button>
                 </Typography>
-                <Fragment>
-                    <PlayerTitle title={playerStore.getPlayerTitle()} onClose={this.handleCloseVideo} />
-                    <PlayBackSeekZones playerStore={playerStore} />
-                    <PlayerFilesList
-                        open={playlistOpen}
-                        device={device}
-                        onFileSelected={this.handleSelectFile}
-                    />
-                    <MediaControls
-                        device={device}
-                        onNext={() => playerStore.nextFile()}
-                        onPrev={() => playerStore.prevFile()}
-                        onPlaylistToggle={this.handleTogglePlayList}
-                        onFullScreenToggle={this.handleToggleFullscreen}
-                    />
-                </Fragment>
+                {isConnected && 
+                    <Fragment>
+                        <PlayerTitle title={playerStore.getPlayerTitle()} onClose={this.handleCloseVideo} />
+                        <PlayBackSeekZones playerStore={playerStore} />
+                        <PlayerFilesList
+                            open={playlistOpen}
+                            device={device}
+                            onFileSelected={this.handleSelectFile}
+                        />
+                        <MediaControls
+                            device={device}
+                            onNext={() => playerStore.nextFile()}
+                            onPrev={() => playerStore.prevFile()}
+                            onPlaylistToggle={this.handleTogglePlayList}
+                            onFullScreenToggle={this.handleToggleFullscreen}
+                        />
+                    </Fragment>
+                }
             </div>
         )
     }

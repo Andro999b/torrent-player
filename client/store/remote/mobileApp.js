@@ -6,6 +6,8 @@ import pick from 'lodash.pick'
 import transitionStore from '../transition-store'
 
 class MobileAppRemoteDevice extends Device {
+    isConnected = false
+
     isLocal = () => false
 
     constructor(device) {
@@ -77,10 +79,12 @@ class MobileAppRemoteDevice extends Device {
     @action.bound onConnected(state) {
         this.onSync(state)
         this.isLoading = false
+        this.isConnected = true
     }
 
     @action.bound onDisconnected() {
         this.error = 'Device disconnected'
+        this.isConnected = false
     }
 }
 

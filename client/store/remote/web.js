@@ -9,6 +9,8 @@ import pick from 'lodash.pick'
 import { ALLOWED_REMOTE_STATE_FIELDS } from '../../constants'
 
 class RemoteDevice extends Device {
+    isConnected = false
+
     constructor(socket, device) {
         super()
         this.socket = socket
@@ -43,10 +45,12 @@ class RemoteDevice extends Device {
     @action.bound onConnected(state) {
         this.onSync(state)
         this.isLoading = false
+        this.isConnected = true
     }
 
     @action.bound onDisconnected() {
         this.error = 'Device disconnected'
+        this.isConnected = false
     }
 
     resume() {
