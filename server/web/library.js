@@ -5,7 +5,7 @@ const mapTorrent = require('../utils/mapTorrent')
 
 const router = express.Router()
 
-router.get('/', (req, res) => {
+router.get('/', (_, res) => {
     const bookmarks = continueWatchingService.getAllBookmarks()
         .sort((s1, s2) => s2.ts - s1.ts)
 

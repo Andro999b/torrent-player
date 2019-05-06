@@ -83,7 +83,7 @@ class RemotePlayer extends Component {
         } = device
 
         return (
-            <div className="player__background-cover" style={{ backgroundImage: image ? `url(${image})` : 'none'}}>
+            <div className="player__background-cover" style={{ backgroundImage: image ? `url(/proxyMedia?url=${encodeURIComponent(image)})` : 'none' }}>
                 <Typography className="center" align="center" variant="h4" style={{ width: '100%' }}>
                     {error && <div>{error}</div>}
                     {!error && 

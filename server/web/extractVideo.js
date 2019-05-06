@@ -8,7 +8,7 @@ router.get('/', (req, res, next) => {
     const { type, url } = req.query
 
     if(!type || !url)
-        throw ResponseError('url and type parameters required')
+        throw new ResponseError('url and type parameters required')
 
     extractVideo(type, url)
         .then((videoUrl) => {
