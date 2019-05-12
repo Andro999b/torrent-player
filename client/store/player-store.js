@@ -32,7 +32,7 @@ export class Device {
     disconnect() { }
     setVolume(volume) {}
     selectFile(fileIndex) {}
-    setPlaylist(playlist, fileIndex) {} 
+    setPlaylist(playlist, fileIndex) {}
     /* eslint-enable */
 }
 
@@ -169,12 +169,9 @@ class PlayerStore {
         const { device } = this
         if(device && device.duration) {
             const { currentTime, duration } = device
-            let seekTime = currentTime + inc
+            const seekTime = currentTime + inc
 
-            if(seekTime < 0) seekTime = 0
-            else if(seekTime > duration) seekTime = duration
-
-            device.seek(seekTime)
+            device.seek(Math.min(Math.max(seekTime, 0), duration))
         }
     }
 
@@ -204,7 +201,10 @@ class PlayerStore {
     }
 
     getPlayerTitle() {
-        const { playlist: { name, files }, currentFileIndex } = this.device
+        const {
+            playlist: { name, files },
+            currentFileIndex
+        } = this.device
 
         if(name && files)
             return name + (files.length > 1 ? ` - ${currentFileIndex + 1} / ${files.length}`: '')

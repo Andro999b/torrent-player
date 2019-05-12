@@ -5,11 +5,10 @@ import MediaControls from './MediaControls'
 import PlayerTitle from './PlayerTitle'
 import PlayerFilesList from './PlayerPlayList'
 import PlayBackSeekZones from './PlayBackSeekZones'
+import RemotePlaybackInfo from './RemotePlaybackInfo'
 
-import { Typography, LinearProgress, Button } from '@material-ui/core'
+import { Typography, Button } from '@material-ui/core'
 import { observer, inject } from 'mobx-react'
-
-import { toHHMMSS } from '../utils'
 
 @inject('playerStore', 'transitionStore')
 @observer
@@ -45,16 +44,6 @@ class RemotePlayer extends Component {
         }))
     }
 
-    handleTogglePlaying = () => {
-        const { props: { playerStore: {device}}} = this
-
-        if (device.isPlaying) {
-            device.pause()
-        } else {
-            device.play()
-        }
-    }
-
     handleKeyUp = (e) => {
         if(e.which == 32) { //spacebar
             this.handleClick()
@@ -73,12 +62,9 @@ class RemotePlayer extends Component {
         const { playlistOpen } = this.state
         const { playerStore } = this.props
         const { device } = playerStore
-        const { 
-            isLoading, 
-            isConnected, 
-            error, 
-            currentTime,
-            duration, 
+        const {
+            isConnected,
+            error,
             playlist: { image }
         } = device
 
@@ -86,20 +72,10 @@ class RemotePlayer extends Component {
             <div className="player__background-cover" style={{ backgroundImage: image ? `url(/proxyMedia?url=${encodeURIComponent(image)})` : 'none' }}>
                 <Typography className="center" align="center" variant="h4" style={{ width: '100%' }}>
                     {error && <div>{error}</div>}
-                    {!error && 
-                        <div style={{ cursor: 'pointer' }} className="text-border" onClick={this.handleTogglePlaying}>
-                            <div>{device.getName()}</div>
-                            {isLoading && <div style={{padding: '18px 0 17px'}}>
-                                <LinearProgress color="secondary" />
-                            </div>}
-                            {!isLoading && <div style={{whiteSpace: 'nowrap'}}>
-                                {toHHMMSS(currentTime)} / {toHHMMSS(duration)}
-                            </div>}
-                        </div>
-                    }
+                    {!error && <RemotePlaybackInfo device={device} />}
                     <Button variant="contained" onClick={this.handleCloseDevice}>Close device</Button>
                 </Typography>
-                {isConnected && 
+                {isConnected &&
                     <Fragment>
                         <PlayerTitle title={playerStore.getPlayerTitle()} onClose={this.handleCloseVideo} />
                         <PlayBackSeekZones playerStore={playerStore} />
