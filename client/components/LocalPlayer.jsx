@@ -8,7 +8,7 @@ import PlayerFilesList from './PlayerPlayList'
 import PlayerTitle from './PlayerTitle'
 import VideoScrean from './VideoScrean'
 import MPVScrean from './MPVScrean'
-import PlayBackSeekZones from './PlayBackSeekZones'
+import PlayBackSeekZones from './PlayBackSkipZones'
 
 import { Typography, CircularProgress } from '@material-ui/core'
 import { observer, inject } from 'mobx-react'
@@ -78,21 +78,20 @@ class LocalPlayer extends Component {
     }
 
     handleKeyUp = (e) => {
-        const { props: { playerStore }} = this
+        const { props: { playerStore: { device } }} = this
 
         const step = e.ctrlKey ? 5 : (e.shiftKey ? 30 : 10)
 
         if(e.which == 32) { //spacebar
-            const { device } = playerStore
             if (device.isPlaying) {
                 device.pause()
             } else {
                 device.play()
             }
         } else if(e.which == 37) {
-            playerStore.seekIncremetal(-step)
+            device.skip(-step)
         } else if(e.which == 39) {
-            playerStore.seekIncremetal(step)
+            device.skip(step)
         }
     }
 
@@ -163,7 +162,7 @@ class LocalPlayer extends Component {
                     }
                     { error && <Typography className="center" variant="h4">{error}</Typography> }
                     <div className="player__pause-zone" onMouseDown={this.handleClick}></div>
-                    <PlayBackSeekZones playerStore={playerStore}/>
+                    <PlayBackSeekZones device={device}/>
                     { (!idle) && (
                         <Fragment>
                             <PlayerTitle title={playerStore.getPlayerTitle()} onClose={this.handleCloseVideo} />

@@ -35,10 +35,11 @@ class SocketRemoteControl extends RemoteControl {
         this.id = socket.id
         this.socket = socket
 
-        socket.on(SocketRemoteControl.Events.Action, ({action, payload}) => {
+        socket.on(SocketRemoteControl.Events.Action, ({action, payload}, fn) => {
             if (action) {
                 this.emit(RemoteControl.Events.Action, {action, payload})
             }
+            if(fn) fn()
         })
     }
 

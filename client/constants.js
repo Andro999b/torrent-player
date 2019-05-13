@@ -54,3 +54,5 @@ export const ALLOWED_REMOTE_STATE_FIELDS = [
     'volume',
     'isMuted'
 ]
+
+export const END_FILE_TIME_OFFSET = 60

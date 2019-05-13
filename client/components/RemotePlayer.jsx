@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import MediaControls from './MediaControls'
 import PlayerTitle from './PlayerTitle'
 import PlayerFilesList from './PlayerPlayList'
-import PlayBackSeekZones from './PlayBackSeekZones'
+import PlayBackSkipZones from './PlayBackSkipZones'
 import RemotePlaybackInfo from './RemotePlaybackInfo'
 
 import { Typography, Button } from '@material-ui/core'
@@ -24,8 +24,9 @@ class RemotePlayer extends Component {
 
     handleCloseVideo = () => {
         const { playerStore: { device }, transitionStore } = this.props
-        device.closePlaylist()
-        transitionStore.stopPlayMedia()
+        device.closePlaylist(() => {
+            transitionStore.stopPlayMedia()
+        })
     }
 
     handleCloseDevice = () => {
@@ -78,7 +79,7 @@ class RemotePlayer extends Component {
                 {isConnected &&
                     <Fragment>
                         <PlayerTitle title={playerStore.getPlayerTitle()} onClose={this.handleCloseVideo} />
-                        <PlayBackSeekZones playerStore={playerStore} />
+                        <PlayBackSkipZones device={device} />
                         <PlayerFilesList
                             open={playlistOpen}
                             device={device}

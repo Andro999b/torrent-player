@@ -1,6 +1,7 @@
 import remoteControl from './remote-control'
 import { request } from '../utils/api'
 import { observable, action } from 'mobx'
+import { END_FILE_TIME_OFFSET } from '../constants'
 import localStore from 'store'
 
 export class Device {
@@ -30,10 +31,17 @@ export class Device {
     seek(currentTime) { }
     connect() { }
     disconnect() { }
-    setVolume(volume) {}
-    selectFile(fileIndex) {}
-    setPlaylist(playlist, fileIndex) {}
+    setVolume(volume) { }
+    selectFile(fileIndex) { }
+    setPlaylist(playlist, fileIndex) { }
     /* eslint-enable */
+
+    skip(sec) {
+        if(this.duration) {
+            const seekTime = this.currentTime + sec
+            this.seek(Math.min(Math.max(seekTime, 0), this.duration))
+        }
+    }
 }
 
 export class LocalDevice extends Device {
@@ -78,7 +86,11 @@ export class LocalDevice extends Device {
         if(buffered) this.buffered = buffered
         if(currentTime) {
             this.currentTime = currentTime
-            this.source.currentTime = currentTime
+
+            if(this.duration) {
+                const timeLimit = Math.max(0, this.duration - END_FILE_TIME_OFFSET)
+                this.source.currentTime = Math.min(currentTime, timeLimit)
+            }
         }
     }
 
@@ -163,16 +175,6 @@ class PlayerStore {
         this.device = device
         this.device.connect()
         this.device.setPlaylist(playlist, fileIndex)
-    }
-
-    @action.bound seekIncremetal(inc) {
-        const { device } = this
-        if(device && device.duration) {
-            const { currentTime, duration } = device
-            const seekTime = currentTime + inc
-
-            device.seek(Math.min(Math.max(seekTime, 0), duration))
-        }
     }
 
     @action.bound switchFile(fileIndex) {

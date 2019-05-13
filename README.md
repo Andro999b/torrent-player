@@ -18,19 +18,19 @@ cd client && yarn
 cd ../server && yarn
 ```
 
+build and run as electron application
+```
+yarn start
+```
+
+build and run as web server
+```
+yarn server
+```
+
 build ui
 ```
 cd client && yarn build
-```
-
-run as web server
-```
-cd server && yarn start
-```
-
-run as electron application
-```
-yarn start
 ```
 
 build electron binaries
@@ -49,6 +49,8 @@ build/out/electron
 Player use ffmpeg for transcoding. Binaries already included in a repo and contains in a tools directory. If you want use system ffmpeg just remove this directory.
 
 # RuTracker setup
+Create a file in `root-dir` folder with name `rutracker-session`. Copy `bb_session` value from rutracker site cookie into this file.
+
 
 # MPV Integration
 

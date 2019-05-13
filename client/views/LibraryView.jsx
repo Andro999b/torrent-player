@@ -84,7 +84,7 @@ class LibraryView extends Component {
             <Fragment>
                 {bookmarks.length == 0 && 
                     <Typography variant="h5" className="center" align="center" >
-                        No results
+                        No bookmarks
                     </Typography>
                 }
                 {bookmarks.length != 0 && bookmarks.map((item) =>
@@ -105,7 +105,7 @@ class LibraryView extends Component {
             <Fragment>
                 {torrents.length == 0 && 
                     <Typography variant="h5" className="center" align="center" >
-                        No results
+                        No torrents
                     </Typography>
                 }
                 {torrents.length != 0 && torrents.map((torrent) =>

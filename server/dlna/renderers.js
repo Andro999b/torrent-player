@@ -3,6 +3,7 @@ const RemoteDevice = require('../service/remote/RemoteDevice')
 const MediaRendererClient = require('upnp-mediarenderer-client')
 const remote = require('../service/remote')
 const ip = require('ip')
+const debug = require('debug')('dnla-renderer')
 const { WEB_PORT } = require('../config')
 
 class DLNADevice extends RemoteDevice {
@@ -44,7 +45,6 @@ class DLNADevice extends RemoteDevice {
 
         const title = `${this.playlistName} - ${currentFileIndex + 1}`
 
-        this.startTrackState()
         this.seekToPosition = startTime
         this.client.load(`http://${ip.address()}:${WEB_PORT}${source.url}`, {
             autoplay: true,
@@ -55,8 +55,9 @@ class DLNADevice extends RemoteDevice {
         }, (err) => {
             if(err) {
                 console.error('client.load', err)
-                return
-            } 
+            } else {
+                this.startTrackState()
+            }
         })
     }
     
@@ -70,6 +71,14 @@ class DLNADevice extends RemoteDevice {
     
     seek(currentTime) {
         this.client.seek(currentTime)
+    }
+
+    skip(sec) {
+        const { duration, currentTime } = this.state
+        if(duration) {
+            const seekTime = currentTime + sec
+            this.seek(Math.min(Math.max(seekTime, 0), duration))
+        }
     }
 
     stop() {
@@ -103,6 +112,7 @@ class DLNADevice extends RemoteDevice {
             case 'resume': this.resume(); break
             case 'play': this.play(payload); break
             case 'seek': this.seek(payload); break
+            case 'skip': this.seek(payload); break
             case 'setVolume': break 
             case 'selectFile': this.selectFile(payload); break
             case 'toggleMute': break 
@@ -185,6 +195,7 @@ module.exports = () => {
         const usn = headers.USN
         
         if(!devices[usn]) {
+            debug('New dlna device found', headers)
             const device = new DLNADevice(new MediaRendererClient(headers.LOCATION))
             devices[usn] = device
             remote.addDevice(device)

@@ -1,15 +1,15 @@
 import React, { Component, Fragment } from 'react'
 import PropTypes from 'prop-types'
 
-class PlayBackSeekZones extends Component {
+class PlayBackSkipZones extends Component {
     handleSeekFroward = () => {
-        const { playerStore } = this.props
-        playerStore.seekIncremetal(10)
+        const { device } = this.props
+        device.skip(10)
     }
 
     handleSeekBackward = () => {
-        const { playerStore } = this.props
-        playerStore.seekIncremetal(-10)
+        const { device } = this.props
+        device.skip(-10)
     }
 
     render() {
@@ -22,8 +22,8 @@ class PlayBackSeekZones extends Component {
     }
 }
 
-PlayBackSeekZones.propTypes = {
-    playerStore: PropTypes.object.isRequired
+PlayBackSkipZones.propTypes = {
+    device: PropTypes.object.isRequired
 }
 
-export default PlayBackSeekZones
+export default PlayBackSkipZones

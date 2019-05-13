@@ -22,7 +22,7 @@ class MobileAppRemoteDevice extends Device {
     }
 
     disconnect() {
-        setTimeout(() => mobileApp.disconnectDevice(), 200)
+        mobileApp.disconnectDevice()
     }
 
     resume() {
@@ -61,8 +61,9 @@ class MobileAppRemoteDevice extends Device {
         this.sendAction('openPlaylist', { playlist, fileIndex })
     }
 
-    closePlaylist() {
+    closePlaylist(ack) {
         this.sendAction('closePlaylist')
+        setTimeout(ack, 200)
     }
 
     @action sendAction(action, payload) {

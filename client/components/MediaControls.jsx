@@ -13,6 +13,7 @@ import {
     FullscreenExit as FullscreenExitIcon
 } from '@material-ui/icons'
 import SoundControl from './SoundControl'
+import { isElectron } from '../utils'
 
 import { observer } from 'mobx-react'
 
@@ -74,7 +75,7 @@ class MediaControls extends Component {
             onNext
         } = this.props
 
-        const local = device.isLocal()
+        const showFullscrean = device.isLocal() && !isElectron()
 
         return (
             <Slide direction="up" in mountOnEnter unmountOnExit>
@@ -101,7 +102,7 @@ class MediaControls extends Component {
                             <SoundControl device={device}/>
                         </div>
                         <div className="player-controls__panel-section">
-                            {local &&
+                            {showFullscrean &&
                                 <IconButton onClick={() => onFullScreenToggle()}>
                                     {!fullScreen && <FullscreenIcon />}
                                     {fullScreen && <FullscreenExitIcon />}

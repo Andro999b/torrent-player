@@ -39,7 +39,7 @@ class RemoteDevice extends Device {
     }
 
     disconnect() {
-        setTimeout(() => this.socket.disconnect(), 200)
+        this.socket.disconnect()
     }
 
     @action.bound onConnected(state) {
@@ -89,12 +89,12 @@ class RemoteDevice extends Device {
         this.sendAction('openPlaylist', { playlist, fileIndex })
     }
 
-    closePlaylist() {
-        this.sendAction('closePlaylist')
+    closePlaylist(ack) {
+        this.sendAction('closePlaylist', null, ack)
     }
 
-    @action sendAction(action, payload) {
-        this.socket.emit('action', { action, payload })
+    @action sendAction(action, payload, ack) {
+        this.socket.emit('action', { action, payload }, ack)
     }
 
     @action.bound onSync(state) {
