@@ -34,9 +34,7 @@ class RemoteDevice extends Device {
         this.isLoading = true
     }
 
-    getName() {
-        return this.device.name
-    }
+    getName = () => this.device.name
 
     disconnect() {
         this.socket.disconnect()
@@ -159,6 +157,8 @@ export default () => {
             }
 
             if (!device || !device.isLocal()) return
+
+            console.log(action, payload);
 
             if (typeof device[action] === 'function')
                 device[action](payload)

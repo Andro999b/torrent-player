@@ -18,7 +18,8 @@ class RemotePlayer extends Component {
         super(props, context)
 
         this.state = {
-            playlistOpen: true
+            playlistOpen: true,
+            seeking: false
         }
     }
 
@@ -51,6 +52,14 @@ class RemotePlayer extends Component {
         }
     }
 
+    handleStartSeek = () =>  {
+        this.setState({ seeking: true })
+    }
+
+    handleEndSeek = () => {
+        this.setState({ seeking: false })
+    }
+
     componentDidMount() {
         window.addEventListener('keyup', this.handleKeyUp)
     }
@@ -60,7 +69,7 @@ class RemotePlayer extends Component {
     }
 
     render() {
-        const { playlistOpen } = this.state
+        const { playlistOpen, seeking } = this.state
         const { playerStore } = this.props
         const { device } = playerStore
         const {
@@ -70,28 +79,33 @@ class RemotePlayer extends Component {
         } = device
 
         return (
-            <div className="player__background-cover" style={{ backgroundImage: image ? `url(/proxyMedia?url=${encodeURIComponent(image)})` : 'none' }}>
-                <Typography className="center" align="center" variant="h4" style={{ width: '100%' }}>
-                    {error && <div>{error}</div>}
-                    {!error && <RemotePlaybackInfo device={device} />}
-                    <Button variant="contained" onClick={this.handleCloseDevice}>Close device</Button>
-                </Typography>
+            <div 
+                className="player__background-cover" 
+                style={{ backgroundImage: image ? `url(/proxyMedia?url=${encodeURIComponent(image)})` : 'none' }}
+            >
+                {!seeking && 
+                    <Typography className="center" align="center" variant="h4" style={{ width: '100%' }}>
+                        {error && <div>{error}</div>}
+                        {!error && <RemotePlaybackInfo device={device} />}
+                        <Button variant="contained" onClick={this.handleCloseDevice}>Close device</Button>
+                    </Typography>
+                }
                 {isConnected &&
                     <Fragment>
                         <PlayerTitle title={playerStore.getPlayerTitle()} onClose={this.handleCloseVideo} />
-                        <PlayBackSkipZones device={device} />
+                        <PlayBackSkipZones device={device} onSeekStart={this.handleStartSeek} onSeekEnd={this.handleEndSeek}/>
                         <PlayerFilesList
                             open={playlistOpen}
                             device={device}
                             onFileSelected={this.handleSelectFile}
                         />
-                        <MediaControls
+                        {!seeking && <MediaControls
                             device={device}
                             onNext={() => playerStore.nextFile()}
                             onPrev={() => playerStore.prevFile()}
                             onPlaylistToggle={this.handleTogglePlayList}
                             onFullScreenToggle={this.handleToggleFullscreen}
-                        />
+                        />}
                     </Fragment>
                 }
             </div>

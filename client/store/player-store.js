@@ -66,6 +66,7 @@ export class LocalDevice extends Device {
         this.isPlaying = true
         if (currentTime != undefined) {
             this.currentTime = currentTime
+            this.seekTime = currentTime
         }
     }
 
