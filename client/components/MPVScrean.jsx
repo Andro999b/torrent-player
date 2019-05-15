@@ -31,23 +31,14 @@ class MPVScrean extends BaseScrean {
 
     onSource(source, startTime = 0) {
         const { mpv, props: { device } } = this
+        const { volume, isMute } = device
 
         device.setLoading(true)
 
-        if(source.fsPath) {
-            mpv.command('loadfile', 
-                source.fsPath, 
-                'replace', 
-                `start=${startTime},video-sync=display-resample` 
-            )
-        } else {
-            mpv.command('loadfile', 
-                location.protocol + '//' + location.host + source.url, 
-                'replace', 
-                `start=${startTime},video-sync=display-resample` 
-            )
-        }
+        const options = `start=${startTime},video-sync=display-resample,volume=${volume * 100},mute=${ isMute? 'yes': 'no' }` 
+        const path = source.fsPath || (location.protocol + '//' + location.host + source.url)
 
+        mpv.command('loadfile', path, 'replace', options)
         mpv.property('pause', false)
     } 
     
