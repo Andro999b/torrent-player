@@ -30,6 +30,18 @@ class RemoteDevice extends Device {
         this.socket.on('reconnect', () => {
             this.socket.emit('connectDevice', this.device.id)
         })
+        this.socket.on('disconnect', (reason) => {
+            switch(reason) {
+                case 'io server disconnect':
+                case 'transport error':
+                    this.error = 'Connection lost'
+                    this.isConnected = false
+            }
+        })
+        this.socket.on('reconnect_failed', () => {
+            this.error = 'Connection lost'
+            this.isConnected = false
+        })
 
         this.isLoading = true
     }
@@ -61,6 +73,9 @@ class RemoteDevice extends Device {
 
     play(currentTime) {
         this.sendAction('play', currentTime)
+        if(currentTime != null) {
+            this.currentTime = currentTime
+        }
     }
 
     @action seek(currentTime) {
@@ -192,7 +207,8 @@ export default () => {
         })
     }
 
-    listenDeviceList(io(API_BASE_URL))
+    const rootSocket = io(API_BASE_URL)
+    listenDeviceList(rootSocket)
 
     return {
         devices,

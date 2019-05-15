@@ -119,6 +119,10 @@ export class LocalDevice extends Device {
 
     @action selectFile(fileIndex) {
         const { files } = this.playlist
+
+        if (fileIndex < 0 || fileIndex >= files.length)
+            return
+
         this.currentFileIndex = fileIndex
         this.setSource(files[this.currentFileIndex])
     }
@@ -179,11 +183,6 @@ class PlayerStore {
     }
 
     @action.bound switchFile(fileIndex) {
-        const { playlist: { files } } = this.device
-
-        if (fileIndex < 0 || fileIndex >= files.length)
-            return
-
         this.device.selectFile(fileIndex)
         this.device.play()
     }

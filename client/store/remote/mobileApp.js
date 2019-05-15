@@ -35,6 +35,9 @@ class MobileAppRemoteDevice extends Device {
 
     play(currentTime) {
         this.sendAction('play', currentTime)
+        if(currentTime != null) {
+            this.currentTime = currentTime
+        }
     }
 
     @action seek(currentTime) {
@@ -94,7 +97,7 @@ export default () => {
     const deviceName = null
     const setAvailability = () => { }
     const isCastAvaliable = false
-    
+
     let currentRemoteDevice
 
     const getRemoteDevice = (device) => {
