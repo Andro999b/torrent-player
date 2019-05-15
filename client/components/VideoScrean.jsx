@@ -42,23 +42,23 @@ class VideoScrean extends BaseScrean {
         } else {
             this.video.pause()
         }
-    } 
+    }
 
     onSeek(seekTime) {
         this.video.currentTime = seekTime
-    } 
+    }
 
     onMute(isMuted) {
         this.video.muted = isMuted
-    } 
-    
+    }
+
     onVolume(volume) {
         this.video.volume = volume
-    } 
-    
+    }
+
     onSource() {
         this.initVideo()
-    } 
+    }
 
     disposeHls() {
         if(this.hls) {
@@ -73,7 +73,7 @@ class VideoScrean extends BaseScrean {
     }
 
     restoreVideoState = () => {
-        const { video, props: { device } } = this 
+        const { video, props: { device } } = this
 
         video.currentTime = device.currentTime
         video.muted = device.isMuted
@@ -87,7 +87,7 @@ class VideoScrean extends BaseScrean {
 
     initVideo() {
         const { props: { device: { source }}} = this
-        
+
         const video = this.createVideoElement()
 
         this.disposeHls()
@@ -99,14 +99,14 @@ class VideoScrean extends BaseScrean {
     startHlsVideo() {
         this.hlsMode = true
 
-        const { props: { device }} = this   
+        const { props: { device }} = this
         const { source } = device
 
         const hls = new Hls({
             startPosition: device.currentTime,
             xhrSetup: (xhr) => xhr.timeout = 0
         })
-        
+
         hls.attachMedia(this.video)
         hls.on(Hls.Events.MANIFEST_PARSED, () => this.restoreVideoState())
         hls.on(Hls.Events.ERROR, (_, data) => {
@@ -114,7 +114,7 @@ class VideoScrean extends BaseScrean {
                 switch(data.type) {
                     case Hls.ErrorTypes.NETWORK_ERROR:
                         // try to recover network error
-                        console.log('fatal network error encountered, try to recover') // eslint-disable-line 
+                        console.log('fatal network error encountered, try to recover') // eslint-disable-line
                         hls.startLoad()
                         break
                     case Hls.ErrorTypes.MEDIA_ERROR:
@@ -136,13 +136,13 @@ class VideoScrean extends BaseScrean {
     }
 
     isHlsAvaliable() {
-        const { props: { device: { source } }} = this  
+        const { props: { device: { source } }} = this
 
         return source.hlsUrl && Hls.isSupported()
     }
 
     keepHlsAlive() {
-        const { props: { device: { source }}} = this    
+        const { props: { device: { source }}} = this
 
         if(this.keepAliveInterval) {
             clearInterval(this.keepAliveInterval)
@@ -170,7 +170,7 @@ class VideoScrean extends BaseScrean {
         this.video.addEventListener('waiting', this.handleWaiting)
         this.video.addEventListener('playing', this.handlePlay)
         this.video.addEventListener('error', this.handleError)
-        
+
         this.container.append(this.video)
 
         return this.video
@@ -209,7 +209,9 @@ class VideoScrean extends BaseScrean {
     }
 
     handleResize = () => {
-        this.video.className = `scale_${this.getVideoScale()}`
+        if(this.container) {
+            this.video.className = `scale_${this.getVideoScale()}`
+        }
     }
 
     handleWaiting = () => {

@@ -22,17 +22,19 @@ class PlayBackSkipZones extends Component {
 
     handleFastFroward = (e) => {
         e.preventDefault()
+        e.nativeEvent.stopImmediatePropagation()
         this.startSeeking('ff')
     }
 
     handleFastRewind = (e) => {
         e.preventDefault()
+        e.nativeEvent.stopImmediatePropagation()
         this.startSeeking('fr')
     }
 
     startSeeking = (seekMode) =>  {
         this.cleanUp()
-        
+
         window.addEventListener('touchend', this.handleSeekEnd)
         window.addEventListener('touchcancel', this.handleSeekEnd)
         window.addEventListener('mouseup', this.handleSeekEnd)
@@ -118,8 +120,8 @@ class PlayBackSkipZones extends Component {
 
         return (
             <div className="shadow-border">
-                <div 
-                    className="playback-skip backward" 
+                <div
+                    className="playback-skip backward"
                     onTouchStart={this.handleFastRewind}
                     onMouseDown={this.handleFastRewind}
                 >
@@ -130,8 +132,8 @@ class PlayBackSkipZones extends Component {
                         {toHHMMSS(time)}
                     </Typography>
                 }
-                <div 
-                    className="playback-skip forward" 
+                <div
+                    className="playback-skip forward"
                     onTouchStart={this.handleFastFroward}
                     onMouseDown={this.handleFastFroward}
                 >

@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import PropTypes from 'prop-types'
 
 import { toHHMMSS } from '../utils'
@@ -40,7 +40,12 @@ class RemotePlaybackInfo extends Component {
                 }
                 {isConnected &&
                     <div style={{whiteSpace: 'nowrap'}}>
-                        {toHHMMSS(currentTime)} / {toHHMMSS(duration)}
+                        {currentTime > 0 && toHHMMSS(currentTime)}
+                        {duration > 0 &&
+                            <Fragment>
+                                &nbsp;/&nbsp;{toHHMMSS(duration)}
+                            </Fragment>
+                        }
                     </div>
                 }
             </div>

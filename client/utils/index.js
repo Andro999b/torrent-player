@@ -20,7 +20,7 @@ export function invokeAll() {
 }
 
 export function isTablet() {
-    if(window.matchMedia) { 
+    if(window.matchMedia) {
         const isMobile = window.matchMedia('only screen and (max-width: 768px)')
         return isMobile.matches
     }
@@ -29,7 +29,7 @@ export function isTablet() {
 }
 
 export function isMobile() {
-    if(window.matchMedia) { 
+    if(window.matchMedia) {
         const isMobile = window.matchMedia('only screen and (max-width: 570px)')
         return isMobile.matches
     }
@@ -62,7 +62,7 @@ export function toHHMMSS(timestamp) {
         minutes = '0' + minutes
     }
     if (seconds < 10) {
-        seconds = '0'+seconds
+        seconds = '0' + seconds
     }
     return hours+':'+minutes+':'+seconds
 }

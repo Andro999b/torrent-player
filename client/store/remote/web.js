@@ -9,7 +9,7 @@ import pick from 'lodash.pick'
 import { ALLOWED_REMOTE_STATE_FIELDS } from '../../constants'
 
 class RemoteDevice extends Device {
-    isConnected = false
+    @observable isConnected = false
 
     constructor(socket, device) {
         super()
@@ -34,6 +34,7 @@ class RemoteDevice extends Device {
             switch(reason) {
                 case 'io server disconnect':
                 case 'transport error':
+                case 'transport close':
                     this.error = 'Connection lost'
                     this.isConnected = false
             }
