@@ -20,11 +20,13 @@ class PlayBackSkipZones extends Component {
         }
     }
 
-    handleFastFroward = () => {
+    handleFastFroward = (e) => {
+        e.preventDefault()
         this.startSeeking('ff')
     }
 
-    handleFastRewind = () => {
+    handleFastRewind = (e) => {
+        e.preventDefault()
         this.startSeeking('fr')
     }
 
