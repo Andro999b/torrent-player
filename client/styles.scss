@@ -257,10 +257,7 @@ html {
 
 .player__background-cover{
     background: no-repeat center center fixed; 
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover;
+    background-size: contain;
     position: absolute;
     top: 0;
     bottom: 0;
