@@ -31,7 +31,7 @@ class RemotePlaybackInfo extends Component {
         } = this.props
 
         return (
-            <div style={{ cursor: 'pointer' }} className="shadow-border" onClick={this.handleTogglePlaying}>
+            <div style={{ cursor: 'pointer' }} className="remote-player__info" onClick={this.handleTogglePlaying}>
                 <div>{getName()}</div>
                 {isLoading &&
                     <div style={{padding: '18px 0 17px'}}>
