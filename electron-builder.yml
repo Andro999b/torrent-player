@@ -1,7 +1,7 @@
 directories:
   output: build/out/electron
   buildResources: build
-electronVersion: 3.0.5
+electronVersion: 4.2.1
 files:
   - electron
 afterPack: ./build/electron-hooks/afterPack.js
@@ -23,8 +23,9 @@ linux:
         - x64
         - armv7l
 win:
+  icon: build/icon.ico
   target:
     - target: zip
       arch: 
         - x64
-  signAndEditExecutable: false
+publish: null

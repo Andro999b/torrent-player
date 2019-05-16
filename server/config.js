@@ -1,6 +1,6 @@
 const defaultArgc = {
-    'dlna': true,
-    'dlna-renderers': true,
+    'dlna': false,
+    'dlna-renderers': false,
     'transcoding': true
 }
 

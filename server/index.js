@@ -27,8 +27,18 @@ if(TOOLS_DIR) {
     const ffmpegPath = path.join(TOOLS_DIR, `${os.platform()}-${os.arch()}-ffmpeg${platformExt}`)
     const ffprobePath = path.join(TOOLS_DIR, `${os.platform()}-${os.arch()}-ffprobe${platformExt}`)
 
-    if(fs.existsSync(ffmpegPath)) Ffmpeg.setFfmpegPath(ffmpegPath)
-    if(fs.existsSync(ffprobePath)) Ffmpeg.setFfprobePath(ffprobePath)
+    if(fs.existsSync(ffmpegPath)) {
+        Ffmpeg.setFfmpegPath(ffmpegPath)
+    } else {
+        console.log('No internal ffmpeg found. Using system.') // eslint-disable-line no-console
+    }
+    if(fs.existsSync(ffprobePath)) {
+        Ffmpeg.setFfprobePath(ffprobePath)
+    } else {
+        console.log('No internal ffprob found. Using system.') // eslint-disable-line no-console
+    }
+} else {
+    console.log('No internal ffmpeg and ffprob found. Using system.') // eslint-disable-line no-console
 }
 
 //start services
@@ -36,8 +46,8 @@ torrentsService.restoreTorrents()
 web()
 
 if(DLNA_ENABLED) {
-    // dlna()
-    // DLNA_RENDERERS_ENABLED && dlnaRenderers()
+    dlna()
+    DLNA_RENDERERS_ENABLED && dlnaRenderers()
 }
 
 process.on('uncaughtException', (e) => console.error(e))

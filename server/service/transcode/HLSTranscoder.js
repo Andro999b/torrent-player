@@ -50,7 +50,12 @@ class HLSTranscoder {
 
         const progress = await this.loadProgress()
 
-        return this.spawn(progress)
+        try{
+            return this.spawn(progress)
+        }catch(e) {
+            console.error(e)
+            this._needToStartTranscoding = true
+        }
     }
 
     async spawn({ start_time }) {
@@ -84,12 +89,13 @@ class HLSTranscoder {
                 .addOutputOption('-hls_allow_cache 1')
                 .addOutputOption('-hls_segment_filename 1')
                 .addOutputOption(`-hls_base_url ${hlsBaseUrl}`)
-                .addOutputOption(`-hls_segment_filename ${outputDirectory}/segment_%03d.ts`)
+                .addOutputOption(`-hls_segment_filename ${path.join(outputDirectory, 'segment_%03d.ts')}`)
                 .format('hls')
                 .once('error', (err, stdout, stderr) => {
+                    this._needToStartTranscoding = true
+                    this.command = null
+
                     if (err.message.search('SIGKILL') == -1) { //filter SIGKILL
-                        this._needToStartTranscoding = true
-                        this.command = null
                         console.error('Cannot process video: ' + err.message, stderr) // eslint-disable-line
                     }
                     reject(err)

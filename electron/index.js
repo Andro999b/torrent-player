@@ -47,7 +47,7 @@ function getMPVPluginEntry() {
     const platform = process.platform
     const arch = process.arch
     
-    const pluginPath = path.join(process.cwd(), 'plugins', `mpv-${platform}-${arch}`)
+    const pluginPath = path.join(process.cwd(), 'plugins', `mpv-${platform}-${arch}.node`)
 
     console.log('MPV Plugin path:', pluginPath) // eslint-disable-line
 
@@ -62,6 +62,7 @@ function createMainWindow() {
             additionalArguments: process.argv.slice(2),
             webSecurity: false,
             plugins: true,
+            nodeIntegration: true,
             devTools
         },
         show: false,
@@ -69,7 +70,7 @@ function createMainWindow() {
         icon: path.join(__dirname, 'icon.png')
     })
 
-    win.loadFile(path.join(__dirname, 'loading.html'))
+    //win.loadFile(path.join(__dirname, 'loading.html'))
 
     !devTools && win.setMenu(null)
 

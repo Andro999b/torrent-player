@@ -11,27 +11,35 @@ exports.default = async function(context) {
 
     const pluginsDir = path.join(outDir, '../../../plugins')
     const toolsDir = path.join(outDir, '../../../tools')
-    const libsDir = path.join(outDir, '../../../libs', `${platform}-${arch}`)
 
     //copy mpv plugin
-    const mpvPluginName = `mpv-${platform}-${arch}`
+    const mpvPluginName = `mpv-${platform}-${arch}.node`
     const mpvPluginPath = path.join(pluginsDir, mpvPluginName)
 
-    if(await exists(mpvPluginPath)) {
-        const appOutPluginDir = path.join(appOutDir, 'plugins')
+    const appOutPluginDir = path.join(appOutDir, 'plugins')
 
+    if(await exists(mpvPluginPath)) {
         if(!await exists(appOutPluginDir))
             await mkdir(appOutPluginDir)
         
         await cp(mpvPluginPath, path.join(appOutPluginDir, mpvPluginName))
-    }
 
-    //copy lib mpv
-    const libMpvName = platform == 'win32'? 'mpv-1.dll' : 'libmpv.so.1'
-    const libMpvPath = path.join(libsDir, libMpvName)
+        //copy lib mpv
+        if(platform == 'win32') {
+            const libMpvName = 'mpv-1.dll'
+            const libMpvPath = path.join(pluginsDir, libMpvName)
+            if(await exists(libMpvPath)) {
+                await cp(libMpvPath, path.join(appOutPluginDir, libMpvName))
+            }
+        }
 
-    if(await exists(libMpvPath)) {
-        await cp(libMpvPath, path.join(appOutDir, libMpvName))
+        if(platform == 'linux') { //TODO: change linkage
+            const libMpvName = 'libmpv.so.1'
+            const libMpvPath = path.join(pluginsDir, libMpvName)
+            if(await exists(libMpvPath)) {
+                await cp(libMpvPath, path.join(appOutDir, libMpvName))
+            }
+        }
     }
 
     //copy ffmpeg and ffprobe

@@ -35,9 +35,10 @@ class MPVScrean extends BaseScrean {
 
         device.setLoading(true)
 
-        const options = `start=${startTime},video-sync=display-resample,volume=${volume * 100},mute=${ isMute? 'yes': 'no' }` 
+        const options = `start=${startTime},volume=${volume * 100},mute=${ isMute? 'yes': 'no' }` 
         const path = source.fsPath || (location.protocol + '//' + location.host + source.url)
 
+        mpv.property('hwdec', 'auto')
         mpv.command('loadfile', path, 'replace', options)
         mpv.property('pause', false)
     } 
