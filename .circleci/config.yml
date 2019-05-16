@@ -50,7 +50,8 @@ jobs:
           key: v1-dependencies-server-{{ checksum "server/package.json" }}
 
   build-electron:
-    executor: node-x86
+    docker:
+      - image: electronuserland/builder:wine
     
     steps:
       - attach_workspace:
