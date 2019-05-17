@@ -155,7 +155,7 @@ class LocalPlayer extends Component {
                     { isLoading && 
                         <div className="center">
                             <CircularProgress color="secondary"/>
-                            {progress && <Typography variant="h5">
+                            {progress && <Typography variant="h5" className="shadow-border">
                                 {filesize(progress.downloaded).human()}/{filesize(progress.length).human()}
                             </Typography>}
                         </div> 

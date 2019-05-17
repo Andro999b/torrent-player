@@ -112,7 +112,7 @@ function waitForFile(path, timeout) {
                 reject()
                 return
             }
-
+            
             fs.exists(path)
                 .then((exits) => {
                     if (exits) {

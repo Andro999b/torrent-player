@@ -1,6 +1,8 @@
 const fs = require('fs')
+const os = require('os')
 const path = require('path')
 const { promisify } = require('util')
+const { waitForFile } = require('../utils/index')
 const ffprobe = promisify(require('fluent-ffmpeg').ffprobe)
 
 const { RESOURCES_DIR, TORRENTS_DATA_DIR } = require('../config')
@@ -14,7 +16,16 @@ module.exports = {
         if(metadataCache.hasOwnProperty(file.path))
             return metadataCache[file.path]
 
-        const metadata = await ffprobe(path.join(TORRENTS_DATA_DIR, file.path))
+        let metadata
+        if(os.platform == 'win') {
+            const filePath = path.join(TORRENTS_DATA_DIR, file.path)
+            await waitForFile(filePath, 60000)
+            metadata = await ffprobe(filePath)
+        } else {
+            metadata = await ffprobe(file.createReadStream())
+        }
+
+        
         metadataCache[file.path] = metadata
 
         return metadata

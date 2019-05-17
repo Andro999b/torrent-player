@@ -88,7 +88,8 @@ module.exports = {
                 } else {
                     const res = await superagent
                         .get(torrentUrl)
-                        .buffer(true).parse(superagent.parse.image)
+                        .buffer(true)
+                        
                     parsedTorrent = parseTorrent(res.body)
                 }
             } catch(e) {
@@ -142,8 +143,10 @@ module.exports = {
     },
     getTorrent(torrentId) {
         const torrent = torrentClient.get(torrentId)
-        torrent.downloadInBackground = 
-            database.isEnabledDownloadInBackground(torrentId)
+        if(torrent) {
+            torrent.downloadInBackground = 
+                database.isEnabledDownloadInBackground(torrentId)
+        }
 
         return torrent
     },
