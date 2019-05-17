@@ -1,11 +1,9 @@
 const fs = require('fs')
-const os = require('os')
 const path = require('path')
 const { promisify } = require('util')
-const { waitForFile } = require('../utils/index')
 const ffprobe = promisify(require('fluent-ffmpeg').ffprobe)
 
-const { RESOURCES_DIR, TORRENTS_DATA_DIR } = require('../config')
+const { RESOURCES_DIR } = require('../config')
 const browserVideoCodecs = JSON.parse(fs.readFileSync(path.join(RESOURCES_DIR, 'browser-video-codecs.json')))
 const browserAudioCodecs = JSON.parse(fs.readFileSync(path.join(RESOURCES_DIR, 'browser-audio-codecs.json')))
 

@@ -67,12 +67,16 @@ module.exports = {
                 const seedTorrentFile = path.join(TORRENTS_DIR, file)
                 if (fs.statSync(seedTorrentFile).isFile()) {
                     const seedTorrent = fs.readFileSync(seedTorrentFile)
-                    torrentClient.add(seedTorrent, { path: TORRENTS_DATA_DIR }, (torrent) => {
-                        debug(`${torrent.name} verified`)
-                        const autoDownload = database.isEnabledDownloadInBackground(torrent.infoHash)
-                        setTorrentDownloadStatus(torrent, autoDownload)
-                        waitCompletion(torrent)
-                    })
+                    torrentClient.add(
+                        seedTorrent, 
+                        { path: TORRENTS_DATA_DIR }, 
+                        (torrent) => {
+                            debug(`${torrent.name} verified`)
+                            const autoDownload = database.isEnabledDownloadInBackground(torrent.infoHash)
+                            setTorrentDownloadStatus(torrent, autoDownload)
+                            waitCompletion(torrent)
+                        }
+                    )
                     debug(`Torrent resumed: ${seedTorrentFile}`)
                 }
             }
@@ -103,7 +107,7 @@ module.exports = {
 
         let torrent = torrentClient.get(parsedTorrent.infoHash)
 
-        if(torrent) return torrent // alreday downloading
+        if(torrent) return torrent // already downloading
 
         torrent = await addTorrent(parsedTorrent, { path: TORRENTS_DATA_DIR })
 
