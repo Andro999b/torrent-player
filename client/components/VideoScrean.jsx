@@ -6,6 +6,28 @@ import { observer } from 'mobx-react'
 import Hls from 'hls.js'
 import BaseScrean from './BaseScrean'
 
+class HLSLoader extends Hls.DefaultConfig.loader {
+    constructor(hlsConfig) {
+        super(hlsConfig)
+
+        const load = this.load.bind(this)
+
+        this.load = function (context, config, callbacks) {
+            if(hlsConfig.proxy) {
+                if(context.frag) {
+                    const baseUrl = decodeURIComponent(context.frag.baseurl.split('&url=')[1])
+                    context.url = new URL(context.frag.relurl, baseUrl).toString()
+                    console.log(context.url);
+                }
+
+                context.url = `${hlsConfig.proxy}&url=${encodeURIComponent(context.url)}`
+            }
+            
+            load(context, config, callbacks)
+        }
+    }
+}
+
 @observer
 class VideoScrean extends BaseScrean {
     constructor(props, context) {
@@ -61,13 +83,13 @@ class VideoScrean extends BaseScrean {
     }
 
     disposeHls() {
-        if(this.hls) {
+        if (this.hls) {
             this.hls.stopLoad()
             this.hls.detachMedia()
             this.hls.destroy()
         }
         this.hlsMode = false
-        if(this.keepAliveInterval) {
+        if (this.keepAliveInterval) {
             clearInterval(this.keepAliveInterval)
         }
     }
@@ -86,32 +108,48 @@ class VideoScrean extends BaseScrean {
     }
 
     initVideo() {
-        const { props: { device: { source }}} = this
+        const { props: { device: { source } } } = this
 
         const video = this.createVideoElement()
 
         this.disposeHls()
 
-        video.src = source.browserUrl || source.url
+        const sourceUrl = source.browserUrl || source.url
+        if (sourceUrl) {
+            video.src = sourceUrl
+        } else if (source.hlsUrl) {
+            this.startHlsVideo()
+        } else {
+            const { device } = this.props
+
+            device.setLoading(false)
+            device.setError('No suitable video source')
+            return
+        }
+
         this.restoreVideoState()
     }
 
     startHlsVideo() {
         this.hlsMode = true
 
-        const { props: { device }} = this
+        const { props: { device } } = this
         const { source } = device
 
         const hls = new Hls({
             startPosition: device.currentTime,
-            xhrSetup: (xhr) => xhr.timeout = 0
+            xhrSetup: (xhr) => {
+                xhr.timeout = 0
+            },
+            proxy: source.hlsProxy,
+            loader: HLSLoader
         })
 
         hls.attachMedia(this.video)
         hls.on(Hls.Events.MANIFEST_PARSED, () => this.restoreVideoState())
         hls.on(Hls.Events.ERROR, (_, data) => {
             if (data.fatal) {
-                switch(data.type) {
+                switch (data.type) {
                     case Hls.ErrorTypes.NETWORK_ERROR:
                         // try to recover network error
                         console.log('fatal network error encountered, try to recover') // eslint-disable-line
@@ -136,27 +174,27 @@ class VideoScrean extends BaseScrean {
     }
 
     isHlsAvaliable() {
-        const { props: { device: { source } }} = this
+        const { props: { device: { source } } } = this
 
         return source.hlsUrl && Hls.isSupported()
     }
 
     keepHlsAlive() {
-        const { props: { device: { source }}} = this
+        const { props: { device: { source } } } = this
 
-        if(this.keepAliveInterval) {
+        if (this.keepAliveInterval) {
             clearInterval(this.keepAliveInterval)
         }
 
         this.keepAliveInterval = setInterval(() => {
-            if(this.keepAliveUrl) {
+            if (this.keepAliveUrl) {
                 request.get(source.keepAliveUrl).end()
             }
         }, 5000) // each 5 sec call server keep alive
     }
 
     createVideoElement() {
-        if(this.video) {
+        if (this.video) {
             this.video.remove()
         }
 
@@ -189,7 +227,7 @@ class VideoScrean extends BaseScrean {
     handleError = () => {
         const { device } = this.props
 
-        if(!this.hlsMode && this.isHlsAvaliable()) { // retry with hls
+        if (!this.hlsMode && this.isHlsAvaliable()) { // retry with hls
             this.startHlsVideo()
             return
         }
@@ -209,7 +247,7 @@ class VideoScrean extends BaseScrean {
     }
 
     handleResize = () => {
-        if(this.container) {
+        if (this.container) {
             this.video.className = `scale_${this.getVideoScale()}`
         }
     }

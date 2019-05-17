@@ -59,5 +59,6 @@ module.exports = {
     },
     TRANSCODING_ENABLED: argv['transcoding'],
     DLNA_ENABLED: argv['dlna'],
-    DLNA_RENDERERS_ENABLED: argv['dlna-renderers']
+    DLNA_RENDERERS_ENABLED: argv['dlna-renderers'],
+    PROXY_HEADERS: ['Content-Type', 'Content-Length', 'Cache-Control', 'ETag', 'Expires', 'Date', 'Last-Modified']
 }

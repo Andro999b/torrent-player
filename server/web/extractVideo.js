@@ -10,11 +10,7 @@ router.get('/', (req, res, next) => {
     if(!type || !url)
         throw new ResponseError('url and type parameters required')
 
-    extractVideo(type, url)
-        .then((videoUrl) => {
-            res.redirect(videoUrl)
-        })
-        .catch(next)
+    extractVideo(req.query, res).catch(next)
 })
 
 module.exports = router

@@ -5,8 +5,8 @@ const $ = require('cheerio')
 class AnidubProvider extends DataLifeProvider {
     constructor() {
         super({
-            baseUrl: 'https://online.anidub.com',
-            searchUrl: 'https://online.anidub.com/index.php?do=search',
+            baseUrl: 'https://anime.anidub.com',
+            searchUrl: 'https://anime.anidub.com/index.php?do=search',
             scope: '.newstitle',
             pageSize: 50,
             selectors: {
@@ -44,16 +44,23 @@ class AnidubProvider extends DataLifeProvider {
                             .map((node, index) => {
                                 const $node = $(node)
                                 const playerUrl = $node.attr('value').split('|')[0] 
-                                const type = playerUrl.indexOf('sibnet') != -1 ?
-                                    'sibnet' :
-                                    'stormTv'
 
-                                return {
+                                const file = {
                                     index,
                                     id: index,
-                                    name: $node.text(),
-                                    url: `/extractVideo?type=${type}&url=${urlencode(playerUrl)}`
+                                    name: $node.text()
                                 }
+
+                                if(playerUrl.indexOf('sibnet') != -1) {
+                                    file.url = `/extractVideo?type=sibnet&url=${urlencode(playerUrl)}`
+                                } else if (playerUrl.indexOf('storm') != -1) {
+                                    file.url = `/extractVideo?type=stormTv&url=${urlencode(playerUrl)}`
+                                } else {
+                                    file.hlsUrl = playerUrl
+                                    file.hlsProxy = `/extractVideo?type=anidub&referer=${urlencode(playerUrl)}`
+                                }
+
+                                return file
                             })
                 }
             }
