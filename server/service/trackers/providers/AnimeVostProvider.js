@@ -5,8 +5,8 @@ const $ = require('cheerio')
 class AnimeVostProvider extends DataLifeProvider {
     constructor() {
         super({
-            baseUrl: 'http://animevost.org',
-            searchUrl: 'http://animevost.org/index.php?do=search',
+            baseUrl: 'https://animevost.org',
+            searchUrl: 'https://animevost.org/index.php?do=search',
             scope: '.shortstory',
             pageSize: 50,
             selectors: {
@@ -17,7 +17,7 @@ class AnimeVostProvider extends DataLifeProvider {
             detailsSelectors: {
                 image: { 
                     selector: '.imgRadius', 
-                    transform: ($el) => $el.attr('src') 
+                    transform: ($el) => this.config.baseUrl + $el.attr('src') 
                 },
                 description: { 
                     selector: 'p',

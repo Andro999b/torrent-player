@@ -70,7 +70,7 @@ function createMainWindow() {
         icon: path.join(__dirname, 'icon.png')
     })
 
-    //win.loadFile(path.join(__dirname, 'loading.html'))
+    win.loadFile(path.join(__dirname, 'loading.html'))
 
     !devTools && win.setMenu(null)
 
