@@ -38,7 +38,7 @@
     "classnames": "^2.2.6",
     "file-size": "^1.0.0",
     "fscreen": "^1.0.2",
-    "hls.js": "^0.12.4",
+    "hls.js": "^0.12.3-canary.4281",
     "lodash.debounce": "^4.0.8",
     "lodash.groupby": "^4.6.0",
     "lodash.pick": "^4.4.0",

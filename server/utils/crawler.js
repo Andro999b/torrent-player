@@ -13,7 +13,7 @@ class Crawler {
 
             return superagent
                 .get(targetUrl)
-                // .buffer(false)
+                .buffer(true)
                 .charset()
                 .set(this._headers)
         })

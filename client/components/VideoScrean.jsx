@@ -7,20 +7,32 @@ import Hls from 'hls.js'
 import BaseScrean from './BaseScrean'
 
 class HLSLoader extends Hls.DefaultConfig.loader {
-    constructor(hlsConfig) {
-        super(hlsConfig)
+    constructor(config) {
+        super(config)
 
         const load = this.load.bind(this)
+        
+        let proxyBaseUrl = null
+        if(config.proxy) {
+            const { type, params } = config.proxy
+            proxyBaseUrl = '/extractVideo?'
+            proxyBaseUrl += `type=${type}`
+
+            if(params) {
+                Object.keys(params).forEach((key) => 
+                    proxyBaseUrl += `&${key}=${params[key]}`
+                )
+            }
+        }
 
         this.load = function (context, config, callbacks) {
-            if(hlsConfig.proxy) {
-                if(context.frag) {
+            if(proxyBaseUrl) {
+                if(context.url.startsWith(window.location.origin)) { // replaces rlative urls
                     const baseUrl = decodeURIComponent(context.frag.baseurl.split('&url=')[1])
                     context.url = new URL(context.frag.relurl, baseUrl).toString()
-                    console.log(context.url);
                 }
 
-                context.url = `${hlsConfig.proxy}&url=${encodeURIComponent(context.url)}`
+                context.url = `${proxyBaseUrl}&url=${encodeURIComponent(context.url)}`
             }
             
             load(context, config, callbacks)

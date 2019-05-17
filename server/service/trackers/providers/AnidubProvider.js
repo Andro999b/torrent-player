@@ -57,7 +57,12 @@ class AnidubProvider extends DataLifeProvider {
                                     file.url = `/extractVideo?type=stormTv&url=${urlencode(playerUrl)}`
                                 } else {
                                     file.hlsUrl = playerUrl
-                                    file.hlsProxy = `/extractVideo?type=anidub&referer=${urlencode(playerUrl)}`
+                                    file.hlsProxy = {
+                                        type: 'anidub',
+                                        params: {
+                                            referer: urlencode(playerUrl)
+                                        }
+                                    }
                                 }
 
                                 return file
