@@ -16,16 +16,8 @@ module.exports = {
         if(metadataCache.hasOwnProperty(file.path))
             return metadataCache[file.path]
 
-        let metadata
-        if(os.platform == 'win') {
-            const filePath = path.join(TORRENTS_DATA_DIR, file.path)
-            await waitForFile(filePath, 60000)
-            metadata = await ffprobe(filePath)
-        } else {
-            metadata = await ffprobe(file.createReadStream())
-        }
+        const metadata = await ffprobe(file.createReadStream())
 
-        
         metadataCache[file.path] = metadata
 
         return metadata
