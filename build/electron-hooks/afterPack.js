@@ -27,7 +27,7 @@ exports.default = async function(context) {
         //copy lib mpv
         if(platform == 'win32') {
             const libMpvName = 'mpv-1.dll'
-            const libMpvPath = path.join(pluginsDir, libMpvName)
+            const libMpvPath = path.join(pluginsDir, 'libs', 'win32-x64', libMpvName)
             if(await exists(libMpvPath)) {
                 await cp(libMpvPath, path.join(appOutPluginDir, libMpvName))
             }
@@ -35,9 +35,11 @@ exports.default = async function(context) {
 
         if(platform == 'linux') { //TODO: change linkage
             const libMpvName = 'libmpv.so.1'
-            const libMpvPath = path.join(pluginsDir, libMpvName)
-            if(await exists(libMpvPath)) {
-                await cp(libMpvPath, path.join(appOutDir, libMpvName))
+            for (const arch in ['x64', 'arm']) {
+                const libMpvPath = path.join(pluginsDir, 'libs', `linux-${arch}`, libMpvName)
+                if(await exists(libMpvPath)) {
+                    await cp(libMpvPath, path.join(appOutDir, libMpvName))
+                }
             }
         }
     }
