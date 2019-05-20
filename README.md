@@ -83,3 +83,7 @@ Electron version use MPV.js plugin see repo https://github.com/Kagami/mpv.js/ fo
 --no-mpv - disable mpv plugin
 
 --dev-tools - enable developer tools
+
+# Electron sortcuts
+`F5` - reload UI
+`F11` - toggle fullscrean

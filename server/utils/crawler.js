@@ -99,7 +99,7 @@ class Crawler {
 
                 if (this._limit && results.length >= this._limit) {
                     limitReached = true
-                    return false
+                    break
                 }
             }
 

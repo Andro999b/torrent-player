@@ -51,7 +51,7 @@ class Provider {
         throw new Error('Provider not implement getName()')
     }
 
-    search(query, page, pageCount) {
+    async search(query, page, pageCount) {
         if (page < 1) page = 1
         if (pageCount < 1) pageCount = 1
 
@@ -67,7 +67,7 @@ class Provider {
 
         const limit = pageCount * pageSize
 
-        return crawler
+        let results = await crawler
             .get(
                 this.getSearchUrl(urlencode(query, encoding), page), 
                 this._crawlerRequestGenerator(query, page)
@@ -78,35 +78,37 @@ class Provider {
             .paginate(pagenatorSelector)
             .limit(limit)
             .gather() 
-            .then(this._postProcessResult.bind(this))
-            .then((results) =>
-                results
-                    .filter((item) => item.id != null)
-                    .map((item) => {
-                        item.provider = name
-                        return item
-                    })
-            )
+        
+        results = await this._postProcessResult(results)
+
+        return results
+            .filter((item) => item.id != null)
+            .map((item) => {
+                item.provider = name
+                return item
+            })
     }
 
-    getInfo(resultsId) {
+    async getInfo(resultsId) {
         const { detailsScope, detailsSelectors, headers } = this.config
 
-        return crawler
+        let details = await crawler
             .get(this.getInfoUrl(resultsId))
             .limit(1)
             .headers(headers)
             .scope(detailsScope)
             .set(detailsSelectors)
             .gather() 
-            .then((details) => details[0])
-            .then((details) => this._postProcessResultDetails(details, resultsId))
-            .then((details) => ({
-                ...details, 
-                provider: this.getName(), 
-                type: this.getType()
-            }))
-            .then(this._loadTorrentFileInfo.bind(this))
+
+        details = details[0]
+        details = await this._postProcessResultDetails(details, resultsId)
+        details = {
+            ...details, 
+            provider: this.getName(), 
+            type: this.getType()
+        }
+
+        return await this._loadTorrentFileInfo(details)
     }
 
     // eslint-disable-next-line no-unused-vars
@@ -123,7 +125,7 @@ class Provider {
         return 'torrent'
     }
 
-    _postProcessResult(results) {
+    async _postProcessResult(results) {
         results.forEach((result) => {
             result.infoUrl = this.getInfoUrl(result.id)
             if(result.seeds) result.seeds = parseInt(result.seeds)
@@ -132,36 +134,33 @@ class Provider {
         return results
     }
 
-    _postProcessResultDetails(details) {
+    async _postProcessResultDetails(details) {
         return details
     }
 
     _crawlerRequestGenerator(query, page) {} // eslint-disable-line
 
-    _loadTorrentFileInfo(details) {
+    async  _loadTorrentFileInfo(details) {
         if(!details.torrentUrl) {
             return details
         }
 
-        return this.loadTorentFile(details.torrentUrl) 
-            .then((parsedTorrent) => {
-                const files = 
-                    parsedTorrent.files
-                        .map((file, fileIndex) => {
-                            const lastSeparator = file.path .lastIndexOf('/')
-                            const path = lastSeparator > -1 ? file.path.substring(0, lastSeparator) : ''
+        const parsedTorrent = await this.loadTorentFile(details.torrentUrl) 
+        const files = parsedTorrent.files
+            .map((file, fileIndex) => {
+                const lastSeparator = file.path .lastIndexOf('/')
+                const path = lastSeparator > -1 ? file.path.substring(0, lastSeparator) : ''
 
-                            return {
-                                path,
-                                name: file.name,
-                                id: fileIndex,
-                                length: file.length
-                            }
-                        })
-                        .sort((f1, f2) => f1.name.localeCompare(f2.name))
-
-                return { ...details, files }
+                return {
+                    path,
+                    name: file.name,
+                    id: fileIndex,
+                    length: file.length
+                }
             })
+            .sort((f1, f2) => f1.name.localeCompare(f2.name))
+
+        return { ...details, files }
     }
 
     loadTorentFile(torrentUrl) {

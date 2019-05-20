@@ -9,10 +9,10 @@ export const SEARCH_RPVODERS = [
     'nnm-anime', 
     'fastTorrent', 
     'animeVost', 
-    'anidub'
+    'anidub',
+    'kinokrad'
 ]
 export const SEARCH_RPVODERS_NAME = {
-//   'tfile': 'TFile', // no longer supported
     'rutor': 'RuTor',
     'rutracker-movies': 'RuTracker Movies',
     'rutracker-tv-shows': 'RuTracker TV Shows',
@@ -23,8 +23,8 @@ export const SEARCH_RPVODERS_NAME = {
     'nnm-tv-shows': 'NNMClub TV Shows',
     'nnm-anime': 'NNMClub Anime',
     'animeVost': 'AnimeVost',
-    'anidub': 'AniDub'
-// 'coldfilm': 'Coldfilm' // no longer supported
+    'anidub': 'AniDub',
+    'kinokrad': 'Kinokrad Online'
 }
 export const SEARCH_RPVODERS_PRESET = {
     'movies': ['rutracker-movies', 'nnm-video', 'rutor'],   

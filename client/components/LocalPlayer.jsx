@@ -12,7 +12,6 @@ import PlayBackSeekZones from './PlayBackSkipZones'
 
 import { Typography, CircularProgress } from '@material-ui/core'
 import { observer, inject } from 'mobx-react'
-import filesize from 'file-size'
 
 import { isMobile, isElectron, hasArgv } from '../utils'
 
@@ -138,7 +137,7 @@ class LocalPlayer extends Component {
         const { playerStore } = this.props
         const { playlistOpen, idle, fullScreen } = this.state
         const { device } = playerStore
-        const { isLoading, error, source, progress } = device
+        const { isLoading, error, source } = device
 
         const useMpv = isElectron() && 
             !hasArgv('no-mpv') && 
@@ -155,9 +154,9 @@ class LocalPlayer extends Component {
                     { isLoading && 
                         <div className="center">
                             <CircularProgress color="secondary"/>
-                            {progress && <Typography variant="h5" className="shadow-border">
-                                {filesize(progress.downloaded).human()}/{filesize(progress.length).human()}
-                            </Typography>}
+                            <Typography variant="h5" className="shadow-border">
+                                {playerStore.formatProgress()}
+                            </Typography>
                         </div> 
                     }
                     { error && <Typography className="center" variant="h4">{error}</Typography> }

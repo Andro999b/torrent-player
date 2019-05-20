@@ -43,3 +43,15 @@ module.exports = (torrent, addFiles) => {
 
     return filteredTorrent
 }
+
+module.exports.progress = (torrent) => 
+    pick(torrent, [
+        'received',
+        'downloaded',
+        'length',
+        'uploaded',
+        'downloadSpeed',
+        'uploadSpeed',
+        'ratio',
+        'numPeers'
+    ])

@@ -1,10 +1,9 @@
 const providers = [
-    new (require('./providers/TfileProvider'))(),
     new (require('./providers/RutorProvider'))(),
     new (require('./providers/AnimeVostProvider'))(),
     new (require('./providers/AnidubProvider'))(),
-    new (require('./providers/ColdFilmProvider'))(),
     new (require('./providers/FastTorrentsProvider'))(),
+    new (require('./providers/KinokradProvider'))(),
     ...require('./providers/RutrackerProvider').providers,
     ...require('./providers/NNMClubProvider').providers
 ]

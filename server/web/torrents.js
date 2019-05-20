@@ -45,7 +45,7 @@ router.get('/:id', (req, res) => {
 router.get('/:id/progress', (req, res) => {
     const torrent = torrentsService.getTorrent(req.params.id)
     if(torrent)
-        res.json(mapTorrent(torrent, false))
+        res.json(mapTorrent.progress(torrent))
     else
         throw new ResponseError('Torrent not found', 404)
 })

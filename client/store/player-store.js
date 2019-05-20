@@ -3,6 +3,7 @@ import { request } from '../utils/api'
 import { observable, action } from 'mobx'
 import { END_FILE_TIME_OFFSET } from '../constants'
 import localStore from 'store'
+import filesize from 'file-size'
 
 export class Device {
     @observable playlist = { name: '', files: [] }
@@ -37,7 +38,7 @@ export class Device {
     /* eslint-enable */
 
     skip(sec) {
-        if(this.duration) {
+        if (this.duration) {
             const seekTime = this.currentTime + sec
             this.seek(Math.min(Math.max(seekTime, 0), this.duration))
         }
@@ -83,12 +84,12 @@ export class LocalDevice extends Device {
     }
 
     @action onUpdate({ duration, buffered, currentTime }) {
-        if(duration) this.duration = duration
-        if(buffered) this.buffered = buffered
-        if(currentTime) {
+        if (duration) this.duration = duration
+        if (buffered) this.buffered = buffered
+        if (currentTime) {
             this.currentTime = currentTime
 
-            if(this.duration) {
+            if (this.duration) {
                 const timeLimit = Math.max(0, this.duration - END_FILE_TIME_OFFSET)
                 this.source.currentTime = Math.min(currentTime, timeLimit)
             }
@@ -101,7 +102,7 @@ export class LocalDevice extends Device {
         this.play()
 
         //check progress
-        if(playlist.torrentInfoHash) {
+        if (playlist.torrentInfoHash) {
             this.clearProgressInterval()
             this.progressInterval = setInterval(() => {
                 request
@@ -109,7 +110,7 @@ export class LocalDevice extends Device {
                     .then((res) => {
                         this.progress = res.body
                         const { downloaded, length } = this.progress
-                        if(downloaded == length) {
+                        if (downloaded == length) {
                             this.clearProgressInterval()
                         }
                     })
@@ -145,7 +146,7 @@ export class LocalDevice extends Device {
     }
 
     clearProgressInterval() {
-        if(this.progressInterval) {
+        if (this.progressInterval) {
             clearInterval(this.progressInterval)
         }
     }
@@ -172,10 +173,10 @@ class PlayerStore {
     }
 
     @action openPlaylist(device, playlist, fileIndex) {
-        if(playlist.files.length === 0) return
+        if (playlist.files.length === 0) return
 
         const prevDevice = this.device
-        if(prevDevice) prevDevice.disconnect()
+        if (prevDevice) prevDevice.disconnect()
 
         this.device = device
         this.device.connect()
@@ -196,7 +197,7 @@ class PlayerStore {
     }
 
     @action closePlaylist() {
-        if(this.device) {
+        if (this.device) {
             this.device.disconnect()
         }
         this.device = null
@@ -208,8 +209,25 @@ class PlayerStore {
             currentFileIndex
         } = this.device
 
-        if(name && files)
-            return name + (files.length > 1 ? ` - ${currentFileIndex + 1} / ${files.length}`: '')
+        const progress = this.formatProgress()
+
+        if (name && files) {
+            return name +
+                (files.length > 1 ? ` - ${currentFileIndex + 1} / ${files.length}` : '') +
+                (progress ? ' - ' + progress : '')
+        }
+    }
+
+    formatProgress() {
+        const { progress } = this.device
+
+        if(!progress) return ''
+
+        return `
+            ${filesize(progress.downloaded).human()} /
+            ${filesize(progress.length).human()}
+            (Peers: ${progress.numPeers})
+        `
     }
 }
 

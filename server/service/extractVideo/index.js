@@ -3,7 +3,8 @@ const ResponseError = require('../../utils/ResponseError')
 const extractors = {
     'stormTv': require('./stormTVExtractor'),
     'animevost': require('./animevostExtractor'),
-    'anidub': require('./anidubExtractor')
+    'anidub': require('./anidubExtractor'),
+    'direct': require('./directExtractor')
 }
 
 module.exports = async (parmas, res) => {
