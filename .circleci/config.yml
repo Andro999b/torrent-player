@@ -122,7 +122,10 @@ workflows:
   version: 2.1
   build:
     jobs:
-      - prepare
+      - prepare:
+          filters:
+            branches:
+              only: master
       - build-electron:
           requires:
             - prepare
