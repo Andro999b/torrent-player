@@ -4,6 +4,12 @@ const superagent = require('superagent')
 
 require('superagent-charset')(superagent)
 
+cheerio.prototype[Symbol.iterator] = function* () {
+    for (let i = 0; i < this.length; i += 1) {
+        yield this[i]
+    }
+}
+
 class Crawler {
     constructor(url, requestGenerator) {
         this._requestGenerator = requestGenerator || (async (nextUrl) => {
@@ -45,7 +51,7 @@ class Crawler {
         return this
     }
 
-    _extractData($el, config) {
+    async _extractData($el, config) {
         let transform = ($el) => $el.text().trim()
         let selector = config
 
@@ -56,7 +62,7 @@ class Crawler {
 
         $el = selector ? $el.find(selector) : $el
 
-        return transform($el)
+        return await transform($el)
     }
 
     async gather() {
@@ -81,20 +87,13 @@ class Crawler {
 
             let limitReached = false
 
-            $(this._scope).each((_, el) => {
+            for(const el of $(this._scope)) {
                 const item = {}
 
-                Object.keys(this._selectors).forEach(
-                    (selectorName) => {
-                        const selector = this._selectors[
-                            selectorName
-                        ]
-                        item[selectorName] = this._extractData(
-                            $(el),
-                            selector
-                        )
-                    }
-                )
+                for(const selectorName in this._selectors) {
+                    const selector = this._selectors[selectorName]
+                    item[selectorName] = await this._extractData($(el), selector)
+                }
 
                 results.push(item)
 
@@ -102,7 +101,7 @@ class Crawler {
                     limitReached = true
                     return false
                 }
-            })
+            }
 
             if (!nextUrl || limitReached) {
                 return results.slice(0, this._limit)
