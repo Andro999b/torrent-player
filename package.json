@@ -34,6 +34,7 @@
     "eslint-plugin-react": "^7.13.0"
   },
   "dependencies": {
-    "minimist": "^1.2.0"
+    "minimist": "^1.2.0",
+    "rollout": "^0.1.0"
   }
 }
