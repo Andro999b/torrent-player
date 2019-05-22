@@ -87,4 +87,4 @@ Electron version use MPV.js plugin see repo https://github.com/Kagami/mpv.js/ fo
 # Electron sortcuts
 `F5` - reload UI
 
-`F11` - toggle fullscrean
+`F11` - toggle fullscreen
