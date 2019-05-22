@@ -56,6 +56,22 @@ const theme = createMuiTheme({
             root: {
                 padding: '16px'
             }
+        },
+        MuiList: {
+            padding: {
+                paddingTop: 0,
+                paddingBottom: 0
+            }
+        },
+        MuiListSubheader: {
+            gutters: {
+                paddingLeft: 16,
+                paddingRight: 16,
+                '@media (min-width:600px)': {
+                    paddingLeft: 16,
+                    paddingRight: 16
+                }
+            }
         }
     }
 })

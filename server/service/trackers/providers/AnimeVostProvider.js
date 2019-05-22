@@ -5,8 +5,8 @@ const $ = require('cheerio')
 class AnimeVostProvider extends DataLifeProvider {
     constructor() {
         super({
-            baseUrl: 'https://animevost.org',
-            searchUrl: 'https://animevost.org/index.php?do=search',
+            baseUrl: 'https://animerost.org',
+            searchUrl: 'https://animerost.org/index.php?do=search',
             scope: '.shortstory',
             pageSize: 50,
             selectors: {
@@ -15,18 +15,18 @@ class AnimeVostProvider extends DataLifeProvider {
             },
             detailsScope: '.shortstoryContent',
             detailsSelectors: {
-                image: { 
-                    selector: '.imgRadius', 
-                    transform: ($el) => this.config.baseUrl + $el.attr('src') 
+                image: {
+                    selector: '.imgRadius',
+                    transform: ($el) => this.config.baseUrl + $el.attr('src')
                 },
-                description: { 
+                description: {
                     selector: 'p',
                     transform: ($el) => {
                         return $el.toArray()
                             .map((node) => $(node).text())
                             .map((text) => {
                                 const parts = text.split(':')
-                                
+
                                 if(parts.lenght < 2) return
 
                                 const name = parts[0]
@@ -35,7 +35,7 @@ class AnimeVostProvider extends DataLifeProvider {
                                 return { name, value }
                             })
                             .filter((item) => item && item.name && item.value)
-                    } 
+                    }
                 },
                 files: {
                     selector: 'script',

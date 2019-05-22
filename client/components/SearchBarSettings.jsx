@@ -2,10 +2,8 @@ import React, { Component, Fragment } from 'react'
 import PropTypes from 'prop-types'
 
 import { 
-    SEARCH_RPVODERS, 
-    SEARCH_RPVODERS_NAME,
-    SEARCH_RPVODERS_PRESET,
-    SEARCH_RPVODERS_PRESET_NAMES
+    SEARCH_RPOVIDERS, 
+    SEARCH_RPVODERS_PRESET
 } from '../constants'
 
 import {
@@ -15,7 +13,8 @@ import {
     MenuItem,
     ListItemText,
     Checkbox,
-    IconButton
+    IconButton,
+    ListSubheader
 } from '@material-ui/core'
 
 import {
@@ -51,40 +50,88 @@ class SearchBarSettings extends Component {
 
         const index = searchProviders.indexOf(provider)
         if (index != -1) {
-            onSelectProviders(searchProviders.filter((v, i) => i != index))
+            onSelectProviders(searchProviders.filter((_, i) => i != index))
         } else {
             onSelectProviders(searchProviders.concat([provider]))
         }
     }
-    selectPreset = (preset) => this.props.onSelectProviders(preset)
 
+    selectPreset = (preset) => this.props.onSelectProviders(preset)
     handleClearProviders = () => this.props.onSelectProviders([])
-    handleAllProviders = () => this.props.onSelectProviders(SEARCH_RPVODERS)
+    handleAllProviders = () => this.props.onSelectProviders(Object.keys(SEARCH_RPOVIDERS))
+
+    renderPreset(searchProviders, preset, inset) {
+        let count = preset.providers.reduce(
+            (counter, provider) => searchProviders.includes(provider) ? counter + 1 : counter, 
+            0
+        )
+
+        return (
+            <MenuItem
+                button
+                key={preset.name}
+                className={ inset ? 'inset' : ''}
+                onClick={() => this.selectPreset(preset.providers)}
+                selected={count == preset.providers.length}
+            >
+                {preset.name}
+            </MenuItem>
+        )
+    }
 
     renderPresets(searchProviders) {
-        return (
-            Object.keys(SEARCH_RPVODERS_PRESET).map((presetName) => {
-                const preset = SEARCH_RPVODERS_PRESET[presetName]
-                const pesetLabel = SEARCH_RPVODERS_PRESET_NAMES[presetName]
-                let count = preset.reduce((counter, provider) => 
-                    searchProviders.includes(provider) ? counter + 1 : counter
-                , 0)
+        return SEARCH_RPVODERS_PRESET.map((preset) => {
+            if(preset.presets) {
                 return (
-                    <MenuItem
-                        button 
-                        key={presetName} 
-                        onClick={() => this.selectPreset(preset)}
-                        selected={count == preset.length}
+                    <MenuList 
+                        key={preset.name} 
+                        subheader={<ListSubheader disableSticky>{preset.name}</ListSubheader>}
                     >
-                        {pesetLabel}
-                    </MenuItem>
+                        {preset.presets.map((item) => 
+                            this.renderPreset(searchProviders, item, true))
+                        }
+                    </MenuList>
                 )
-            })
+            } else {
+                return this.renderPreset(searchProviders, preset)
+            }
+        })
+    }
+
+    renderProviders(searchProviders) {
+        const { openCustom } = this.state
+
+        return(
+            <Fragment>
+                <MenuItem onClick={this.handleToggleCustom}>
+                    <ListItemText primary="Providers" />
+                    {openCustom ? <ExpandLess /> : <ExpandMore />}
+                </MenuItem>
+                <Collapse in={openCustom} timeout="auto" unmountOnExit component="li">
+                    <MenuList>
+                        <MenuItem onClick={this.handleClearProviders}>
+                            Deselect All
+                        </MenuItem>
+                        {/* List of all providers */}
+                        {Object.keys(SEARCH_RPOVIDERS).map((provider) => (
+                            <MenuItem key={provider} onClick={() => this.toggleProvider(provider)}>
+                                <Checkbox color="primary" disableRipple checked={searchProviders.indexOf(provider) != -1} />
+                                <ListItemText primary={SEARCH_RPOVIDERS[provider]} />
+                            </MenuItem>
+                        ))}
+                        {/* Select all providers */}
+                        <MenuItem onClick={this.handleAllProviders}>
+                            Select All
+                        </MenuItem>
+                        {/* Deselect all providers */}
+                    </MenuList>
+                </Collapse>
+            </Fragment>
         )
     }
 
     render() {
-        const { props: { searchProviders }, state: { anchorEl, openCustom } } = this
+        const { props: { searchProviders }, state: { anchorEl } } = this
         return (
             <Fragment>
                 <IconButton onClick={this.handleOpenSettings} >
@@ -99,30 +146,7 @@ class SearchBarSettings extends Component {
                         {/* Providers Presets */}
                         {this.renderPresets(searchProviders)}
                         {/* Custom providres */}
-                        <MenuItem onClick={this.handleToggleCustom}>
-                            <ListItemText primary="Providers" />
-                            {openCustom ? <ExpandLess /> : <ExpandMore />}
-                        </MenuItem>
-                        <Collapse in={openCustom} timeout="auto" unmountOnExit>
-                            <MenuList>
-                                <MenuItem onClick={this.handleClearProviders}>
-                                    Deselect All
-                                </MenuItem>
-                                {/* List of all providers */}
-                                {SEARCH_RPVODERS.map((provider) => (
-                                    <MenuItem key={provider} onClick={() => this.toggleProvider(provider)}>
-                                        <Checkbox color="primary" disableRipple checked={searchProviders.indexOf(provider) != -1} />
-                                        <ListItemText primary={SEARCH_RPVODERS_NAME[provider]} />
-                                    </MenuItem>
-                                ))}
-                                {/* Select all providers */}
-                                <MenuItem onClick={this.handleAllProviders}>
-                                    Select All
-                                </MenuItem>
-                                {/* Deselect all providers */}
-                                
-                            </MenuList>
-                        </Collapse>
+                        {this.renderProviders(searchProviders)}
                     </div>
                 </Menu>
             </Fragment>

@@ -1,11 +1,11 @@
 import { observable, action } from 'mobx'
 import { request, fetchOnce } from '../utils/api'
 import notificationStore from './notifications-store'
-import { SEARCH_RPVODERS, SEARCH_HISTORY_MAX_SIZE } from '../constants'
+import { SEARCH_RPOVIDERS, SEARCH_HISTORY_MAX_SIZE, DEFUALT_SEARCH_PROVIDERS } from '../constants'
 import localStore from 'store'
 
 const fetchSuggestions = fetchOnce()
-const searchProvidersFetch = SEARCH_RPVODERS.reduce((acc, provider) => {
+const searchProvidersFetch = Object.keys(SEARCH_RPOVIDERS).reduce((acc, provider) => {
     acc[provider] = fetchOnce()
     return acc
 }, {})
@@ -68,7 +68,7 @@ class SearchStore {
     @observable suggestions = []
     @observable searchResults = []
     @observable loading = false
-    @observable searchProviders = localStore.get('searchProviders') || SEARCH_RPVODERS.concat([])
+    @observable searchProviders = localStore.get('searchProviders') || DEFUALT_SEARCH_PROVIDERS
     
     searchHistory = localStore.get('searchHistory') || []
 
