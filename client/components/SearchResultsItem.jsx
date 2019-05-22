@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from 'react'
 import PropTypes from 'prop-types'
 import watchLater from '../store/watchLater'
+import { SEARCH_RPOVIDERS } from '../constants'
 
 import {
     ExpansionPanel,
@@ -57,6 +58,7 @@ class SearchResultsItem extends Component {
         const title =
             <div
                 style={{ wordBreak: 'break-all' }}>
+                [{SEARCH_RPOVIDERS[item.provider]}]&nbsp;
                 { (item.details && item.details.name) || item.name }
             </div>
 

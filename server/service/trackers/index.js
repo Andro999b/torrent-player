@@ -2,10 +2,10 @@ const providers = [
     new (require('./providers/RutorProvider'))(),
     new (require('./providers/AnimeVostProvider'))(),
     new (require('./providers/AnidubProvider'))(),
-    new (require('./providers/FastTorrentsProvider'))(),
     new (require('./providers/KinokradProvider'))(),
     ...require('./providers/RutrackerProvider').providers,
-    ...require('./providers/NNMClubProvider').providers
+    ...require('./providers/NNMClubProvider').providers,
+    ...require('./providers/FastTorrentsProvider').providers
 ]
 
 module.exports = {

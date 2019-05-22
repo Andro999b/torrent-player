@@ -1,10 +1,15 @@
 const Provider = require('../Provider')
 const urlencode = require('urlencode')
+const superagent = require('superagent')
 const $ = require('cheerio')
 
+require('superagent-charset')(superagent)
+
 class FastTorrentsProvider extends Provider {
-    constructor() {
+    constructor(categories, subtype) {
         super({
+            subtype,
+            categories,
             baseUrl: 'http://fast-torrent.ru',
             searchUrl: 'http://fast-torrent.ru/search/',
             scope: '.film-item',
@@ -72,14 +77,42 @@ class FastTorrentsProvider extends Provider {
         return baseUrl + urlencode.decode(resultsId)
     }
 
-    getSearchUrl(query) {
-        const { searchUrl } = this.config
-        return `${searchUrl}${query}/1.html`
-    }
+    getSearchUrl() {}
 
     getName() {
-        return 'fastTorrent'
+        const { subtype } = this.config
+        return `fastTorrent${subtype ? '-' + subtype : ''}`
+    }
+
+    _crawlerRequestGenerator(query) {
+        const { searchUrl, headers, categories } = this.config
+
+        return () => {
+            return superagent
+                .post(`${searchUrl}${encodeURIComponent(query)}/1.html`)
+                .type('form')
+                .field({ 
+                    type: categories
+                })
+                .buffer(true)
+                .charset()
+                .set(headers)
+        }
     }
 }
 
 module.exports = FastTorrentsProvider
+module.exports.providers = [
+    new FastTorrentsProvider(
+        [1],
+        'movies'
+    ),
+    new FastTorrentsProvider(
+        [4, 14902], 
+        'tv-shows'
+    ),
+    new FastTorrentsProvider(
+        [14899], 
+        'cartoons'
+    )
+]
