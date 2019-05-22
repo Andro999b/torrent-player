@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 
 import { 
     SEARCH_RPOVIDERS, 
-    SEARCH_RPVODERS_NAME,
     SEARCH_RPVODERS_PRESET
 } from '../constants'
 
