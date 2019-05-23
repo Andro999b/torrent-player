@@ -23,6 +23,7 @@ const jss = create({
     insertionPoint: 'jss-insertion-point',
 })
 
+
 const theme = createMuiTheme({
     palette: {
         secondary: {

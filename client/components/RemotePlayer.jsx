@@ -10,6 +10,8 @@ import RemotePlaybackInfo from './RemotePlaybackInfo'
 import { Typography, Button } from '@material-ui/core'
 import { observer, inject } from 'mobx-react'
 
+import { toHHMMSS } from '../utils'
+
 @inject('playerStore', 'transitionStore')
 @observer
 class RemotePlayer extends Component {
@@ -19,7 +21,7 @@ class RemotePlayer extends Component {
 
         this.state = {
             playlistOpen: true,
-            seeking: false
+            seekTime: null
         }
     }
 
@@ -52,12 +54,8 @@ class RemotePlayer extends Component {
         }
     }
 
-    handleStartSeek = () =>  {
-        this.setState({ seeking: true })
-    }
-
-    handleEndSeek = () => {
-        this.setState({ seeking: false })
+    handleSeekTime = (seekTime) => {
+        this.setState({seekTime})
     }
 
     componentDidMount() {
@@ -69,13 +67,14 @@ class RemotePlayer extends Component {
     }
 
     render() {
-        const { playlistOpen, seeking } = this.state
+        const { playlistOpen, seekTime } = this.state
         const { playerStore } = this.props
         const { device } = playerStore
         const {
             isConnected,
             error,
-            playlist: { image }
+            playlist: { image },
+            duration
         } = device
 
         return (
@@ -83,29 +82,35 @@ class RemotePlayer extends Component {
                 className="player__background-cover" 
                 style={{ backgroundImage: image ? `url(/proxyMedia?url=${encodeURIComponent(image)})` : 'none' }}
             >
-                {!seeking && 
+                {seekTime == null && 
                     <Typography className="center" align="center" variant="h4" style={{ width: '100%' }}>
                         {error && <div>{error}</div>}
                         {!error && <RemotePlaybackInfo device={device} />}
                         <Button variant="contained" onClick={this.handleCloseDevice}>Close device</Button>
                     </Typography>
                 }
-                {isConnected &&
+                {(isConnected && !error) &&
                     <Fragment>
+                        {seekTime != null && 
+                            <Typography className="center shadow-border" align="center" variant="h4">
+                                {toHHMMSS(seekTime)} / {toHHMMSS(duration)}
+                            </Typography>
+                        }
                         <PlayerTitle title={playerStore.getPlayerTitle()} onClose={this.handleCloseVideo} />
-                        <PlayBackSkipZones device={device} onSeekStart={this.handleStartSeek} onSeekEnd={this.handleEndSeek}/>
+                        <PlayBackSkipZones device={device} onSeekTime={this.handleSeekTime}/>
                         <PlayerFilesList
                             open={playlistOpen}
                             device={device}
                             onFileSelected={this.handleSelectFile}
                         />
-                        {!seeking && <MediaControls
+                        <MediaControls
                             device={device}
                             onNext={() => playerStore.nextFile()}
                             onPrev={() => playerStore.prevFile()}
+                            onSeekTime={this.handleSeekTime}
                             onPlaylistToggle={this.handleTogglePlayList}
                             onFullScreenToggle={this.handleToggleFullscreen}
-                        />}
+                        />
                     </Fragment>
                 }
             </div>

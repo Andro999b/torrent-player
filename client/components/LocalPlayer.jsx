@@ -13,7 +13,7 @@ import PlayBackSeekZones from './PlayBackSkipZones'
 import { Typography, CircularProgress } from '@material-ui/core'
 import { observer, inject } from 'mobx-react'
 
-import { isMobile, isElectron, hasArgv } from '../utils'
+import { isMobile, isElectron, hasArgv, toHHMMSS } from '../utils'
 
 const IDLE_TIMEOUT = 3000
 
@@ -27,7 +27,8 @@ class LocalPlayer extends Component {
         this.state = {
             playlistOpen: false,
             idle: false,
-            fullScreen: false
+            fullScreen: false,
+            seekTime: null
         }
 
         this.handleActivity = this.handleActivity.bind(this)
@@ -94,6 +95,10 @@ class LocalPlayer extends Component {
         }
     }
 
+    handleSeekTime = (seekTime) => {
+        this.setState({seekTime})
+    }
+
     // --- idle checking ---
     handleActivity = () => {
         const { state: { idle }, idleTimeout } = this
@@ -133,15 +138,23 @@ class LocalPlayer extends Component {
     }
     // --- idle checking ---
 
-    render() {
-        const { playerStore } = this.props
-        const { playlistOpen, idle, fullScreen } = this.state
-        const { device } = playerStore
-        const { isLoading, error, source } = device
+    renderVideoSrean(device, onNext) {
+        const { source } = device
 
         const useMpv = isElectron() && 
             !hasArgv('no-mpv') && 
             source.preferMpv
+
+        return useMpv ? 
+            <MPVScrean device={device} onEnded={onNext} /> :
+            <VideoScrean device={device} onEnded={onNext} />
+    }
+
+    render() {
+        const { playerStore } = this.props
+        const { playlistOpen, idle, fullScreen, seekTime } = this.state
+        const { device } = playerStore
+        const { isLoading, error, duration } = device
 
         return (
             <Fullscreen
@@ -149,37 +162,50 @@ class LocalPlayer extends Component {
                 onChange={this.handleSetFullScreen}
             >
                 <div className={idle ? 'idle': ''}>
-                    { useMpv && <MPVScrean device={device} onEnded={playerStore.nextFile} /> }
-                    { !useMpv && <VideoScrean device={device} onEnded={playerStore.nextFile} /> }
-                    { isLoading && 
-                        <div className="center">
-                            <CircularProgress color="secondary"/>
-                            <Typography variant="h5" className="shadow-border">
-                                {playerStore.formatProgress()}
-                            </Typography>
-                        </div> 
-                    }
-                    { error && <Typography className="center" variant="h4">{error}</Typography> }
-                    <div className="player__pause-zone" onMouseDown={this.handleClick}></div>
-                    <PlayBackSeekZones device={device}/>
-                    { (!idle) && (
+                    { /* elements taht always avaliable */ }
+                    { !idle && <PlayerTitle title={playerStore.getPlayerTitle()} onClose={this.handleCloseVideo} /> }
+                    { this.renderVideoSrean(device, playerStore.nextFile) }
+                    { /* Error message */ }
+                    { error && <Typography className="center shadow-border" variant="h4">{error}</Typography> }
+                    { !error && 
                         <Fragment>
-                            <PlayerTitle title={playerStore.getPlayerTitle()} onClose={this.handleCloseVideo} />
-                            <PlayerFilesList
-                                open={playlistOpen}
-                                device={device}
-                                onFileSelected={this.handleSelectFile}
-                            />
-                            <MediaControls
-                                fullScreen={fullScreen}
-                                device={device}
-                                onNext={() => playerStore.nextFile()}
-                                onPrev={() => playerStore.prevFile()}
-                                onPlaylistToggle={this.handleTogglePlayList}
-                                onFullScreenToggle={this.handleToggleFullscreen}
-                            />
+                            { /* Screan indicators */ }
+                            { isLoading && 
+                                <div className="center">
+                                    <CircularProgress color="secondary"/>
+                                    <Typography variant="h5" className="shadow-border">
+                                        {playerStore.formatProgress()}
+                                    </Typography>
+                                </div> 
+                            }
+                            { (!isLoading && seekTime != null) && 
+                                <Typography className="center shadow-border" align="center" variant="h4">
+                                    {toHHMMSS(seekTime)} / {toHHMMSS(duration)}
+                                </Typography>
+                            }
+                            { /* Controls */ }
+                            <div className="player__pause-zone" onMouseDown={this.handleClick}></div>
+                            <PlayBackSeekZones device={device} onSeekTime={this.handleSeekTime}/>
+                            { 
+                                <Fragment>
+                                    <PlayerFilesList
+                                        open={playlistOpen}
+                                        device={device}
+                                        onFileSelected={this.handleSelectFile}
+                                    />
+                                    <MediaControls
+                                        fullScreen={fullScreen}
+                                        device={device}
+                                        onNext={() => playerStore.nextFile()}
+                                        onPrev={() => playerStore.prevFile()}
+                                        onSeekTime={this.handleSeekTime}
+                                        onPlaylistToggle={this.handleTogglePlayList}
+                                        onFullScreenToggle={this.handleToggleFullscreen}
+                                    />
+                                </Fragment>
+                            }
                         </Fragment>
-                    )}
+                    }
                 </div>
             </Fullscreen >
         )

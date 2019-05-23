@@ -1,209 +1,143 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { toHHMMSS } from '../utils'
 
-/**
- * Origin source: https://github.com/egorovsa/react-video-seek-slider
- */
 class VideoSeekSlider extends Component {
+
     constructor(props, context) {
         super(props, context)
 
         this.state = {
-            ready: false,
             trackWidth: 0,
-            seekHoverPosition: 0
+            seekTime: null,
+            hoverTime: null
         }
     }
 
     componentDidMount() {
         this.setTrackWidthState()
         window.addEventListener('resize', this.setTrackWidthState)
-        window.addEventListener('mousemove', this.handleSeeking)
-        window.addEventListener('mouseup', this.mouseSeekingHandler)
-        window.addEventListener('touchmove', this.handleTouchSeeking)
-        window.addEventListener('touchend', this.mobileTouchSeekingHandler)
     }
 
     componentWillUnmount() {
-        window.removeEventListener('resize', this.setTrackWidthState)
-        window.removeEventListener('mousemove', this.handleSeeking)
-        window.removeEventListener('mouseup', this.mouseSeekingHandler)
-        window.removeEventListener('touchmove', this.handleTouchSeeking)
-        window.removeEventListener('touchend', this.mobileTouchSeekingHandler)
-    }
-
-    handleTouchSeeking = (event) => {
-        let pageX = 0
-
-        for (let i = 0; i < event.changedTouches.length; i++) {
-            pageX = event.changedTouches[i].pageX
-        }
-
-        pageX = pageX < 0 ? 0 : pageX
-
-        if (this.mobileSeeking) {
-            this.changeCurrentTimePosition(pageX)
-        }
-    };
-
-    handleSeeking = (event) => {
-        if (this.seeking) {
-            this.changeCurrentTimePosition(event.pageX)
-        }
-    };
-
-    changeCurrentTimePosition(pageX) {
-        let position = pageX - this.track.getBoundingClientRect().left
-
-        position = position < 0 ? 0 : position
-        position = position > this.state.trackWidth ? this.state.trackWidth : position
-
-        this.setState({
-            seekHoverPosition: position
-        })
-
-        let percent = position * 100 / this.state.trackWidth
-        let time = +(percent * (this.props.max / 100)).toFixed(0)
-
-        if(isNaN(time)) return
-
-        this.props.onChange(time, (time + this.props.offset))
+        this.cleanUp()
     }
 
     setTrackWidthState = () => {
-        if (this.track) {
-            this.setState({
-                trackWidth: this.track.offsetWidth
-            })
-        }
+        this.setState({ trackWidth: this.track.offsetWidth })
     };
 
-    handleTrackHover = (clear, e) => {
-        let position = e.pageX - this.track.getBoundingClientRect().left
+    handleStartSeek = (e) => {
+        window.addEventListener('pointerleave', this.handleSeekEnd)
+        window.addEventListener('touchcancel', this.handleSeekEnd)
+        window.addEventListener('pointerup', this.handleSeekEnd)
+        window.addEventListener('mousemove', this.handleSeeking)
+        window.addEventListener('touchmove', this.handleTouchSeeking, { passive: false})
+    }
 
-        if (clear) {
-            position = 0
+    cleanUp() {
+        window.removeEventListener('pointerleave', this.handleSeekEnd)
+        window.removeEventListener('pointercancel', this.handleSeekEnd)
+        window.removeEventListener('pointerup', this.handleSeekEnd)
+        window.removeEventListener('mousemove', this.handleSeeking)
+        window.removeEventListener('touchmove', this.handleTouchSeeking)
+    }
+
+    handleSeeking = (e) => {
+        const seekTime = this.calcTime(e)
+
+        this.setState({ seekTime })
+        this.props.onSeekTime(seekTime)
+    }
+
+    handleTouchSeeking = (e) => {
+        if(e.cancelable) {
+            e.preventDefault()
+            e.stopImmediatePropagation()
         }
 
-        this.setState({
-            seekHoverPosition: position
-        })
-    };
+        const seekTime = this.calcTime(e)
 
-    getPositionStyle(time) {
-        let position = time * 100 / this.props.max
+        this.setState({ seekTime })
+        this.props.onSeekTime(seekTime)
+    }
 
-        return {
-            transform: 'scaleX(' + position / 100 + ')'
+    handleSeekEnd = (e) => {
+        this.cleanUp()
+
+        const { onSeekTime, onSeekEnd } = this.props
+        const seekTime = this.calcTime(e)
+
+        this.setState({ seekTime: null })
+        onSeekTime(null)
+        onSeekEnd(seekTime)
+    }
+
+    handleStartHover = (e) => {
+        const hoverTime = this.calcTime(e)
+
+        this.setState({ hoverTime })
+        this.props.onSeekTime(hoverTime)
+    }
+
+    handleEndHover = () => {
+        this.setState({ hoverTime: null })
+        this.props.onSeekTime(null)
+    }
+
+    calcTime(e) {
+        const { trackWidth } = this.state
+        const { duration } = this.props
+
+        let posx
+        if(e.touches) {
+            posx = e.touches[0].pageX
+        } else {
+            posx = e.pageX
+        }
+
+        const position = posx - this.track.getBoundingClientRect().left
+        return duration * (position / trackWidth)
+    }
+
+    getPositionStyle(time, duration) {
+        if(time) {
+            return { transform: 'scaleX(' + (time / duration) + ')' }
+        } else {
+            return { transform: 'scaleX(0)' }
         }
     }
 
-    getThumbHandlerPosition() {
-        let position = this.state.trackWidth / (this.props.max / this.props.currentTime)
-
-        return {
-            transform: 'translateX(' + position + 'px)'
-        }
-    }
-
-    getSeekHoverPosition() {
-        let position = this.state.seekHoverPosition * 100 / this.state.trackWidth
-
-        return {
-            transform: 'scaleX(' + position / 100 + ')'
-        }
-    }
-
-    getHoverTime() {
-        const {seekHoverPosition, trackWidth} = this.state
-        const {offset, max} = this.props
-        const percent = seekHoverPosition * 100 / trackWidth
-        let seconds = Math.floor(+ (percent * (max / 100)))
-        seconds = Math.round(seconds + offset)
-
-        if(isNaN(seconds)) return
-        if(isNaN(max)) return
-
-        return `${toHHMMSS(seconds)} / ${toHHMMSS(max)}`
-    }
-
-    mouseSeekingHandler = (event) => {
-        this.setSeeking(false, event)
-    };
-
-    setSeeking = (state, event) => {
-        event.preventDefault()
-
-        this.handleSeeking(event)
-
-        if (this.seeking && !state) {
-            this.props.onSeekEnd()
-        }
-
-        this.seeking = state
-
-        this.setState({
-            seekHoverPosition: !state ? 0 : this.state.seekHoverPosition
-        })
-    };
-
-    mobileTouchSeekingHandler = () => {
-        this.setMobileSeeking(false)
-    };
-
-    setMobileSeeking = (state) => {
-        if (this.mobileSeeking && !state) {
-            this.props.onSeekEnd()
-        }
-
-        this.mobileSeeking = state
-
-        this.setState({
-            seekHoverPosition: !state ? 0 : this.state.seekHoverPosition
-        })
-    };
-
-    isThumbActive() {
-        return this.state.seekHoverPosition > 0 || this.seeking
-    }
-
-    drawHoverTime() {
-        if (!this.props.hideHoverTime) {
-            return (
-                <div
-                    className={this.isThumbActive() ? 'hover-time active' : 'hover-time'}
-                    ref={(ref) => this.hoverTime = ref}
-                >
-                    {this.getHoverTime()}
-                </div>
-            )
-        }
+    getThumbHandlerPosition(trackWidth, time, duration) {
+        let position = trackWidth * (time / duration )
+        return { transform: 'translateX(' + position + 'px)' }
     }
 
     render() {
+        const { seekTime, hoverTime, trackWidth } = this.state
+        const { buffered, currentTime, duration } = this.props
+
+        const time = seekTime != null ? seekTime : currentTime
+
         return (
-            <div
-                className="ui-video-seek-slider"
-            >
+            <div className="ui-video-seek-slider">
                 <div
-                    className={this.isThumbActive() ? 'track active' : 'track'}
+                    className={seekTime != null ? 'track active' : 'track'}
                     ref={(ref) => this.track = ref}
-                    onMouseMove={(e) => this.handleTrackHover(false, e)}
-                    onMouseLeave={(e) => this.handleTrackHover(true, e)}
-                    onMouseDown={(e) => this.setSeeking(true, e)}
-                    onTouchStart={() => this.setMobileSeeking(true)}
+                    onPointerDown={this.handleStartSeek}
+                    onMouseMove={this.handleStartHover}
+                    onMouseLeave={this.handleEndHover}
                 >
                     <div className="main">
-                        <div className="buffered" style={this.getPositionStyle(this.props.progress)} />
-                        <div className="seek-hover" style={this.getSeekHoverPosition()} />
-                        <div className="connect" style={this.getPositionStyle(this.props.currentTime)} />
+                        <div className="buffered" style={this.getPositionStyle(buffered, duration)} />
+                        { seekTime == null && <div className="seek-hover" style={this.getPositionStyle(hoverTime, duration)} /> }
+                        <div className="connect" style={this.getPositionStyle(time, duration)} />
                     </div>
                 </div>
 
-                {this.drawHoverTime()}
-
-                <div className={this.isThumbActive() ? 'thumb active' : 'thumb'} style={this.getThumbHandlerPosition()}>
+                <div 
+                    className={seekTime != null ? 'thumb active' : 'thumb'} 
+                    style={this.getThumbHandlerPosition(trackWidth, time, duration)}
+                >
                     <div className="handler" />
                 </div>
             </div>
@@ -212,22 +146,17 @@ class VideoSeekSlider extends Component {
 }
 
 VideoSeekSlider.defaultProps = {
-    max: 100,
+    duration: 100,
     currentTime: 0,
-    progress: 0,
-    hideHoverTime: false,
-    offset: 0
+    buffered: 0
 }
 
 VideoSeekSlider.propTypes = {
-    max: PropTypes.number,
+    buffered: PropTypes.number,
+    duration: PropTypes.number,
     currentTime: PropTypes.number,
-    progress: PropTypes.number,
-    onChange: PropTypes.func.isRequired,
+    onSeekTime: PropTypes.func.isRequired,
     onSeekEnd: PropTypes.func.isRequired,
-    hideHoverTime: PropTypes.bool,
-    offset: PropTypes.number,
-    limitTimeTooltipBySides: PropTypes.bool
 }
 
 export default VideoSeekSlider

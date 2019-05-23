@@ -18,52 +18,6 @@ import { isElectron } from '../utils'
 import { observer } from 'mobx-react'
 
 @observer
-class VideoSeek extends Component {
-    constructor(props, context) {
-        super(props, context)
-        
-        this.state = {
-            seekTime: null
-        }
-    }
-    
-    handleTimeChange = (seekTime) => {
-        this.setState({seekTime})
-    }
-    
-    handleEndSeek = () => {
-        const { device } = this.props
-        const { seekTime } = this.state
-
-        device.seek(seekTime)
-
-        this.setState({seekTime: null})
-    }
-
-    render() {
-        const { device } = this.props
-        const { seekTime } = this.state
-
-        return (
-            <div style={{padding: '0px 10px'}}>
-                <VideoSeekSlider
-                    max={device.duration}
-                    currentTime={seekTime || device.currentTime}
-                    progress={device.buffered}
-                    onChange={this.handleTimeChange}
-                    onSeekEnd={this.handleEndSeek}
-                    offset={0}
-                />
-            </div>
-        )
-    }
-}
-
-VideoSeek.propTypes = {
-    device: PropTypes.object.isRequired
-}
-
-@observer
 class MediaControls extends Component {
     render() {
         const {
@@ -72,7 +26,8 @@ class MediaControls extends Component {
             fullScreen,
             device,
             onPrev,
-            onNext
+            onNext,
+            onSeekTime
         } = this.props
 
         const showFullscrean = device.isLocal() && !isElectron()
@@ -80,7 +35,13 @@ class MediaControls extends Component {
         return (
             <Slide direction="up" in mountOnEnter unmountOnExit>
                 <Paper elevation={0} square className="player-controls">
-                    {device.isSeekable() && <VideoSeek device={device}/>}
+                    <VideoSeekSlider 
+                        buffered={device.buffered}
+                        currentTime={device.currentTime}
+                        duration={device.duration}
+                        onSeekEnd={(time) => device.seek(time)}
+                        onSeekTime={onSeekTime}
+                    />
                     <div className="player-controls__panel">
                         <div className="player-controls__panel-section">
                             <IconButton onClick={onPrev}>
@@ -123,6 +84,7 @@ MediaControls.propTypes = {
     device: PropTypes.object.isRequired,
     onPlaylistToggle: PropTypes.func.isRequired,
     onFullScreenToggle: PropTypes.func,
+    onSeekTime: PropTypes.func,
     onPrev: PropTypes.func.isRequired,
     onNext: PropTypes.func.isRequired,
     fullScreen: PropTypes.bool,

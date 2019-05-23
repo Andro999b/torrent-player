@@ -16,11 +16,7 @@ export class Device {
     @observable error = null
     @observable volume = 1
     @observable isMuted = false
-
-    isSeekable() {
-        return true
-    }
-
+    
     isLocal() {
         return true
     }

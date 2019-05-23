@@ -1,13 +1,10 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
-import { Typography } from '@material-ui/core'
 import {
     FastForwardRounded as FastForwardIcon,
     FastRewindRounded as FastRewindIcon
 } from '@material-ui/icons'
-
-import { toHHMMSS } from '../utils'
 
 class PlayBackSkipZones extends Component {
 
@@ -15,20 +12,15 @@ class PlayBackSkipZones extends Component {
         super(props, context)
 
         this.state = {
-            seekMode: null,
-            time: null
+            seekMode: null
         }
     }
 
-    handleFastFroward = (e) => {
-        e.preventDefault()
-        e.nativeEvent.stopImmediatePropagation()
+    handleFastFroward = () => {
         this.startSeeking('ff')
     }
 
-    handleFastRewind = (e) => {
-        e.preventDefault()
-        e.nativeEvent.stopImmediatePropagation()
+    handleFastRewind = () => {
         this.startSeeking('fr')
     }
 
@@ -36,6 +28,7 @@ class PlayBackSkipZones extends Component {
         this.cleanUp()
 
         window.addEventListener('touchend', this.handleSeekEnd)
+        window.addEventListener('touchmove', this.handlePreventScroll, { passive: false })
         window.addEventListener('touchcancel', this.handleSeekEnd)
         window.addEventListener('mouseup', this.handleSeekEnd)
 
@@ -58,16 +51,23 @@ class PlayBackSkipZones extends Component {
         if(onSeekStart) onSeekStart()
     }
 
+    handlePreventScroll(e) {
+        if(e.cancelable) {
+            e.preventDefault()
+            e.stopImmediatePropagation()
+        }
+    }
+
     handleSeekEnd = () => {
         const { device, onSeekEnd } = this.props
-        const { time } = this.state
 
-        device.play(time)
+        device.play(this.targetTime)
 
         this.setState({
             seekMode: null,
-            time: null
         })
+
+        this.targetTime = null
         this.lastTs = null
 
         this.cleanUp()
@@ -88,7 +88,7 @@ class PlayBackSkipZones extends Component {
         const newAccTime = this.accTime + Math.floor(progress * seekSpeed)
 
         const { seekMode } = this.state
-        const { device: { currentTime, duration } } = this.props
+        const { device: { currentTime, duration }, onSeekTime } = this.props
         const targetTime = seekMode == 'ff' ? currentTime + newAccTime : currentTime - newAccTime
 
         if(targetTime < 0 || targetTime > duration) {
@@ -98,10 +98,9 @@ class PlayBackSkipZones extends Component {
 
         this.accTime = newAccTime
         this.lastTs = timestamp
+        this.targetTime = targetTime
 
-        this.setState({
-            time: targetTime
-        })
+        if(onSeekTime) onSeekTime(targetTime)
     }
 
     componentWillUnmount() {
@@ -110,13 +109,17 @@ class PlayBackSkipZones extends Component {
 
     cleanUp() {
         window.removeEventListener('touchend', this.handleSeekEnd)
+        window.removeEventListener('touchmove', this.handlePreventScroll)
         window.removeEventListener('touchcancel', this.handleSeekEnd)
         window.removeEventListener('mouseup', this.handleSeekEnd)
         clearInterval(this.stepInterval)
+
+        const { onSeekTime } = this.props
+        if(onSeekTime) onSeekTime(null)
     }
 
     render() {
-        const { seekMode, time } = this.state
+        const { seekMode } = this.state
 
         return (
             <div className="shadow-border">
@@ -127,11 +130,6 @@ class PlayBackSkipZones extends Component {
                 >
                     {seekMode == 'fr' && <FastRewindIcon className="center" />}
                 </div>
-                {time &&
-                    <Typography variant="h4" className="center">
-                        {toHHMMSS(time)}
-                    </Typography>
-                }
                 <div
                     className="playback-skip forward"
                     onTouchStart={this.handleFastFroward}
@@ -148,6 +146,7 @@ PlayBackSkipZones.propTypes = {
     device: PropTypes.object.isRequired,
     onSeekStart: PropTypes.func,
     onSeekEnd: PropTypes.func,
+    onSeekTime: PropTypes.func
 }
 
 export default PlayBackSkipZones
