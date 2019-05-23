@@ -11,8 +11,6 @@ import ShowIf from './ShowIf'
 import { Typography, Button } from '@material-ui/core'
 import { observer, inject } from 'mobx-react'
 
-import { toHHMMSS } from '../utils'
-
 @inject('playerStore', 'transitionStore')
 @observer
 class RemotePlayer extends Component {
@@ -74,8 +72,7 @@ class RemotePlayer extends Component {
         const {
             isConnected,
             error,
-            playlist: { image },
-            duration
+            playlist: { image }
         } = device
 
         return (
