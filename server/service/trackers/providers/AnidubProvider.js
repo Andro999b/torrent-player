@@ -15,18 +15,18 @@ class AnidubProvider extends DataLifeProvider {
             },
             detailsScope: '#dle-content',
             detailsSelectors: {
-                image: { 
-                    selector: '.poster_img>img', 
-                    transform: ($el) => $el.attr('src') 
+                image: {
+                    selector: '.poster_img>img',
+                    transform: ($el) => $el.attr('src')
                 },
-                description: { 
+                description: {
                     selector: '.maincont>ul>li',
                     transform: ($el) => {
                         return $el.toArray()
                             .map((node) => $(node).text())
                             .map((text) => {
                                 const parts = text.split(':')
-                                
+
                                 if(parts.lenght < 2) return
 
                                 const name = parts[0]
@@ -35,15 +35,15 @@ class AnidubProvider extends DataLifeProvider {
                                 return { name, value }
                             })
                             .filter((item) => item && item.name && item.value)
-                    } 
+                    }
                 },
                 files: {
                     selector: '.players>div:first-child select>option',
-                    transform: ($el) => 
+                    transform: ($el) =>
                         $el.toArray()
                             .map((node, index) => {
                                 const $node = $(node)
-                                const playerUrl = $node.attr('value').split('|')[0] 
+                                const playerUrl = $node.attr('value').split('|')[0]
 
                                 const file = {
                                     index,
@@ -52,7 +52,7 @@ class AnidubProvider extends DataLifeProvider {
                                 }
 
                                 if(playerUrl.indexOf('sibnet') != -1) {
-                                    file.url = `/extractVideo?type=sibnet&url=${urlencode(playerUrl)}`
+                                    return null
                                 } else if (playerUrl.indexOf('storm') != -1) {
                                     file.url = `/extractVideo?type=stormTv&url=${urlencode(playerUrl)}`
                                 } else {
@@ -67,6 +67,7 @@ class AnidubProvider extends DataLifeProvider {
 
                                 return file
                             })
+                            .filter((file) => !file)
                 }
             }
         })
