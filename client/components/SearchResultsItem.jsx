@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react'
+import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import watchLater from '../store/watchLater'
 import { SEARCH_RPOVIDERS } from '../constants'
@@ -20,6 +20,7 @@ import {
 } from '@material-ui/icons'
 
 import SearchResultsItemDetails from './SearchResultsItemDetails'
+import ShowIf from './ShowIf'
 
 import { observer, inject } from 'mobx-react'
 
@@ -78,20 +79,24 @@ class SearchResultsItem extends Component {
                         <ExpansionPanelDetails>
                             <SearchResultsItemDetails details={item.details} />
                         </ExpansionPanelDetails>
-                        {item.hasFiles() && <Fragment>
-                            {item.isDownlodableTorrent() && <ExpansionPanelActions>
-                                <Button onClick={() => onDownload(item.details)} variant="contained">
-                                    <AddToLibraryIcon className="button-icon__left" />
-                                Add to Library
-                                </Button>
-                            </ExpansionPanelActions>}
-                            {!item.isTorrent() && <ExpansionPanelActions>
-                                <Button onClick={() => watchLater(item.details)} variant="contained">
-                                    <WatchLaterIcon className="button-icon__left"/>
-                                    Watch Later
-                                </Button>
-                            </ExpansionPanelActions>}
-                        </Fragment>}
+                        <ShowIf must={[item.hasFiles()]}>
+                            <ShowIf must={[item.isDownlodableTorrent()]}>
+                                <ExpansionPanelActions>
+                                    <Button onClick={() => onDownload(item.details)} variant="contained">
+                                        <AddToLibraryIcon className="button-icon__left" />
+                                    Add to Library
+                                    </Button>
+                                </ExpansionPanelActions>
+                            </ShowIf>
+                            <ShowIf mustNot={[item.isTorrent()]}>
+                                <ExpansionPanelActions>
+                                    <Button onClick={() => watchLater(item.details)} variant="contained">
+                                        <WatchLaterIcon className="button-icon__left"/>
+                                        Watch Later
+                                    </Button>
+                                </ExpansionPanelActions>
+                            </ShowIf>
+                        </ShowIf>
                     </div>
             )
 

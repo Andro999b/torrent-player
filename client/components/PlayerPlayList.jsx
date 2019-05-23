@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react'
+import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import {
     List,
@@ -14,6 +14,7 @@ import ExpandMore from '@material-ui/icons/ExpandMore'
 import { observer } from 'mobx-react'
 import memoize from 'memoize-one'
 import { fileGroupingFun } from './GroupFiles'
+import ShowIf from './ShowIf'
 
 @observer
 class PlayerPlayList extends Component {    
@@ -62,7 +63,7 @@ class PlayerPlayList extends Component {
         return (
             <Slide direction="left" in={open} mountOnEnter unmountOnExit>
                 <Paper elevation={12} square className="player__file-list">
-                    {groups.length > 1 && <Fragment>
+                    <ShowIf must={[groups.length > 1]}>
                         <List>
                             <ListItem  button style={{ background: grey[600] }} onClick={this.handleOpenGroupsMenu}>
                                 <ListItemText primary={selectedGroup.name} />
@@ -84,7 +85,7 @@ class PlayerPlayList extends Component {
                                 </MenuItem>
                             ))}
                         </Menu>
-                    </Fragment>}
+                    </ShowIf>
                     <List>
                         {sortedFiles.map((file) => {
                             const style = currentFileIndex === file.index ? { background: grey[600] } : {}

@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react'
+import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
 import Fullscreen from 'react-full-screen'
@@ -9,6 +9,7 @@ import PlayerTitle from './PlayerTitle'
 import VideoScrean from './VideoScrean'
 import MPVScrean from './MPVScrean'
 import PlayBackSeekZones from './PlayBackSkipZones'
+import ShowIf from './ShowIf'
 
 import { Typography, CircularProgress } from '@material-ui/core'
 import { observer, inject } from 'mobx-react'
@@ -162,50 +163,46 @@ class LocalPlayer extends Component {
                 onChange={this.handleSetFullScreen}
             >
                 <div className={idle ? 'idle': ''}>
-                    { /* elements taht always avaliable */ }
-                    { !idle && <PlayerTitle title={playerStore.getPlayerTitle()} onClose={this.handleCloseVideo} /> }
+                    <ShowIf mustNot={[idle]}>
+                        <PlayerTitle title={playerStore.getPlayerTitle()} onClose={this.handleCloseVideo} />
+                    </ShowIf>
                     { this.renderVideoSrean(device, playerStore.nextFile) }
-                    { /* Error message */ }
-                    { error && <Typography className="center shadow-border" variant="h4">{error}</Typography> }
-                    { !error && 
-                        <Fragment>
-                            { /* Screan indicators */ }
-                            { isLoading && 
-                                <div className="center">
-                                    <CircularProgress color="secondary"/>
-                                    <Typography variant="h5" className="shadow-border">
-                                        {playerStore.formatProgress()}
-                                    </Typography>
-                                </div> 
-                            }
-                            { (!isLoading && seekTime != null) && 
-                                <Typography className="center shadow-border" align="center" variant="h4">
-                                    {toHHMMSS(seekTime)} / {toHHMMSS(duration)}
+                    <ShowIf must={[error]}>
+                        <Typography className="center shadow-border" variant="h4">{error}</Typography> 
+                    </ShowIf>
+                    <ShowIf mustNot={[error]}> 
+                        <ShowIf must={[seekTime == null, isLoading]}>
+                            <div className="center">
+                                <CircularProgress color="secondary"/>
+                                <Typography variant="h5" className="shadow-border">
+                                    {playerStore.formatProgress()}
                                 </Typography>
-                            }
-                            { /* Controls */ }
-                            <div className="player__pause-zone" onMouseDown={this.handleClick}></div>
-                            <PlayBackSeekZones device={device} onSeekTime={this.handleSeekTime}/>
-                            { 
-                                <Fragment>
-                                    <PlayerFilesList
-                                        open={playlistOpen}
-                                        device={device}
-                                        onFileSelected={this.handleSelectFile}
-                                    />
-                                    <MediaControls
-                                        fullScreen={fullScreen}
-                                        device={device}
-                                        onNext={() => playerStore.nextFile()}
-                                        onPrev={() => playerStore.prevFile()}
-                                        onSeekTime={this.handleSeekTime}
-                                        onPlaylistToggle={this.handleTogglePlayList}
-                                        onFullScreenToggle={this.handleToggleFullscreen}
-                                    />
-                                </Fragment>
-                            }
-                        </Fragment>
-                    }
+                            </div> 
+                        </ShowIf>
+                        <ShowIf mustNot={[seekTime == null]}>
+                            <Typography className="center shadow-border" align="center" variant="h4">
+                                {toHHMMSS(seekTime)} / {toHHMMSS(duration)}
+                            </Typography>
+                        </ShowIf>
+                        <div className="player__pause-zone" onMouseDown={this.handleClick}></div>
+                        <PlayBackSeekZones device={device} onSeekTime={this.handleSeekTime}/>
+                        <ShowIf mustNot={[idle]}>
+                            <PlayerFilesList
+                                open={playlistOpen}
+                                device={device}
+                                onFileSelected={this.handleSelectFile}
+                            />
+                            <MediaControls
+                                fullScreen={fullScreen}
+                                device={device}
+                                onNext={() => playerStore.nextFile()}
+                                onPrev={() => playerStore.prevFile()}
+                                onSeekTime={this.handleSeekTime}
+                                onPlaylistToggle={this.handleTogglePlayList}
+                                onFullScreenToggle={this.handleToggleFullscreen}
+                            />
+                        </ShowIf>
+                    </ShowIf>
                 </div>
             </Fullscreen >
         )

@@ -20,12 +20,13 @@ class DeleteDialog extends Component {
         } = this.props
 
         if(item != null) {
-            this.renderedContent = <Fragment>
-                <DialogTitle>{renderTitle(item)}</DialogTitle>
-                <DialogContent>
-                    {item && <DialogContentText>{renderText(item)}</DialogContentText>}
-                </DialogContent>
-            </Fragment>
+            this.renderedContent = 
+                <Fragment>
+                    <DialogTitle>{renderTitle(item)}</DialogTitle>
+                    <DialogContent>
+                        {item && <DialogContentText>{renderText(item)}</DialogContentText>}
+                    </DialogContent>
+                </Fragment>
         }
 
         return (

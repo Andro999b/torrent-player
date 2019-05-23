@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react'
+import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
 import MediaControls from './MediaControls'
@@ -6,6 +6,7 @@ import PlayerTitle from './PlayerTitle'
 import PlayerFilesList from './PlayerPlayList'
 import PlayBackSkipZones from './PlayBackSkipZones'
 import RemotePlaybackInfo from './RemotePlaybackInfo'
+import ShowIf from './ShowIf'
 
 import { Typography, Button } from '@material-ui/core'
 import { observer, inject } from 'mobx-react'
@@ -82,37 +83,35 @@ class RemotePlayer extends Component {
                 className="player__background-cover" 
                 style={{ backgroundImage: image ? `url(/proxyMedia?url=${encodeURIComponent(image)})` : 'none' }}
             >
-                {seekTime == null && 
+                <ShowIf must={[error]}>
                     <Typography className="center" align="center" variant="h4" style={{ width: '100%' }}>
-                        {error && <div>{error}</div>}
-                        {!error && <RemotePlaybackInfo device={device} />}
+                        <div>{error}</div>
                         <Button variant="contained" onClick={this.handleCloseDevice}>Close device</Button>
                     </Typography>
-                }
-                {(isConnected && !error) &&
-                    <Fragment>
-                        {seekTime != null && 
-                            <Typography className="center shadow-border" align="center" variant="h4">
-                                {toHHMMSS(seekTime)} / {toHHMMSS(duration)}
-                            </Typography>
-                        }
-                        <PlayerTitle title={playerStore.getPlayerTitle()} onClose={this.handleCloseVideo} />
-                        <PlayBackSkipZones device={device} onSeekTime={this.handleSeekTime}/>
-                        <PlayerFilesList
-                            open={playlistOpen}
-                            device={device}
-                            onFileSelected={this.handleSelectFile}
-                        />
-                        <MediaControls
-                            device={device}
-                            onNext={() => playerStore.nextFile()}
-                            onPrev={() => playerStore.prevFile()}
-                            onSeekTime={this.handleSeekTime}
-                            onPlaylistToggle={this.handleTogglePlayList}
-                            onFullScreenToggle={this.handleToggleFullscreen}
-                        />
-                    </Fragment>
-                }
+                </ShowIf>
+                <ShowIf mustNot={[error]}>
+                    <Typography className="center" align="center" variant="h4" style={{ width: '100%' }}>
+                        <RemotePlaybackInfo device={device} seekTime={seekTime}/>
+                        <Button variant="contained" onClick={this.handleCloseDevice}>Close device</Button>
+                    </Typography>
+                </ShowIf>
+                <ShowIf mustNot={[error]} must={[isConnected]}>
+                    <PlayerTitle title={playerStore.getPlayerTitle()} onClose={this.handleCloseVideo} />
+                    <PlayBackSkipZones device={device} onSeekTime={this.handleSeekTime}/>
+                    <PlayerFilesList
+                        open={playlistOpen}
+                        device={device}
+                        onFileSelected={this.handleSelectFile}
+                    />
+                    <MediaControls
+                        device={device}
+                        onNext={() => playerStore.nextFile()}
+                        onPrev={() => playerStore.prevFile()}
+                        onSeekTime={this.handleSeekTime}
+                        onPlaylistToggle={this.handleTogglePlayList}
+                        onFullScreenToggle={this.handleToggleFullscreen}
+                    />
+                </ShowIf>
             </div>
         )
     }

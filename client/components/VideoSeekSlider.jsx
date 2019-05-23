@@ -26,7 +26,7 @@ class VideoSeekSlider extends Component {
         this.setState({ trackWidth: this.track.offsetWidth })
     };
 
-    handleStartSeek = (e) => {
+    handleStartSeek = () => {
         window.addEventListener('pointerleave', this.handleSeekEnd)
         window.addEventListener('touchcancel', this.handleSeekEnd)
         window.addEventListener('pointerup', this.handleSeekEnd)

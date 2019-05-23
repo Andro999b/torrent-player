@@ -51,6 +51,8 @@ export function diff(oldObject, newObject) {
 }
 
 export function toHHMMSS(timestamp) {
+    if(isNaN(timestamp)) return ''
+
     var hours   = Math.floor(timestamp / 3600)
     var minutes = Math.floor((timestamp - (hours * 3600)) / 60)
     var seconds = Math.floor(timestamp - (hours * 3600) - (minutes * 60))
