@@ -23,9 +23,9 @@ class Provider {
 
         this.config.detailsSelectors = Object.assign(
             {
-                magnetUrl: { 
-                    selector: 'a[href*="magnet:?xt=urn:btih:"]', 
-                    transform: ($el) => $el.attr('href') 
+                magnetUrl: {
+                    selector: 'a[href*="magnet:?xt=urn:btih:"]',
+                    transform: ($el) => $el.attr('href')
                 }
             },
             this.config.detailsSelectors
@@ -69,7 +69,7 @@ class Provider {
 
         let results = await crawler
             .get(
-                this.getSearchUrl(urlencode(query, encoding), page), 
+                this.getSearchUrl(urlencode(query, encoding), page),
                 this._crawlerRequestGenerator(query, page)
             )
             .headers(headers)
@@ -77,8 +77,8 @@ class Provider {
             .set(selectors)
             .paginate(pagenatorSelector)
             .limit(limit)
-            .gather() 
-        
+            .gather()
+
         results = await this._postProcessResult(results)
 
         return results
@@ -98,13 +98,13 @@ class Provider {
             .headers(headers)
             .scope(detailsScope)
             .set(detailsSelectors)
-            .gather() 
+            .gather()
 
         details = details[0]
         details = await this._postProcessResultDetails(details, resultsId)
         details = {
-            ...details, 
-            provider: this.getName(), 
+            ...details,
+            provider: this.getName(),
             type: this.getType()
         }
 
@@ -145,10 +145,10 @@ class Provider {
             return details
         }
 
-        const parsedTorrent = await this.loadTorentFile(details.torrentUrl) 
+        const parsedTorrent = await this.loadTorentFile(details.torrentUrl)
         const files = parsedTorrent.files
             .map((file, fileIndex) => {
-                const lastSeparator = file.path .lastIndexOf('/')
+                const lastSeparator = file.path.lastIndexOf('/')
                 const path = lastSeparator > -1 ? file.path.substring(0, lastSeparator) : ''
 
                 return {

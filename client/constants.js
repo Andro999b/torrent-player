@@ -12,7 +12,8 @@ export const SEARCH_RPOVIDERS = {
     'nnm-anime': 'NNMClub Anime',
     'animeVost': 'AnimeVost',
     'anidub': 'AniDub',
-    'kinokrad': 'Kinokrad Online'
+    'kinokrad': 'Kinokrad',
+    'hdrezka': 'HD Rezka'
 }
 
 export const DEFUALT_SEARCH_PROVIDERS = [
