@@ -4,6 +4,7 @@ const extractors = {
     'stormTv': require('./stormTVExtractor'),
     'animevost': require('./animevostExtractor'),
     'anidub': require('./anidubExtractor'),
+    'streamguard': require('./streamguardExtractor'),
     'direct': require('./directExtractor')
 }
 

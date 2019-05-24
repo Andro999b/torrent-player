@@ -121,8 +121,7 @@ class VideoScrean extends BaseScrean {
 
     initVideo() {
         const { props: { device: { source } } } = this
-
-        const video = this.createVideoElement()
+        const { video } = this
 
         this.disposeHls()
 
@@ -205,27 +204,6 @@ class VideoScrean extends BaseScrean {
         }, 5000) // each 5 sec call server keep alive
     }
 
-    createVideoElement() {
-        if (this.video) {
-            this.video.remove()
-        }
-
-        this.video = document.createElement('video')
-        this.video.addEventListener('durationchange', this.handleUpdate)
-        this.video.addEventListener('loadedmetadata', this.handleLoadedMetadata)
-        this.video.addEventListener('progress', this.handleUpdate)
-        this.video.addEventListener('timeupdate', this.handleUpdate)
-        this.video.addEventListener('ended', this.handleEnded)
-        this.video.addEventListener('loadstart', this.handleLoadStart)
-        this.video.addEventListener('waiting', this.handleWaiting)
-        this.video.addEventListener('playing', this.handlePlay)
-        this.video.addEventListener('error', this.handleError)
-
-        this.container.append(this.video)
-
-        return this.video
-    }
-
     /**
      * event handlers
      */
@@ -293,10 +271,10 @@ class VideoScrean extends BaseScrean {
     }
 
     getVideoScale() {
-        const originAspect = this.video.videoWidth / this.video.videoHeight
-        const containerAspect = this.container.clientWidth / this.container.clientHeight
+        const originAspectRatio = this.video.videoWidth / this.video.videoHeight
+        const containerAspectRatio = this.container.clientWidth / this.container.clientHeight
 
-        if (originAspect < containerAspect)
+        if (originAspectRatio < containerAspectRatio)
             return 'vert'
 
         return 'hor'
@@ -310,6 +288,18 @@ class VideoScrean extends BaseScrean {
                     handleWidth
                     handleHeight
                     onResize={this.handleResize}
+                />
+                <video 
+                    ref={(el) => this.video = el}
+                    onDurationChange={this.handleUpdate}
+                    onProgress={this.handleUpdate}
+                    onTimeUpdate={this.handleUpdate}
+                    onLoadedMetadata={this.handleLoadedMetadata}
+                    onEnded={this.handleEnded}
+                    onLoadStart={this.handleLoadStart}
+                    onWaiting={this.handleWaiting}
+                    onPlaying={this.handlePlay}
+                    onError={this.handleError}
                 />
             </div>
         )

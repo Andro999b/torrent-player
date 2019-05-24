@@ -48,7 +48,7 @@ export const SEARCH_RPVODERS_PRESET = [
     },
     {
         name: 'Video Hostings',
-        providers: ['kinokrad']
+        providers: ['hdrezka', 'kinokrad']
     }
 ]
 

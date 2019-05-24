@@ -48,7 +48,7 @@ class RuTrackerProvider extends Provider {
                     transform: ($el) => {
                         const { baseUrl } = this.config
                         const href = $el.attr('href')
-                        return `${baseUrl}/forum/${href}`
+                        return href ? `${baseUrl}/forum/${href}` : null
                     }
                 }
             },

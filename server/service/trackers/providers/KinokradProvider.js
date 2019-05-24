@@ -49,13 +49,13 @@ class KinokradProvider extends DataLifeProvider {
 
                         if(!matches) return []
 
-                        const sinpleFile = matches[1]
+                        const singleFile = matches[1]
 
                         return [{
                             index: 0,
                             id: 0, 
                             hlsProxy: { type: 'direct' },
-                            hlsUrl: sinpleFile
+                            hlsUrl: singleFile
                         }]
                     }
                 }

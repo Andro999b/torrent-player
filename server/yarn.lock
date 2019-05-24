@@ -382,6 +382,11 @@ create-torrent@^3.33.0:
     run-parallel "^1.0.0"
     simple-sha1 "^2.0.0"
 
+crypto-js@^3.1.9-1:
+  version "3.1.9-1"
+  resolved "https://registry.yarnpkg.com/crypto-js/-/crypto-js-3.1.9-1.tgz#fda19e761fc077e01ffbfdc6e9fdfc59e8806cd8"
+  integrity sha1-/aGedh/Ad+Af+/3G6f38WeiAbNg=
+
 css-select@~1.2.0:
   version "1.2.0"
   resolved "http://registry.npmjs.org/css-select/-/css-select-1.2.0.tgz#2b3a110539c5355f1cd8d314623e870b121ec858"
@@ -1308,6 +1313,11 @@ readable-stream@^3.0.2, readable-stream@^3.0.6:
     inherits "^2.0.3"
     string_decoder "^1.1.1"
     util-deprecate "^1.0.1"
+
+really-relaxed-json@^0.2.24:
+  version "0.2.24"
+  resolved "https://registry.yarnpkg.com/really-relaxed-json/-/really-relaxed-json-0.2.24.tgz#03122087b1807d450b20366a7b3ae43c55077607"
+  integrity sha512-YaY9fR3c+wKOJFSv5dXsPQGtp7zvuOKlmdzUvQvNI/+Hk1/S0eiH+/Pwj9eMRpxlC59lt/szUAG3BLoJaz8JnQ==
 
 record-cache@^1.0.2:
   version "1.1.0"
