@@ -7,7 +7,7 @@ const password = CryptoJS.enc.Hex.parse('9186a0bae4afec34c323aecb7754b7c848e0161
 const iv = CryptoJS.enc.Hex.parse('2ea2116c80fae4e90c1e2b2b765fcc45')
 
 module.exports = async ({ url, referer }, res) => {
-    let targetUrl;
+    let targetUrl
 
     if(url.startsWith('https://edge')) {
         targetUrl = url
