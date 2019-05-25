@@ -5,6 +5,7 @@ import ReactResizeDetector from 'react-resize-detector'
 import { observer } from 'mobx-react'
 import Hls from 'hls.js'
 import BaseScrean from './BaseScrean'
+import { createExtractorUrlBuilder } from '../utils'
 
 class HLSLoader extends Hls.DefaultConfig.loader {
     constructor(config) {
@@ -12,27 +13,19 @@ class HLSLoader extends Hls.DefaultConfig.loader {
 
         const load = this.load.bind(this)
         
-        let proxyBaseUrl = null
-        if(config.proxy) {
-            const { type, params } = config.proxy
-            proxyBaseUrl = '/extractVideo?'
-            proxyBaseUrl += `type=${type}`
-
-            if(params) {
-                Object.keys(params).forEach((key) => 
-                    proxyBaseUrl += `&${key}=${params[key]}`
-                )
-            }
+        let extractorUrlBuilder = null
+        if(config.extractor) {
+            extractorUrlBuilder = createExtractorUrlBuilder(config.extractor)
         }
 
         this.load = function (context, config, callbacks) {
-            if(proxyBaseUrl) {
+            if(extractorUrlBuilder) {
                 if(context.url.startsWith(window.location.origin)) { // replaces rlative urls
                     const baseUrl = decodeURIComponent(context.frag.baseurl.split('&url=')[1])
                     context.url = new URL(context.frag.relurl, baseUrl).toString()
                 }
 
-                context.url = `${proxyBaseUrl}&url=${encodeURIComponent(context.url)}`
+                context.url = extractorUrlBuilder(context.url)
             }
             
             load(context, config, callbacks)
@@ -120,15 +113,20 @@ class VideoScrean extends BaseScrean {
     }
 
     initVideo() {
-        const { props: { device: { source } } } = this
+        const { props: { device: { source: { browserUrl, url, manifestUrl, extractor } } } } = this
         const { video } = this
 
         this.disposeHls()
 
-        const sourceUrl = source.browserUrl || source.url
-        if (sourceUrl) {
-            video.src = sourceUrl
-        } else if (source.hlsUrl) {
+        if (browserUrl) {
+            video.src = browserUrl
+        } else if (url) {
+            if(extractor) {
+                video.src = createExtractorUrlBuilder(extractor)(url)
+            } else {
+                video.src = url
+            }
+        } else if (manifestUrl) {
             this.startHlsVideo()
         } else {
             const { device } = this.props
@@ -152,7 +150,7 @@ class VideoScrean extends BaseScrean {
             xhrSetup: (xhr) => {
                 xhr.timeout = 0
             },
-            proxy: source.hlsProxy,
+            extractor: source.extractor,
             loader: HLSLoader
         })
 
@@ -179,7 +177,7 @@ class VideoScrean extends BaseScrean {
             }
         })
 
-        hls.loadSource(source.hlsUrl)
+        hls.loadSource(source.manifestUrl)
 
         this.hls = hls
     }
@@ -187,7 +185,7 @@ class VideoScrean extends BaseScrean {
     isHlsAvaliable() {
         const { props: { device: { source } } } = this
 
-        return source.hlsUrl && Hls.isSupported()
+        return source.manifestUrl && Hls.isSupported()
     }
 
     keepHlsAlive() {

@@ -10,6 +10,24 @@ export function getTorrentFileContentLink(hashInfo, fileIndex) {
     return `/api/torrents/${hashInfo}/files/${fileIndex}`
 }
 
+
+export function createExtractorUrlBuilder(extractor) {
+    let extractorBaseUrl = null
+    const { type, params } = extractor
+    extractorBaseUrl = '/extractVideo?'
+    extractorBaseUrl += `type=${type}`
+
+    if(params) {
+        Object.keys(params).forEach((key) => 
+            extractorBaseUrl += `&${key}=${params[key]}`
+        )
+    }
+
+    return (url) => {
+        return `${extractorBaseUrl}&url=${encodeURIComponent(url)}`
+    }
+}
+
 export function invokeAll() {
     const invockes = Array.from(arguments)
     return function () {

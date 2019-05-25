@@ -54,10 +54,11 @@ class AnidubProvider extends DataLifeProvider {
                                 if(playerUrl.indexOf('sibnet') != -1) {
                                     return null
                                 } else if (playerUrl.indexOf('storm') != -1) {
-                                    file.url = `/extractVideo?type=stormTv&url=${urlencode(playerUrl)}`
+                                    file.extractor = { type: 'stormTv' }
+                                    file.url = playerUrl
                                 } else {
-                                    file.hlsUrl = playerUrl
-                                    file.hlsProxy = {
+                                    file.manifestUrl = playerUrl
+                                    file.extractor = {
                                         type: 'anidub',
                                         params: {
                                             referer: urlencode(playerUrl)

@@ -50,7 +50,7 @@ class HDRezka extends Provider {
                         return files.map((item, index) => ({
                             id: index,
                             index,
-                            hlsProxy: { type: 'streamguard' },
+                            extractor: { type: 'streamguard' },
                             ...item
                         }))
                     }
@@ -73,7 +73,7 @@ class HDRezka extends Provider {
                 if(url) {
                     return {
                         name,
-                        hlsUrl: url
+                        manifestUrl: url
                     }
                 } else {
                     const title = $translation.attr('title')
@@ -120,7 +120,7 @@ class HDRezka extends Provider {
 
             return [{
                 name,
-                hlsUrl: cdnPlayerUrl
+                manifestUrl: cdnPlayerUrl
             }]
         }
     }
@@ -141,7 +141,7 @@ class HDRezka extends Provider {
                 files.push({
                     path: `Season ${s}`,
                     name: `Season ${s} / Episode ${e}`,
-                    hlsUrl: url.toString()
+                    manifestUrl: url.toString()
                 })
             }
         }
@@ -151,7 +151,7 @@ class HDRezka extends Provider {
 
     _postProcessResultDetails(details, resultsId) {
         details.files.forEach((file) => {
-            file.hlsProxy.params = { referer: resultsId }
+            file.extractor.params = { referer: resultsId }
         })
 
         return details

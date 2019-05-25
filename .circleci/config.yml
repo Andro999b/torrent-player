@@ -3,7 +3,7 @@ version: 2.1
 executors:
   node-x86:
     docker:
-      - image: circleci/node:8.12.0
+      - image: circleci/node:10.15.3
     working_directory: /tmp/repo
 
 jobs:

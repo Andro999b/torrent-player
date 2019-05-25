@@ -1,10 +1,10 @@
-const { toJson } = require('really-relaxed-json')
-const CryptoJS = require('crypto-js')
+const { toJson } = require('really-relaxed-json') 
+const crypto = require('crypto')
 const superagent = require('superagent')
 const { PROXY_HEADERS } = require('../../config')
 
-const password = CryptoJS.enc.Hex.parse('9186a0bae4afec34c323aecb7754b7c848e016188eb8b5be677d54d3e70f9cbd')
-const iv = CryptoJS.enc.Hex.parse('2ea2116c80fae4e90c1e2b2b765fcc45')
+const key = Buffer.from('9186a0bae4afec34c323aecb7754b7c848e016188eb8b5be677d54d3e70f9cbd', 'hex') 
+const iv = Buffer.from('2ea2116c80fae4e90c1e2b2b765fcc45', 'hex')
 
 module.exports = async ({ url, referer }, res) => {
     let targetUrl
@@ -32,15 +32,16 @@ module.exports = async ({ url, referer }, res) => {
             f : USER_AGENT
         }
 
-        const message = CryptoJS.enc.Utf8.parse(JSON.stringify(item))
-        const c = CryptoJS.AES.encrypt(message, password, { iv })
+        const cipher = crypto.createCipheriv('aes-256-cbc', key, iv)
+        let encrypted = cipher.update(JSON.stringify(item), 'utf8', 'base64')
+        encrypted += cipher.final('base64')
 
         const vsReferer = iframeRes.redirects[iframeRes.redirects.length - 1]
         const vsRes = await agent
             .post('https://streamguard.cc/vs')
             .type('form')
             .field({
-                q: c.toString(),
+                q: encrypted,
                 ref: options.ref
             })
             .set({

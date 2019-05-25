@@ -3,6 +3,7 @@ import React from 'react'
 import { observer } from 'mobx-react'
 import ReactMPV from './ReactMPV'
 import BaseScrean from './BaseScrean'
+import { createExtractorUrlBuilder } from '../utils'
 
 @observer
 class MPVScrean extends BaseScrean {
@@ -29,14 +30,23 @@ class MPVScrean extends BaseScrean {
         this.mpv.property('ao-volume', volume * 100)
     }
 
-    onSource(source, startTime = 0) {
+    onSource({ url, fsPath, extractor}, startTime = 0) {
         const { mpv, props: { device } } = this
         const { volume, isMute } = device
 
         device.setLoading(true)
 
         const options = `start=${startTime},volume=${volume * 100},mute=${ isMute? 'yes': 'no' }` 
-        const path = source.fsPath || (location.protocol + '//' + location.host + source.url)
+        let path = fsPath
+        
+        if(!path) {
+            path = location.protocol + '//' + location.host
+            if(extractor) {
+                path += createExtractorUrlBuilder(extractor)(url)
+            } else {
+                path += url
+            }
+        }
 
         mpv.property('hwdec', 'auto')
         mpv.command('loadfile', path, 'replace', options)

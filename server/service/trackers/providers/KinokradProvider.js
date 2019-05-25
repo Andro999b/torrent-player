@@ -54,8 +54,8 @@ class KinokradProvider extends DataLifeProvider {
                         return [{
                             index: 0,
                             id: 0, 
-                            hlsProxy: { type: 'direct' },
-                            hlsUrl: singleFile
+                            extractor: { type: 'direct' },
+                            manifestUrl: singleFile
                         }]
                     }
                 }
@@ -75,8 +75,8 @@ class KinokradProvider extends DataLifeProvider {
                     index,
                     id: index,
                     name: comment,
-                    hlsProxy: { type: 'direct' },
-                    hlsUrl: file
+                    extractor: { type: 'direct' },
+                    manifestUrl: file
                 }))
         } else {
             details.files[0].name = details.title

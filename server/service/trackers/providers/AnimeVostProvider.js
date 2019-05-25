@@ -58,7 +58,8 @@ class AnimeVostProvider extends DataLifeProvider {
                                     index,
                                     id: index,
                                     name: key,
-                                    url: `/extractVideo?type=animevost&url=${urlencode(playerUrl)}`
+                                    extractor: { type: 'animevost' },
+                                    url: playerUrl
                                 }
                             })
                     }

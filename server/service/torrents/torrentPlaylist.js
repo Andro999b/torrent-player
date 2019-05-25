@@ -40,7 +40,7 @@ module.exports = function(torrent) {
             }
 
             if(TRANSCODING_ENABLED) {
-                source['hlsUrl'] = getTorrentFileHLSLink(torrent.infoHash, fileIndex)
+                source['manifestUrl'] = getTorrentFileHLSLink(torrent.infoHash, fileIndex)
                 source['transcodedUrl'] = getTorrentTranscodedLink(torrent.infoHash, fileIndex)
                 source['keepAliveUrl'] = getTorrentHLSKeepAliveLink(torrent.infoHash, fileIndex)
             }
