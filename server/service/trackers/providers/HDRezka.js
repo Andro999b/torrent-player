@@ -135,8 +135,8 @@ class HDRezka extends Provider {
 
             for(let e = 1; e <= episodesCount; e++) {
                 const url = new URL(cdnPlayerUrl)
-                url.searchParams.set('season', 1)
-                url.searchParams.set('episode', 1)
+                url.searchParams.set('season', s)
+                url.searchParams.set('episode', e)
 
                 files.push({
                     path: `Season ${s}`,
