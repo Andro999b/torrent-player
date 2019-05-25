@@ -194,7 +194,7 @@ html {
 }
 
 .shadow-border {
-    text-shadow: 0px 0px 4px rgba(0, 0, 0, 0.75);
+    text-shadow: 0px 0px 5px rgba(0, 0, 0, 0.8);
 }
 
 .player__title {
@@ -226,7 +226,6 @@ html {
     height: 50%;
     width: 30%;
     z-index: 1;
-    color: white;
 
     &.forward {
         right: 0
@@ -235,6 +234,17 @@ html {
     &.backward {
         left: 0
     }
+}
+
+.playback-skip__indicator {
+    filter: drop-shadow(0px 0px 5px rgba(0, 0, 0, 0.8));
+    color: white;
+    pointer-events: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
 }
 
 .player__pause-zone {

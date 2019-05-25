@@ -122,21 +122,21 @@ class PlayBackSkipZones extends Component {
         const { seekMode } = this.state
 
         return (
-            <div className="shadow-border">
+            <div>
                 <div
                     className="playback-skip backward"
                     onTouchStart={this.handleFastRewind}
                     onMouseDown={this.handleFastRewind}
-                >
-                    {seekMode == 'fr' && <FastRewindIcon className="center" />}
+                />
+                <div className="playback-skip__indicator">
+                    {seekMode == 'fr' && <FastRewindIcon className="center" fontSize="large" />}
+                    {seekMode == 'ff' && <FastForwardIcon className="center" fontSize="large"/>}
                 </div>
                 <div
                     className="playback-skip forward"
                     onTouchStart={this.handleFastFroward}
                     onMouseDown={this.handleFastFroward}
-                >
-                    {seekMode == 'ff' && <FastForwardIcon className="center" />}
-                </div>
+                />
             </div>
         )
     }
