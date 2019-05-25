@@ -81,7 +81,7 @@ class LocalPlayer extends Component {
     handleKeyUp = (e) => {
         const { props: { playerStore: { device } }} = this
 
-        const step = e.ctrlKey ? 5 : (e.shiftKey ? 30 : 10)
+        const step = e.ctrlKey ? 10 : (e.shiftKey ? 60 : 30)
 
         if(e.which == 32) { //spacebar
             if (device.isPlaying) {
