@@ -139,7 +139,7 @@ class LocalPlayer extends Component {
     }
     // --- idle checking ---
 
-    renderVideoSrean(device, onNext) {
+    renderVideoSrean(device, onEnded) {
         const { source } = device
 
         const useMpv = isElectron() && 
@@ -147,8 +147,8 @@ class LocalPlayer extends Component {
             source.preferMpv
 
         return useMpv ? 
-            <MPVScrean device={device} onEnded={onNext} /> :
-            <VideoScrean device={device} onEnded={onNext} />
+            <MPVScrean device={device} onEnded={onEnded} /> :
+            <VideoScrean device={device} onEnded={onEnded} />
     }
 
     render() {
@@ -166,7 +166,7 @@ class LocalPlayer extends Component {
                     <ShowIf mustNot={[idle]}>
                         <PlayerTitle title={playerStore.getPlayerTitle()} onClose={this.handleCloseVideo} />
                     </ShowIf>
-                    { this.renderVideoSrean(device, playerStore.nextFile) }
+                    { this.renderVideoSrean(device, playerStore.fileEnd) }
                     <ShowIf must={[error]}>
                         <Typography className="center shadow-border" variant="h4">{error}</Typography> 
                     </ShowIf>

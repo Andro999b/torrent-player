@@ -192,6 +192,15 @@ class PlayerStore {
         this.switchFile(this.device.currentFileIndex + 1)
     }
 
+    @action.bound endFile() {
+        const  {currentFileIndex, playlist: { files }} = this.device
+        if(currentFileIndex == files.length - 1) {
+            this.device.pause()
+        } else {
+            this.switchFile(this.device.currentFileIndex + 1)
+        }
+    }
+
     @action closePlaylist() {
         if (this.device) {
             this.device.disconnect()
