@@ -41,13 +41,11 @@ class AnidubProvider extends DataLifeProvider {
                     selector: '.players>div:first-child select>option',
                     transform: ($el) =>
                         $el.toArray()
-                            .map((node, index) => {
+                            .map((node) => {
                                 const $node = $(node)
                                 const playerUrl = $node.attr('value').split('|')[0]
 
                                 const file = {
-                                    index,
-                                    id: index,
                                     name: $node.text()
                                 }
 
@@ -68,7 +66,12 @@ class AnidubProvider extends DataLifeProvider {
 
                                 return file
                             })
-                            .filter((file) => !file)
+                            .filter((file) => file)
+                            .map((file, index) => ({
+                                id: index,
+                                index,
+                                ...file
+                            }))
                 }
             }
         })

@@ -15,6 +15,8 @@ import { isPlayable } from '../utils'
 import GroupFiles from './GroupFiles'
 import { inject } from 'mobx-react'
 import CastOrPlayListItem from './CastOrPlayListItem'
+import watchLater from '../store/watchLater'
+import { creatDirectoryAction } from '../utils'
 
 @inject(({ transitionStore }) => ({
     onPlayFile: transitionStore.downloadAndPlay,
@@ -65,13 +67,19 @@ class SearchResultsItemDetails extends Component {
     }
 
     render() {
-        const { details } = this.props
+        const { details, onPlayFile, onCastFile } = this.props
         if (!details) return null
 
         const { files, description, torrents } = details
         const posterImage = details.image ? 
             urljoin(API_BASE_URL, `/proxyMedia?url=${encodeURIComponent(details.image)}`)
             : null
+
+        const directoryActions = [
+            { title: 'Play', action: creatDirectoryAction(details, onPlayFile) },
+            { title: 'Cast', action: creatDirectoryAction(details, onCastFile) } ,
+            { title: 'WatchLater', action: creatDirectoryAction(details, watchLater) }
+        ]
 
         return (
             <Grid container spacing={24}>
@@ -87,7 +95,7 @@ class SearchResultsItemDetails extends Component {
                 </Grid>
                 <Grid item xs={12} md={4}>
                     <List className="files-list">
-                        { files && <GroupFiles files={files} renderFiles={this.renderFiles} /> }
+                        { files && <GroupFiles files={files} renderFiles={this.renderFiles} directoryActions={directoryActions} /> }
                         { torrents && torrents.map(this.renderTorrent) }
                     </List>
                 </Grid>

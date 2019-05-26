@@ -23,7 +23,9 @@ class VideoSeekSlider extends Component {
     }
 
     setTrackWidthState = () => {
-        this.setState({ trackWidth: this.track.offsetWidth })
+        if(this.track) {
+            this.setState({ trackWidth: this.track.offsetWidth })
+        }
     };
 
     handleStartSeek = () => {

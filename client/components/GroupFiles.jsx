@@ -7,8 +7,14 @@ import {
     List,
     ListItem,
     ListItemText,
-    Collapse
+    ListItemSecondaryAction,
+    IconButton,
+    Collapse,
+    Menu,
+    MenuItem
 } from '@material-ui/core'
+
+import { MoreVert as MoreIcon} from '@material-ui/icons'
 
 export function fileGroupingFun(files) {
     const maxfiles = GroupFiles.MAX_FILES
@@ -37,6 +43,52 @@ export function fileGroupingFun(files) {
         }))
 }
 
+class GroupFilesHeader extends Component {
+    constructor(props, context) {
+        super(props, context)
+        this.state = { anchorEl: null }
+    }
+
+    handleOpenMenu = (event) => this.setState({ anchorEl: event.currentTarget })
+    handleCloseMenu = () => this.setState({ anchorEl: null })
+
+    render() {
+        const { onSelect, directory, directoryActions } = this.props
+        const { anchorEl } = this.state
+
+        return (
+            <ListItem
+                button
+                onClick={() => onSelect(directory)}>
+                <ListItemText primary={directory.name}/>
+                {directoryActions && 
+                    <ListItemSecondaryAction>
+                        <IconButton onClick={this.handleOpenMenu}>
+                            <MoreIcon/>
+                        </IconButton>
+                        <Menu anchorEl={anchorEl} open={anchorEl != null} onClose={this.handleCloseMenu}>
+                            {directoryActions.map(({title, action}) => 
+                                <MenuItem key={title} onClick={() => {
+                                    action(directory)
+                                    this.handleCloseMenu()
+                                }}>
+                                    {title}
+                                </MenuItem>
+                            )}
+                        </Menu>
+                    </ListItemSecondaryAction>
+                }
+            </ListItem>
+        )
+    }
+}
+
+GroupFilesHeader.propTypes = {
+    onSelect: PropTypes.func.isRequired,
+    directory: PropTypes.object,
+    directoryActions: PropTypes.array
+}
+
 class GroupFiles extends Component {
     constructor(props, context) {
         super(props, context)
@@ -56,7 +108,7 @@ class GroupFiles extends Component {
 
     renderDirectories(directories) {
         const { currentDirectory } = this.state
-        const { renderFiles } = this.props
+        const { renderFiles, directoryActions } = this.props
 
         return (
             <List style={{width: '100%'}}>
@@ -64,10 +116,11 @@ class GroupFiles extends Component {
                     const expanded = currentDirectory == directory.name
                     return (
                         <Fragment key={directory.name}>
-                            <ListItem button
-                                onClick={() => this.switchCurrentDirectory(directory.name)}>
-                                <ListItemText primary={directory.name}/>
-                            </ListItem>
+                            <GroupFilesHeader 
+                                directory={directory}
+                                directoryActions={directoryActions}
+                                onSelect={(d) => this.switchCurrentDirectory(d.name)}
+                            />
                             <Collapse in={expanded} timeout="auto" unmountOnExit>
                                 {expanded && renderFiles(directory.files)}
                             </Collapse>                           
@@ -91,7 +144,8 @@ GroupFiles.MAX_FILES = 50
 
 GroupFiles.propTypes = {
     files: PropTypes.array.isRequired,
-    renderFiles: PropTypes.func.isRequired
+    renderFiles: PropTypes.func.isRequired,
+    directoryActions: PropTypes.array
 }
 
 export default GroupFiles

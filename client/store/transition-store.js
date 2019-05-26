@@ -40,7 +40,7 @@ class TransitionStore {
 
     @action.bound downloadAndPlay(results, selectedItem) {
         this.goToScreen('player')
-        this.downloadPlaylist(results, selectedItem)
+        this._downloadPlaylist(results, selectedItem)
             .then((params) => this.playMediaOnDevice({ 
                 ...params, 
                 results 
@@ -51,7 +51,7 @@ class TransitionStore {
         
     @action.bound downloadAndPlayMediaOnDevice(results, selectedItem, device) {
         this.goToScreen('player')
-        this.downloadPlaylist(results, selectedItem)
+        this._downloadPlaylist(results, selectedItem)
             .then((params) => this.playMediaOnDevice({
                 ...params, 
                 device, 
@@ -60,7 +60,7 @@ class TransitionStore {
             .catch(console.error)
     }
 
-    playTorrentMedia = (results, selectedItem) => {
+    @action.bound playTorrentMedia(results, selectedItem) {
         this.playMedia(
             {
                 ...results, 
@@ -72,7 +72,7 @@ class TransitionStore {
 
     @action.bound playMedia(results, selectedItem) {
         this.goToScreen('player')
-        this.downloadPlaylist(results, selectedItem)
+        this._downloadPlaylist(results, selectedItem)
             .then((params) => this.playMediaOnDevice({ 
                 ...params, 
                 results 
@@ -94,7 +94,7 @@ class TransitionStore {
         this.castDialog = null
     }
 
-    openCastTorrentDialog = (results, selectedItem) => {
+    @action.bound openCastTorrentDialog (results, selectedItem) {
         this.openCastDialog({...results, type: 'torrent' }, selectedItem)
     }
 
@@ -145,26 +145,26 @@ class TransitionStore {
         this.castDialog = null
     }
 
-    downloadPlaylist(results, selectedItem) {
+    _downloadPlaylist(results, selectedItem) {
         if(results.type == 'torrent') {
             if(results.magnetUrl || results.torrentUrl) {
                 return libraryStore
                     .addTorrent(results)
                     .then((torrent) => 
-                        this.downloadTorrentPlaylist(torrent, selectedItem)
+                        this._downloadTorrentPlaylist(torrent, selectedItem)
                     )
   
             }
-            return this.downloadTorrentPlaylist(results, selectedItem)
+            return this._downloadTorrentPlaylist(results, selectedItem)
         }
 
         return Promise.resolve({
-            startIndex: selectedItem.index,
+            startIndex: selectedItem ? selectedItem.index : 0,
             playlist: pick(results, 'name', 'files', 'torrentInfoHash', 'image')
         })
     }
 
-    downloadTorrentPlaylist(torrent, tragetItem) {
+    _downloadTorrentPlaylist(torrent, tragetItem) {
         return request
             .get(`/api/torrents/${torrent.infoHash}/playlist`)
             .then((res) => {

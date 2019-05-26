@@ -10,7 +10,6 @@ export function getTorrentFileContentLink(hashInfo, fileIndex) {
     return `/api/torrents/${hashInfo}/files/${fileIndex}`
 }
 
-
 export function createExtractorUrlBuilder(extractor) {
     let extractorBaseUrl = null
     const { type, params } = extractor
@@ -102,4 +101,12 @@ export function hasArgv(arg) {
     }
 
     return false
+}
+
+export function creatDirectoryAction(details, orginalAction) {
+    return (directory ) => orginalAction({
+        ...details,
+        files: directory.files,
+        name: `${details.name} / ${directory.name}`
+    })
 }

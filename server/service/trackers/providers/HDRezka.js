@@ -92,7 +92,7 @@ class HDRezka extends Provider {
                     const { seasons, episodes, player } = res.body
                     const $seasons = $.load(seasons)('.b-simple_season__item')
                     const $episodesLists = $.load(episodes)('.b-simple_episodes__list')
-                    const cdnPlayerUrl = $.load(player)('#cdn-player').attr('src')
+                    const cdnPlayerUrl = $.load(player)('iframe').attr('src')
 
                     return this
                         ._extarctSeasonFiles(cdnPlayerUrl, $episodesLists, $seasons)
@@ -108,7 +108,7 @@ class HDRezka extends Provider {
 
     _extractNoTranslationFiles($scope) {
         const $seasons = $scope.find('.b-simple_season__item')
-        const cdnPlayerUrl = $scope.find('#cdn-player').attr('src')
+        const cdnPlayerUrl = $scope.find('iframe').attr('src')
         if($seasons.length > 0) {
             // tv show with single translation
             const $episodesLists = $scope.find('.b-simple_episodes__list')
