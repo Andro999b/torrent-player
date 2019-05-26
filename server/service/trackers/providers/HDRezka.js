@@ -49,7 +49,6 @@ class HDRezka extends Provider {
 
                         return files.map((item, index) => ({
                             id: index,
-                            index,
                             extractor: { type: 'streamguard' },
                             ...item
                         }))

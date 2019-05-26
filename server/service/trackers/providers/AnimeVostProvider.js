@@ -55,7 +55,6 @@ class AnimeVostProvider extends DataLifeProvider {
                             .map((key, index) => {
                                 const playerUrl = `http://play.aniland.org/${episodesData[key]}`
                                 return {
-                                    index,
                                     id: index,
                                     name: key,
                                     extractor: { type: 'animevost' },

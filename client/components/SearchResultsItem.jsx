@@ -60,7 +60,7 @@ class SearchResultsItem extends Component {
             <div
                 style={{ wordBreak: 'break-all' }}>
                 [{SEARCH_RPOVIDERS[item.provider]}]&nbsp;
-                { (item.details && item.details.name) || item.name }
+                { item.name }
             </div>
 
         const subheader =

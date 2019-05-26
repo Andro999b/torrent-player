@@ -69,7 +69,6 @@ class AnidubProvider extends DataLifeProvider {
                             .filter((file) => file)
                             .map((file, index) => ({
                                 id: index,
-                                index,
                                 ...file
                             }))
                 }

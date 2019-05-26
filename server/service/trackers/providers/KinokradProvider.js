@@ -52,7 +52,6 @@ class KinokradProvider extends DataLifeProvider {
                         const singleFile = matches[1]
 
                         return [{
-                            index: 0,
                             id: 0, 
                             extractor: { type: 'direct' },
                             manifestUrl: singleFile
@@ -72,7 +71,6 @@ class KinokradProvider extends DataLifeProvider {
 
             details.files = playlist
                 .map(({comment, file}, index) => ({
-                    index,
                     id: index,
                     name: comment,
                     extractor: { type: 'direct' },

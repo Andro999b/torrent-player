@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import PropTypes from 'prop-types'
 import {
     List,
@@ -14,7 +14,6 @@ import ExpandMore from '@material-ui/icons/ExpandMore'
 import { observer } from 'mobx-react'
 import memoize from 'memoize-one'
 import { fileGroupingFun } from './GroupFiles'
-import ShowIf from './ShowIf'
 
 @observer
 class PlayerPlayList extends Component {    
@@ -41,9 +40,9 @@ class PlayerPlayList extends Component {
     }
 
     getGroups = memoize(fileGroupingFun)
-    getFileGroup = memoize((fileIndex, groups) =>
+    getFileGroup = memoize((fileId, groups) =>
         groups.find((g) =>
-            g.files.find((f) => f.index == fileIndex) != null
+            g.files.find((f) => f.id == fileId) != null
         )
     )   
 
@@ -54,7 +53,8 @@ class PlayerPlayList extends Component {
 
         const groups = this.getGroups(files)
 
-        const currentGroup = this.getFileGroup(currentFileIndex, groups)
+        const currentFileId = files[currentFileIndex].id
+        const currentGroup = this.getFileGroup(currentFileId, groups)
         selectedGroup = selectedGroup || currentGroup
 
         const groupFiles = groups.length > 1 ? selectedGroup.files : files
@@ -63,7 +63,7 @@ class PlayerPlayList extends Component {
         return (
             <Slide direction="left" in={open} mountOnEnter unmountOnExit>
                 <Paper elevation={12} square className="player__file-list">
-                    <ShowIf must={[groups.length > 1]}>
+                    {groups.length > 1 && <Fragment>
                         <List>
                             <ListItem  button style={{ background: grey[600] }} onClick={this.handleOpenGroupsMenu}>
                                 <ListItemText primary={selectedGroup.name} />
@@ -85,16 +85,16 @@ class PlayerPlayList extends Component {
                                 </MenuItem>
                             ))}
                         </Menu>
-                    </ShowIf>
+                    </Fragment>}
                     <List>
                         {sortedFiles.map((file) => {
-                            const style = currentFileIndex === file.index ? { background: grey[600] } : {}
+                            const style = currentFileId == file.id ? { background: grey[600] } : {}
                             return (
                                 <ListItem 
                                     button 
                                     key={file.id} 
                                     style={style} 
-                                    onClick={() => onFileSelected(file.index)}>
+                                    onClick={() => onFileSelected(files.findIndex((i) => i.id == file.id))}>
                                     <ListItemText primary={
                                         <span style={{ wordBreak: 'break-all' }}>
                                             {file.name}

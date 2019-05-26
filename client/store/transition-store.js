@@ -158,8 +158,15 @@ class TransitionStore {
             return this._downloadTorrentPlaylist(results, selectedItem)
         }
 
+        // result already contain playlist
+        let startIndex = 0
+        if(selectedItem) {
+            const selectedItemIndex = results.files.findIndex((i) => i.id == selectedItem.id)
+            if(selectedItemIndex != -1) startIndex = selectedItemIndex
+        }
+
         return Promise.resolve({
-            startIndex: selectedItem ? selectedItem.index : 0,
+            startIndex,
             playlist: pick(results, 'name', 'files', 'torrentInfoHash', 'image')
         })
     }

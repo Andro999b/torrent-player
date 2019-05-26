@@ -7,7 +7,8 @@ export const SEARCH_RPOVIDERS = {
     'fastTorrent-movies': 'FastTorrent Movies',
     'fastTorrent-tv-shows': 'FastTorrent TV Shows',
     'fastTorrent-cartoons': 'FastTorrent Cartoons',
-    'nnm-video': 'NNMClub Video',
+    'nnm-movies': 'NNMClub Movies',
+    'nnm-cartoons': 'NNMClub Cartoons',
     'nnm-tv-shows': 'NNMClub TV Shows',
     'nnm-anime': 'NNMClub Anime',
     'animeVost': 'AnimeVost',
@@ -26,7 +27,7 @@ export const SEARCH_RPVODERS_PRESET = [
         presets: [
             {
                 name: 'Movies',
-                providers: ['rutracker-movies', 'nnm-video', 'fastTorrent-movies', 'rutor']
+                providers: ['rutracker-movies', 'nnm-movies', 'fastTorrent-movies', 'rutor']
             },
             {
                 name: 'TV Shows',
@@ -34,7 +35,7 @@ export const SEARCH_RPVODERS_PRESET = [
             },
             {
                 name: 'Cartoons',
-                providers: ['rutracker-cartoons', 'fastTorrent-cartoons', 'nnm-video', 'rutor']
+                providers: ['rutracker-cartoons', 'fastTorrent-cartoons', 'nnm-cartoons', 'rutor']
             },
             {
                 name: 'Anime',

@@ -94,7 +94,7 @@ export class LocalDevice extends Device {
 
     @action setPlaylist(playlist, fileIndex) {
         this.playlist = playlist
-        this.selectFile(fileIndex)
+        this.selectFile(fileIndex || 0)
         this.play()
 
         //check progress

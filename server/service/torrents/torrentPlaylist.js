@@ -53,10 +53,6 @@ module.exports = function(torrent) {
         })
         .filter((f) => f != null)
         .sort((f1, f2) => f1.name.localeCompare(f2.name))
-        .map((f, fileIndex) => {
-            f.index = fileIndex
-            return f
-        })
 
     return {
         name: torrent.name,
