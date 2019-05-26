@@ -165,17 +165,22 @@ class TransitionStore {
     }
 
     _downloadTorrentPlaylist(torrent, tragetItem) {
+        const ids =new Set(torrent.files.map((i) => i.id))
         return request
             .get(`/api/torrents/${torrent.infoHash}/playlist`)
             .then((res) => {
                 const playlist = res.body
-                const { files } = playlist
+                let { files } = playlist
                 let startIndex = 0
         
+                files = files.filter((file) => ids.has(file.id))
+
                 if(tragetItem) {
                     startIndex = files.findIndex((selectedItem) => selectedItem.id == tragetItem.id)
                     if(startIndex < 0) startIndex = 0
                 }
+
+                playlist.files = files
 
                 return { playlist, startIndex, results: torrent }
             })

@@ -23,6 +23,7 @@ import TorrentListItemFile from './TorrentListItemFile'
 import PropTypes from 'prop-types'
 import filesize from 'file-size'
 import { inject, observer } from 'mobx-react'
+import { creatDirectoryAction } from '../utils'
 
 @inject(({
     transitionStore: { playTorrentMedia, openCastTorrentDialog }, 
@@ -60,7 +61,7 @@ class TorrentListItem extends Component {
     }
 
     render() {
-        const { torrent, onDelete, onSetBackgroudDownload } = this.props
+        const { torrent, onDelete, onSetBackgroudDownload, onPlayFile, onCastFile } = this.props
         const { showDetails } = this.state
 
         let downloadSize
@@ -93,6 +94,11 @@ class TorrentListItem extends Component {
             </div>
         )
 
+        const directoryActions = [
+            { title: 'Play', action: creatDirectoryAction(torrent, onPlayFile) },
+            { title: 'Cast', action: creatDirectoryAction(torrent, onCastFile) } 
+        ]
+
         return (
             <ExpansionPanel expanded={showDetails} onChange={this.handleToggleDetails}>
                 <ExpansionPanelSummary expandIcon={<ExpandIcon />} classes={{ content: 'expand-header' }}>
@@ -118,7 +124,13 @@ class TorrentListItem extends Component {
                     </Button>
                 </div>
                 <ExpansionPanelDetails className="files-list">
-                    {showDetails && <GroupFiles files={torrent.files} renderFiles={this.renderFiles} />}
+                    {showDetails && 
+                        <GroupFiles 
+                            directoryActions={directoryActions} 
+                            files={torrent.files} 
+                            renderFiles={this.renderFiles} 
+                        />
+                    }
                 </ExpansionPanelDetails>
             </ExpansionPanel>
         )

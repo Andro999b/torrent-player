@@ -61,7 +61,10 @@ class CastOrPlayListItem extends Component {
                                 </MenuItem>
                             }
                             {secondaryActions.map(({title, action}) => 
-                                <MenuItem key={title} onClick={action}>
+                                <MenuItem key={title} onClick={() => {
+                                    action()
+                                    this.handleCloseMenu()
+                                }}>
                                     {title}
                                 </MenuItem>
                             )}

@@ -93,6 +93,7 @@ module.exports = {
                     const res = await superagent
                         .get(torrentUrl)
                         .buffer(true)
+                        .parse(superagent.parse['application/octet-stream'])
                         
                     parsedTorrent = parseTorrent(res.body)
                 }
@@ -103,6 +104,10 @@ module.exports = {
         
         if (!parsedTorrent && magnetUrl) {
             parsedTorrent = parseTorrent(magnetUrl)
+        } 
+        
+        if (!parsedTorrent) {
+            throw new Error('No suitable torrent file source')
         }
 
         let torrent = torrentClient.get(parsedTorrent.infoHash)
