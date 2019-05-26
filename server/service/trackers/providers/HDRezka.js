@@ -98,7 +98,7 @@ class HDRezka extends Provider {
                         ._extarctSeasonFiles(cdnPlayerUrl, $episodesLists, $seasons)
                         .map((file) => ({
                             ...file,
-                            path: `${title} / ${file.path}`
+                            path: [title, file.path].filter((i) => i).join(' / ')
                         }))
                 }
             })
@@ -130,19 +130,33 @@ class HDRezka extends Provider {
 
         const files = []
 
-        for(let s = 1; s <= seasonsCount; s++) {
-            const episodesCount = $episodesLists.eq(s-1).children().length
+        const getEpisodeUrl = (s, e) => {
+            const url = new URL(cdnPlayerUrl)
+            url.searchParams.set('season', 1)
+            url.searchParams.set('episode', e)
+            return url.toString()
+        }
+
+        if(seasonsCount == 1) {
+            const episodesCount = $episodesLists.eq(0).children().length
 
             for(let e = 1; e <= episodesCount; e++) {
-                const url = new URL(cdnPlayerUrl)
-                url.searchParams.set('season', s)
-                url.searchParams.set('episode', e)
-
                 files.push({
-                    path: `Season ${s}`,
-                    name: `Season ${s} / Episode ${e}`,
-                    manifestUrl: url.toString()
+                    name: `Episode ${e}`,
+                    manifestUrl: getEpisodeUrl(1, e)
                 })
+            }
+        } else {
+            for(let s = 1; s <= seasonsCount; s++) {
+                const episodesCount = $episodesLists.eq(s - 1).children().length
+
+                for(let e = 1; e <= episodesCount; e++) {
+                    files.push({
+                        path: `Season ${s}`,
+                        name: `Season ${s} / Episode ${e}`,
+                        manifestUrl: getEpisodeUrl(1, e)
+                    })
+                }
             }
         }
 

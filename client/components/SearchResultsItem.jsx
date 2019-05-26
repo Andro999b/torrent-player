@@ -84,7 +84,7 @@ class SearchResultsItem extends Component {
                                 <ExpansionPanelActions>
                                     <Button onClick={() => onDownload(item.details)} variant="contained">
                                         <AddToLibraryIcon className="button-icon__left" />
-                                    Add to Library
+                                        Add to Library
                                     </Button>
                                 </ExpansionPanelActions>
                             </ShowIf>

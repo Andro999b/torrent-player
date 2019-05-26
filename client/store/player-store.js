@@ -219,7 +219,7 @@ class PlayerStore {
         if (name && files) {
             return name +
                 (files.length > 1 ? ` - ${currentFileIndex + 1} / ${files.length}` : '') +
-                (progress ? ' - ' + progress : '')
+                (progress ? ` - ${progress}` : '')
         }
     }
 

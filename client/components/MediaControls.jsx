@@ -32,6 +32,11 @@ class MediaControls extends Component {
 
         const showFullscrean = device.isLocal() && !isElectron()
 
+        const {
+            currentFileIndex,
+            playlist: { files }
+        } = device
+
         return (
             <Slide direction="up" in mountOnEnter unmountOnExit>
                 <Paper elevation={0} square className="player-controls">
@@ -44,9 +49,11 @@ class MediaControls extends Component {
                     />
                     <div className="player-controls__panel">
                         <div className="player-controls__panel-section">
-                            <IconButton onClick={onPrev}>
-                                <PreviousIcon />
-                            </IconButton>
+                            { currentFileIndex != 0 && 
+                                <IconButton onClick={onPrev}>
+                                    <PreviousIcon />
+                                </IconButton>
+                            }
                             {!device.isPlaying &&
                                 <IconButton onClick={() => device.resume()}>
                                     <PlayIcon />
@@ -57,9 +64,11 @@ class MediaControls extends Component {
                                     <PauseIcon />
                                 </IconButton>
                             }
-                            <IconButton onClick={onNext}>
-                                <NextIcon />
-                            </IconButton>
+                            { currentFileIndex < files.length - 1 &&
+                                <IconButton onClick={onNext}>
+                                    <NextIcon />
+                                </IconButton>
+                            }
                             <SoundControl device={device}/>
                         </div>
                         <div className="player-controls__panel-section">
