@@ -16,7 +16,8 @@ module.exports = (torrent, addFiles) => {
         'numPeers',
         'path',
         'files',
-        'downloadInBackground'
+        'downloadInBackground',
+        'image'
     ])
 
     if(addFiles) {

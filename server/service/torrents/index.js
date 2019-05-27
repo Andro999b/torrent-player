@@ -153,8 +153,8 @@ module.exports = {
     getTorrent(torrentId) {
         const torrent = torrentClient.get(torrentId)
         if(torrent) {
-            torrent.downloadInBackground = 
-                database.isEnabledDownloadInBackground(torrentId)
+            torrent.downloadInBackground = database.isEnabledDownloadInBackground(torrentId)
+            torrent.image = database.getImageCover(torrentId)
         }
 
         return torrent
@@ -163,8 +163,8 @@ module.exports = {
         return torrentClient
             .torrents
             .map((torrent) => {
-                torrent.downloadInBackground = 
-                    database.isEnabledDownloadInBackground(torrent.infoHash)
+                torrent.downloadInBackground = database.isEnabledDownloadInBackground(torrent.infoHash)
+                torrent.image = database.getImageCover(torrent.infoHash)
 
                 return torrent
             })

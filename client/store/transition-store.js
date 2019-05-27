@@ -147,15 +147,18 @@ class TransitionStore {
 
     _downloadPlaylist(results, selectedItem) {
         if(results.type == 'torrent') {
+            // add only selected in result files to playlist
+            const filesIds = results.files ? new Set(results.files.map((i) => i.id)) : null
+
             if(results.magnetUrl || results.torrentUrl) {
                 return libraryStore
                     .addTorrent(results)
                     .then((torrent) => 
-                        this._downloadTorrentPlaylist(torrent, selectedItem)
+                        this._downloadTorrentPlaylist(torrent, filesIds, selectedItem)
                     )
   
             }
-            return this._downloadTorrentPlaylist(results, selectedItem)
+            return this._downloadTorrentPlaylist(results, filesIds, selectedItem)
         }
 
         // result already contain playlist
@@ -171,8 +174,7 @@ class TransitionStore {
         })
     }
 
-    _downloadTorrentPlaylist(torrent, tragetItem) {
-        const ids =new Set(torrent.files.map((i) => i.id))
+    _downloadTorrentPlaylist(torrent, filesIds, tragetItem) {
         return request
             .get(`/api/torrents/${torrent.infoHash}/playlist`)
             .then((res) => {
@@ -180,7 +182,9 @@ class TransitionStore {
                 let { files } = playlist
                 let startIndex = 0
         
-                files = files.filter((file) => ids.has(file.id))
+                if(filesIds && filesIds.length != files.length) { // no reason to filter files if all selected
+                    files = files.filter((file) => filesIds.has(file.id))
+                }
 
                 if(tragetItem) {
                     startIndex = files.findIndex((selectedItem) => selectedItem.id == tragetItem.id)

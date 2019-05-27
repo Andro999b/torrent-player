@@ -77,7 +77,7 @@ class SearchResultsItem extends Component {
                     <Typography variant="body2" color='error'>{item.loadingError}</Typography> :
                     <div>
                         <ExpansionPanelDetails>
-                            <SearchResultsItemDetails details={item.details} />
+                            <SearchResultsItemDetails item={item} />
                         </ExpansionPanelDetails>
                         <ShowIf must={[item.hasFiles()]}>
                             <ShowIf must={[item.isDownlodableTorrent()]}>

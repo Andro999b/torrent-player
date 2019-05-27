@@ -29,7 +29,7 @@ class SearchResultsItemDetails extends Component {
     }
 
     renderFile = (file) => {
-        const { details, onPlayFile, onCastFile } = this.props
+        const { item: { details } , onPlayFile, onCastFile } = this.props
         const playable = details.type == 'directMedia' || isPlayable(file.name)
 
         return (
@@ -67,7 +67,9 @@ class SearchResultsItemDetails extends Component {
     }
 
     render() {
-        const { details, onPlayFile, onCastFile } = this.props
+        const { item, onPlayFile, onCastFile } = this.props
+        const { details } = item
+
         if (!details) return null
 
         const { files, description, torrents } = details
@@ -75,11 +77,15 @@ class SearchResultsItemDetails extends Component {
             urljoin(API_BASE_URL, `/proxyMedia?url=${encodeURIComponent(details.image)}`)
             : null
 
+        // setup actions for directory
         const directoryActions = [
-            { title: 'Play', action: creatDirectoryAction(details, onPlayFile) },
-            { title: 'Cast', action: creatDirectoryAction(details, onCastFile) } ,
-            { title: 'WatchLater', action: creatDirectoryAction(details, watchLater) }
+            { title: 'Cast All', action: creatDirectoryAction(details, onCastFile) },
+            { title: 'Play All', action: creatDirectoryAction(details, onPlayFile) }
         ]
+
+        if(!item.isTorrent()) {
+            directoryActions.push({ title: 'Watch Later', action: creatDirectoryAction(details, watchLater) })
+        }
 
         return (
             <Grid container spacing={24}>
@@ -105,7 +111,7 @@ class SearchResultsItemDetails extends Component {
 }
 
 SearchResultsItemDetails.propTypes = {
-    details: PropTypes.object,
+    item: PropTypes.object,
     onPlayFile: PropTypes.func,
     onCastFile: PropTypes.func
 }

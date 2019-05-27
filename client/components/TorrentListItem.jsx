@@ -95,8 +95,8 @@ class TorrentListItem extends Component {
         )
 
         const directoryActions = [
-            { title: 'Play', action: creatDirectoryAction(torrent, onPlayFile) },
-            { title: 'Cast', action: creatDirectoryAction(torrent, onCastFile) } 
+            { title: 'Cast All', action: creatDirectoryAction(torrent, onCastFile) },
+            { title: 'Play All', action: creatDirectoryAction(torrent, onPlayFile) }
         ]
 
         return (
