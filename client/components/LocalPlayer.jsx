@@ -166,7 +166,7 @@ class LocalPlayer extends Component {
                     <ShowIf mustNot={[idle]}>
                         <PlayerTitle title={playerStore.getPlayerTitle()} onClose={this.handleCloseVideo} />
                     </ShowIf>
-                    { this.renderVideoSrean(device, playerStore.fileEnd) }
+                    { this.renderVideoSrean(device, playerStore.endFile) }
                     <ShowIf must={[error]}>
                         <Typography className="center shadow-border" variant="h4">{error}</Typography> 
                     </ShowIf>
