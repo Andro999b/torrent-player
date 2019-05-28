@@ -11,7 +11,7 @@ async function browseContent(inputs, req) {
     if (inputs.ObjectID == '0') {
         return browseTorrentsList(inputs)
     } else {
-        return await browseTorrentFs(inputs, req)
+        const id = parseObjetcId(inputs.ObjectID)
     }
 }
 
@@ -126,15 +126,15 @@ async function browseMetadata(inputs, req) {
     // }
 }
 
-// function parseObjetcId(inputs) {
-//     const parts = inputs.ObjectID.split(':')
+function parseObjetcId(inputs) {
+    const parts = inputs.ObjectID.split(':')
 
-//     return {
-//         infoHash: parts[0],
-//         torrentFsId: parts[1],
-//         transcoded: TRANSCODING_ENABLED && parts[2] == 't'
-//     }
-// }
+    return {
+        type: parts[0],
+        infoHash: parts[1],
+        torrentFsId: parts[2]
+    }
+}
 
 function toDIDLXml(content) {
     const didl = toXML({
