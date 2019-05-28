@@ -9,7 +9,7 @@
     "delay": "2500"
   },
   "scripts": {
-    "start": "nodemon --inspect"
+    "start": "nodemon --inspect ./index.js --dlna-uid=1"
   },
   "dependencies": {
     "bidirectional-map": "^1.0.4",

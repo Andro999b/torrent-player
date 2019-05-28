@@ -33,12 +33,12 @@ class TorrentFs {
                 currentParent.type = 'dir'
                 lastEntry = null
             }
-            
+
             if(lastEntry == null) {
-                lastEntry = { 
-                    title: currentItem, 
-                    id: `${++this.maxId}`, 
-                    parentId: currentParent.id 
+                lastEntry = {
+                    title: currentItem,
+                    id: `${++this.maxId}`,
+                    parentId: currentParent.id
                 }
                 currentParent.children.push(lastEntry)
                 currentParent.count = currentParent.children.length
@@ -62,7 +62,7 @@ class TorrentFs {
 
 function createTorrentFs(torrent) {
     const torrentFs = new TorrentFs(torrent.infoHash)
-    
+
     torrent.files.forEach((file, fileIndex) => torrentFs.addFile(file, fileIndex))
 
     return torrentFs

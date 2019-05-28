@@ -9,17 +9,18 @@ const { WEB_PORT } = require('../config')
 class DLNADevice extends RemoteDevice {
     constructor(client) {
         super()
-        this.avaliable = true   
+        this.avaliable = true
         this.client = client
 
         client.getDeviceDescription((err, description) => {
             if(err) {
                 console.error(err)
+                this.updateState({ error: 'Device not ready' })
                 return
             }
             this.name = description.friendlyName
         })
-        
+
         client.on('playing', () => {
             this.updateState({
                 isPlaying: true,
@@ -30,7 +31,7 @@ class DLNADevice extends RemoteDevice {
                 client.seek(this.seekToPosition)
                 this.seekToPosition = null
             }
-            
+
             client.getDuration((err, duration) => {
                 this.updateState({ duration })
             })
@@ -45,22 +46,29 @@ class DLNADevice extends RemoteDevice {
 
         const title = `${this.playlistName} - ${currentFileIndex + 1}`
 
+        let targetUrl = source.url
+        if(source.url.startsWith('/')) {
+            targetUrl = `http://${ip.address()}:${WEB_PORT}${source.url}`
+        }
+
         this.seekToPosition = startTime
-        this.client.load(`http://${ip.address()}:${WEB_PORT}${source.url}`, {
+        this.client.load(targetUrl, {
             autoplay: true,
+            contentType: 'video/mp4',
             metadata: {
                 title,
                 type: 'video'
             }
         }, (err) => {
             if(err) {
+                this.updateState({ error: 'Device cant play media' })
                 console.error('client.load', err)
             } else {
                 this.startTrackState()
             }
         })
     }
-    
+
     resume() {
         this.client.play()
     }
@@ -68,7 +76,7 @@ class DLNADevice extends RemoteDevice {
     pause() {
         this.client.pause()
     }
-    
+
     seek(currentTime) {
         this.client.seek(currentTime)
     }
@@ -93,7 +101,7 @@ class DLNADevice extends RemoteDevice {
 
     setPlaylist(playlist, fileIndex, currentTime) {
         this.playlistName = playlist.name
-        this.updateState({ 
+        this.updateState({
             currentFileIndex: fileIndex,
             currentTime,
             duration: 0,
@@ -101,10 +109,10 @@ class DLNADevice extends RemoteDevice {
             isLoading: true,
             error: null,
             volume: 1,
-            playlist 
+            playlist
         })
         this.play(currentTime)
-    } 
+    }
 
     doAction(action, payload) {
         switch(action) {
@@ -113,21 +121,21 @@ class DLNADevice extends RemoteDevice {
             case 'play': this.play(payload); break
             case 'seek': this.seek(payload); break
             case 'skip': this.seek(payload); break
-            case 'setVolume': break 
+            case 'setVolume': break
             case 'selectFile': this.selectFile(payload); break
-            case 'toggleMute': break 
+            case 'toggleMute': break
             case 'openPlaylist': {
                 const { playlist, fileIndex, startTime } = payload
                 this.setPlaylist(playlist, fileIndex, startTime)
                 break
             }
-            case 'closePlaylist': this.stop(); break 
+            case 'closePlaylist': this.stop(); break
         }
     }
 
     destroy() {
         this.stopTrackState()
-    } 
+    }
 
     startTrackState() {
         this.stopTrackState()
@@ -137,14 +145,14 @@ class DLNADevice extends RemoteDevice {
             if(isLoading) return
 
             client.callAction(
-                'AVTransport', 
+                'AVTransport',
                 'GetTransportInfo',
                 { InstanceID: client.instanceId },
                 (err, result) => {
                     if(err) {
                         console.error(err)
                         return
-                    } 
+                    }
 
                     switch(result.CurrentTransportState) {
                         case 'STOPPED':
@@ -166,7 +174,7 @@ class DLNADevice extends RemoteDevice {
                 if(err) {
                     console.error('getPosition', err)
                     return
-                } 
+                }
 
                 this.updateState({ currentTime })
             })
@@ -193,7 +201,7 @@ module.exports = () => {
         // console.log(headers, statusCode, rinfo)
 
         const usn = headers.USN
-        
+
         if(!devices[usn]) {
             debug('New dlna device found', headers)
             const device = new DLNADevice(new MediaRendererClient(headers.LOCATION))

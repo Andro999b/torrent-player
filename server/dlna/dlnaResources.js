@@ -1,6 +1,7 @@
 const mime = require('mime-types')
 const ip = require('ip')
 const database = require('../service/torrents/database')
+const metadataService = require('../service/metadata')
 const { isVideo, isAudio, isPsSupported, formatDLNADuration } = require('../utils')
 const { WEB_PORT } = require('../config')
 
@@ -38,48 +39,41 @@ function commonResource({ infoHash, upnpClass, fsEntry }) {
     }
 }
 
-async function videoResource({ infoHash, upnpClass, fsEntry, clientId, transcoded }) {
-    const { title, fileIndex, parentId, id, file } = fsEntry
+async function videoResource({ infoHash, upnpClass, fsEntry }) {
+    const { title, fileIndex, parentId, id } = fsEntry
 
     const content = [
         { 'dc:title': title },
         { 'upnp:class': upnpClass }
     ]
 
-    let formatedDuration = null
-    const metadata = database.getTorrentFileMetadata(infoHash, file.path)
-    if(metadata) {
-        formatedDuration = formatDLNADuration(metadata.duration)
-    }
-
-    if(transcoded) {
-        content.push({
-            _name: 'res',
-            _attrs: {
-                'protocolInfo': 'http-get:*:video/mpegts:DLNA.ORG_PN=MPEG_TS_SD_EU_ISO;DLNA.ORG_OP=10',
-                'xmlns:dlna': 'urn:schemas-dlna-org:metadata-1-0/',
-                'size': -1,
-                'duration': formatedDuration
-            },
-            _content: `http://${ip.address()}:${WEB_PORT}/api/torrents/${infoHash}/files/${fileIndex}/transcoded?clientId=${clientId}`
-        })
-    } else {
-        content.push({
-            _name: 'res',
-            _attrs: {
-                'protocolInfo': `http-get:*:${mime.lookup(title)}`,
-                'xmlns:dlna': 'urn:schemas-dlna-org:metadata-1-0/',
-                'size': -1,
-                'duration': formatedDuration
-            },
-            _content: `http://${ip.address()}:${WEB_PORT}/api/torrents/${infoHash}/files/${fileIndex}`
-        })
-    }
+    // if(transcoded) {
+    //     content.push({
+    //         _name: 'res',
+    //         _attrs: {
+    //             'protocolInfo': 'http-get:*:video/mpegts:DLNA.ORG_PN=MPEG_TS_SD_EU_ISO;DLNA.ORG_OP=10',
+    //             'xmlns:dlna': 'urn:schemas-dlna-org:metadata-1-0/',
+    //             'size': -1,
+    //             'duration': formatedDuration
+    //         },
+    //         _content: `http://${ip.address()}:${WEB_PORT}/api/torrents/${infoHash}/files/${fileIndex}/transcoded?clientId=${clientId}`
+    //     })
+    // } else {
+    content.push({
+        _name: 'res',
+        _attrs: {
+            'protocolInfo': `http-get:*:${mime.lookup(title)}`,
+            'xmlns:dlna': 'urn:schemas-dlna-org:metadata-1-0/',
+            'size': -1
+        },
+        _content: `http://${ip.address()}:${WEB_PORT}/api/torrents/${infoHash}/files/${fileIndex}`
+    })
+    // }
 
     return {
         _name: 'item',
         _attrs: {
-            id: `${infoHash}:${id}${transcoded?':t':''}`,
+            id: `${infoHash}:${id}`,
             parentID: `${parentId}`,
             restricted: '1'
         },
@@ -88,7 +82,7 @@ async function videoResource({ infoHash, upnpClass, fsEntry, clientId, transcode
 }
 
 
-async function getMediaResource(params) {
+async function mediaResource(params) {
     const upnpClass = getItemClass(params.fsEntry)
     switch (upnpClass) {
         case 'object.item.videoItem':
@@ -99,4 +93,24 @@ async function getMediaResource(params) {
     }
 }
 
-module.exports = getMediaResource
+function transcodedResource() {
+
+}
+
+function containerResource({infoHash, id, parentId, count, title}, transcoded) {
+    return {
+        _name: 'container',
+        _attrs: {
+            id: `${infoHash}:${id || '0'}${transcoded? ':t' : '' }`,
+            parentID: `${parentId}`,
+            childCount: `${count}`,
+            restricted: '1'
+        },
+        _content: {
+            'dc:title': title,
+            'upnp:class': 'object.container.storageFolder'
+        }
+    }
+}
+
+module.exports = { mediaResource, containerResource, transcodedResource}

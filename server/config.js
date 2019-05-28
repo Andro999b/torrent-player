@@ -1,6 +1,6 @@
 const defaultArgc = {
-    'dlna': false,
-    'dlna-renderers': false,
+    'dlna': true,
+    'dlna-renderers': true,
     'transcoding': true
 }
 
@@ -40,12 +40,13 @@ module.exports = {
     RESOURCES_DIR,
     TOOLS_DIR,
     DLNA_UUID: argv['dlna-uid'] || uuid(),
+    DLNA_NAME: argv['dlna-name'] || 'Torrents',
     DLNA_PORT: argv['dlna-port'] || 5004,
     WEB_PORT: argv['web-port'] || 8080,
     TRANSCODER_IDLE_TIMEOUT: 60 * 1000,
     HLS_FRAGMENT_DURATION: 10,
     /*
-        timeout 2 times longer that time needted to play 1 fragment. 
+        timeout 2 times longer that time needted to play 1 fragment.
         if during this time client not request any fragment we can pause transcoding
     */
     HLS_TRANSCODER_IDLE_TIMEOUT: 10 * 1000 * 2,

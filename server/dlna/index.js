@@ -2,19 +2,10 @@ const uuid = require('uuid')
 const UPNPServer = require('./upnp-server/Server')
 const { toXML } = require('jstoxml')
 const torrentsService = require('../service/torrents')
-const { DLNA_PORT, TRANSCODING_ENABLED, DLNA_UUID } = require('../config')
-const getMediaResource = require('./resources')
+const { DLNA_PORT, DLNA_NAME , TRANSCODING_ENABLED, DLNA_UUID } = require('../config')
+const getMediaResource = require('./dlnaResources')
 const getTorrentFs = require('./torrentFs')
 const debug = require('debug')('dlna')
-
-function getClientId(req) {
-    const userAgent = req.headers['user-agent']
-
-    if(userAgent && userAgent.includes('PlayStation'))
-        return 'ps'
-
-    return uuid()
-}
 
 async function browseContent(inputs, req) {
     if (inputs.ObjectID == '0') {
@@ -24,142 +15,126 @@ async function browseContent(inputs, req) {
     }
 }
 
-function browseTorrentsList(inputs) { 
-    const begin = parseInt(inputs.StartingIndex)
-    const end = begin + parseInt(inputs.RequestedCount)
-    const torrents = torrentsService.getTorrents()
-    const sliced = end > begin ? torrents.slice(begin, end) : torrents
+function browseTorrentsList(inputs) {
+    // const begin = parseInt(inputs.StartingIndex)
+    // const end = begin + parseInt(inputs.RequestedCount)
+    // const torrents = torrentsService.getTorrents()
+    // const sliced = end > begin ? torrents.slice(begin, end) : torrents
 
-    const didl = toDIDLXml(
-        sliced
-            .map((tor) => ({
-                infoHash: tor.infoHash,
-                parentId: '0',
-                title: tor.name,
-                count: tor.files.length
-            }))
-            .map(toDIDLContainer)
-    )
+    // const didl = toDIDLXml(
+    //     sliced
+    //         .map((tor) => ({
+    //             infoHash: tor.infoHash,
+    //             parentId: '0',
+    //             title: tor.name,
+    //             count: tor.files.length
+    //         }))
+    //         .map(toDIDLContainer)
+    // )
 
-    return {
-        Result: didl,
-        NumberReturned: sliced.length,
-        TotalMatches: torrents.length,
-        UpdateID: 0
-    }
+    // return {
+    //     Result: didl,
+    //     NumberReturned: sliced.length,
+    //     TotalMatches: torrents.length,
+    //     UpdateID: 0
+    // }
 }
 
 async function browseTorrentFs(inputs, req) {
-    const { infoHash, torrentFsId, transcoded } = parseObjetcId(inputs)
+    // const { infoHash, torrentFsId, transcoded } = parseObjetcId(inputs)
 
-    const torrent = torrentsService.getTorrent(infoHash)
-    const torrentFs = getTorrentFs(torrent)
-    const parentEntry = torrentFs.getById(torrentFsId)
+    // const torrent = torrentsService.getTorrent(infoHash)
+    // const torrentFs = getTorrentFs(torrent)
+    // const parentEntry = torrentFs.getById(torrentFsId)
 
-    const begin = parseInt(inputs.StartingIndex)
-    const end = begin + parseInt(inputs.RequestedCount)
-    const sliced = end > begin ? parentEntry.children.slice(begin, end) : parentEntry.children
+    // const begin = parseInt(inputs.StartingIndex)
+    // const end = begin + parseInt(inputs.RequestedCount)
+    // const sliced = end > begin ? parentEntry.children.slice(begin, end) : parentEntry.children
 
-    const didl = await Promise.all(sliced.map(async (fsEntry) => 
-        fsEntry.type == 'file' ? 
-            await getMediaResource({ 
-                fsEntry, 
-                infoHash, 
-                clientId: getClientId(req), 
-                transcoded
-            }):
-            toDIDLContainer(fsEntry, transcoded)
-    ))
+    // const didl = await Promise.all(sliced.map(async (fsEntry) =>
+    //     fsEntry.type == 'file' ?
+    //         await getMediaResource({
+    //             fsEntry,
+    //             infoHash,
+    //             clientId: getClientId(req),
+    //             transcoded
+    //         }):
+    //         toDIDLContainer({...fsEntry, infoHash}, transcoded)
+    // ))
 
-    // add folder with transcoded files
-    if(torrentFsId == '0' && TRANSCODING_ENABLED && !transcoded) {
-        didl.unshift(
-            toDIDLContainer(
-                {
-                    infoHash,
-                    id: parentEntry.id,
-                    parentId: '0',
-                    title: 'Transcode',
-                    count: parentEntry.children.length
-                }, 
-                true
-            )
-        )
-    }
+    // // add folder with transcoded files
+    // if(begin == 0 && torrentFsId == '0' && TRANSCODING_ENABLED && !transcoded) {
+    //     didl.unshift(
+    //         toDIDLContainer(
+    //             {
+    //                 infoHash,
+    //                 id: parentEntry.id,
+    //                 parentId: '0',
+    //                 title: 'Transcode',
+    //                 count: parentEntry.children.length
+    //             },
+    //             true
+    //         )
+    //     )
+    // }
 
-    return {
-        Result: toDIDLXml(didl),
-        NumberReturned: didl.length,
-        TotalMatches: torrent.files.length,
-        UpdateID: 0
-    }
+    // return {
+    //     Result: toDIDLXml(didl),
+    //     NumberReturned: didl.length,
+    //     TotalMatches: torrent.files.length,
+    //     UpdateID: 0
+    // }
 }
 
-async function browseMetadata(inputs, req) { 
-    if(inputs.ObjectID == '0') {
-        return {
-            Result: toDIDLXml([toDIDLContainer({
-                id: '0',
-                parentId: '0',
-                title: 'Torrents',
-                count: torrentsService.getTorrents().length
-            })]),
-            NumberReturned: 1,
-            TotalMatches: 1,
-            UpdateID: 0 
-        }
-    }
+async function browseMetadata(inputs, req) {
+    // if(inputs.ObjectID == '0') {
+    //     return {
+    //         Result: toDIDLXml([toDIDLContainer({
+    //             id: '0',
+    //             parentId: '0',
+    //             title: 'Torrents',
+    //             count: torrentsService.getTorrents().length
+    //         })]),
+    //         NumberReturned: 1,
+    //         TotalMatches: 1,
+    //         UpdateID: 0
+    //     }
+    // }
 
-    const { infoHash, torrentFsId, transcoded } = parseObjetcId(inputs)
+    // const { infoHash, torrentFsId, transcoded } = parseObjetcId(inputs)
 
-    const torrent = torrentsService.getTorrent(infoHash)
-    const torrentFs = getTorrentFs(torrent)
-    const fsEntry = torrentFs.getById(torrentFsId)
+    // const torrent = torrentsService.getTorrent(infoHash)
+    // const torrentFs = getTorrentFs(torrent)
+    // const fsEntry = torrentFs.getById(torrentFsId)
 
-    
-    const didl = fsEntry.type == 'file' ? 
-        await getMediaResource({
-            fsEntry, 
-            infoHash, 
-            clientId: getClientId(req), 
-            metadata: true,
-            transcoded
-        }):
-        toDIDLContainer(fsEntry, transcoded)
 
-    return {
-        Result: toDIDLXml([didl]),
-        NumberReturned: 1,
-        TotalMatches: 1,
-        UpdateID: 0
-    }
+    // const didl = fsEntry.type == 'file' ?
+    //     await getMediaResource({
+    //         fsEntry,
+    //         infoHash,
+    //         clientId: getClientId(req),
+    //         loadMetadata: true,
+    //         transcoded
+    //     }):
+    //     toDIDLContainer({...fsEntry, infoHash}, transcoded)
+
+    // return {
+    //     Result: toDIDLXml([didl]),
+    //     NumberReturned: 1,
+    //     TotalMatches: 1,
+    //     UpdateID: 0
+    // }
 }
 
-function parseObjetcId(inputs) {
-    const parts = inputs.ObjectID.split(':')
+// function parseObjetcId(inputs) {
+//     const parts = inputs.ObjectID.split(':')
 
-    return {
-        infoHash: parts[0],
-        torrentFsId: parts[1],
-        transcoded: TRANSCODING_ENABLED && parts[2] == 't'
-    }
-}
-
-function toDIDLContainer({infoHash, id, parentId, count, title}, transcoded) {
-    return {
-        _name: 'container',
-        _attrs: {
-            id: `${infoHash}:${id || '0'}${transcoded?':t':''}`,
-            parentID: `${parentId}`,
-            childCount: `${count}`,
-            restricted: '1'
-        },
-        _content: {
-            'dc:title': title,
-            'upnp:class': 'object.container.storageFolder'
-        }
-    }
-}
+//     return {
+//         infoHash: parts[0],
+//         torrentFsId: parts[1],
+//         transcoded: TRANSCODING_ENABLED && parts[2] == 't'
+//     }
+// }
 
 function toDIDLXml(content) {
     const didl = toXML({
@@ -177,8 +152,17 @@ function toDIDLXml(content) {
     return didl
 }
 
+function getClientId(req) {
+    const userAgent = req.headers['user-agent']
+
+    if(userAgent && userAgent.includes('PlayStation'))
+        return 'ps'
+
+    return uuid()
+}
+
 module.exports = function () {
-    // Create a UPnP Peer. 
+    // Create a UPnP Peer.
     const server = new UPNPServer({
         prefix: '/dlna',
         port: DLNA_PORT
@@ -186,15 +170,13 @@ module.exports = function () {
 
     const device = server.createDevice({
         uuid: DLNA_UUID,
-        productName: 'Torrents',
+        productName: DLNA_NAME,
         productVersion: '0.0.1',
         domain: 'schemas-upnp-org',
         type: 'MediaServer',
         version: '1',
-        friendlyName: 'Torrents',
+        friendlyName: DLNA_NAME,
         manufacturer: 'andro999b',
-        modelName: 'Torrents',
-        modelDescription: 'Torrents',
         modelNumber: '0.0.1',
     })
 
@@ -205,22 +187,16 @@ module.exports = function () {
         // Service Implementation
         implementation: {
             Browse(inputs, req) {
-                try {
-                    let res
-                    switch (inputs.BrowseFlag) {
-                        case 'BrowseDirectChildren': res = browseContent(inputs, req); break
-                        case 'BrowseMetadata': res = browseMetadata(inputs); break
-                    }
-                    return res
-                } catch (e) {
-                    throw e
+                switch (inputs.BrowseFlag) {
+                    case 'BrowseDirectChildren': return browseContent(inputs, req)
+                    case 'BrowseMetadata': return browseMetadata(inputs)
                 }
             },
-            GetSortCapabilities() { 
+            GetSortCapabilities() {
                 return { SortCaps: '' }
             }
         },
-        // Service Description. this will be converted to XML 
+        // Service Description. this will be converted to XML
         description: {
             actions: {
                 Browse: {
@@ -245,8 +221,8 @@ module.exports = function () {
                     }
                 }
             },
-            // declare all state variables: key is the name of the variable and value is the type of the variable. 
-            // type can be JSON object in this form {type: "boolean"}. 
+            // declare all state variables: key is the name of the variable and value is the type of the variable.
+            // type can be JSON object in this form {type: "boolean"}.
             variables: {
                 A_ARG_TYPE_ObjectID: 'string',
                 A_ARG_TYPE_BrowseFlag: {
@@ -264,5 +240,5 @@ module.exports = function () {
         }
     })
 
-    server.start(() => console.log(`DLNA Server started at port ${DLNA_PORT}`))// eslint-disable-line no-console
+    server.start(() => console.log(`DLNA Server started at port ${DLNA_PORT}, uuid ${DLNA_UUID} `))// eslint-disable-line no-console
 }
