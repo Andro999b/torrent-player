@@ -4,12 +4,12 @@ module.exports = (regExps) => async ({ url }, res) => {
     const siteRes = await superagent.get(url)
 
     for(let extractExpr of regExps) {
-        const match = siteRes.text.match(extractExpr)
+        const matches = siteRes.text.match(extractExpr)
 
-        if(match == null)
+        if(matches == null || matches.length < 1)
             continue
 
-        res.redirect(match)
+        res.redirect(matches[matches.length - 1])
         return
     }
     
