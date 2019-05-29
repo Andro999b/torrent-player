@@ -79,8 +79,8 @@ class SearchResultsItemDetails extends Component {
 
         // setup actions for directory
         const directoryActions = [
-            { title: 'Cast All', action: creatDirectoryAction(details, onCastFile) },
-            { title: 'Play All', action: creatDirectoryAction(details, onPlayFile) }
+            { title: 'Cast Group', action: creatDirectoryAction(details, onCastFile) },
+            { title: 'Play Group', action: creatDirectoryAction(details, onPlayFile) }
         ]
 
         if(!item.isTorrent()) {
