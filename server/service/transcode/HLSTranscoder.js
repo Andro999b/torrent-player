@@ -68,8 +68,8 @@ class HLSTranscoder {
                 file.createReadStream()
 
             this.command = ffmpeg(source)
-                .videoCodec('mpeg2video')
-                .audioCodec('acc')
+                .videoCodec('libx264')
+                .audioCodec('aac')
                 .addOutputOption('-max_muxing_queue_size 1024')
                 .addOutputOption('-preset ultrafast')
                 .addOutputOption('-tune zerolatency')
