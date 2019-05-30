@@ -1,12 +1,12 @@
-const path = require('path')
 const ffmpeg = require('fluent-ffmpeg')
+const path = require('path')
 const CycleBuffer = require('../../utils/CycleBuffer')
-const { TORRENTS_DATA_DIR, TRANSCODER_COPY_CODECS, VIDEO_ENCODER } = require('../../config')
-const debug = require('debug')('transcode')
+const BufferedStream = require('bufferedstream')
+const { TORRENTS_DATA_DIR } = require('../../config')
 const checkIfTorrentFileReady = require('../torrents/checkIfTorrentFileReady')
-const database = require('../torrents/database')
-const metadataService = require('../metadata')
 const { parseCodeDuration } = require('../../utils')
+
+const debug = require('debug')('transcode')
 
 class Transcoder {
     constructor() {
@@ -20,83 +20,87 @@ class Transcoder {
             || this.filePath != file.path
             || this._lastStart != start) {
 
-            if (this.command) {
-                this.kill()
-            }
+            this.kill()
 
             this.torrentHash = torrent.infoHash
             this.filePath = file.path
             this._lastStart = start
 
-            const codecs = await metadataService.getCodecs(file)
-            const copyAudio = TRANSCODER_COPY_CODECS.audio.indexOf(codecs.audio) != -1
-            const copyVideo = TRANSCODER_COPY_CODECS.video.indexOf(codecs.video) != -1
-
-            await new Promise((resolve, reject) => {
+            return new Promise((resolve, reject) => {
                 if (this.command) {//fix concurrect problem
-                    return resolve()
+                    resolve(this.commandContext)
+                    return
                 }
 
-                debug(`Start transcoding ${this.torrentHash} ${this.filePath}, tile start from ${start}, duration ${duration}`)
+                const startFFmpeg = (source) => {
+                    const commandContext = this.commandContext = {}
 
-                this._isRunning = true
+                    debug(`Start transcoding ${this.torrentHash} ${this.filePath}, tile start from ${start}, duration ${duration}`)
 
-                const buffer = new CycleBuffer({ capacity: 1024 * 20 })
-                buffer.on('continueWritting', () => this.continue())
-                buffer.on('stopWritting', () => this.stop())
-                buffer.on('full', () => this.kill())
+                    this._isRunning = true
 
-                this.buffer = buffer
+                    const buffer = new CycleBuffer({ capacity: 1024 * 20 })
+                    buffer.on('continueWritting', () => this.continue())
+                    buffer.on('stopWritting', () => this.stop())
+                    buffer.on('full', () => this.kill())
 
-                const source = checkIfTorrentFileReady(file) ?
-                    path.join(TORRENTS_DATA_DIR, file.path) :
-                    file.createReadStream()
+                    commandContext.stream = buffer.readStream()
 
-                this.command = ffmpeg(source)
-                    .seekInput(start)
-                    .videoCodec(copyVideo ? 'copy' : VIDEO_ENCODER)
-                    .audioCodec(copyAudio ? 'copy' : 'aac')
-                    .addOutputOption('-max_muxing_queue_size 400')
-                    .addOutputOption('-preset ultrafast')
-                    .addOutputOption('-tune zerolatency')
-                    .addOutputOption('-crf 22')
-                    .addOutputOption('-copyts')
-                    .fps(25)
-                    .format('mpegts')
-                    .once('error', (err, stdout, stderr) => {
-                        if (err.message.search('SIGKILL') == -1) { //filter SIGKILL
-                            console.error('Cannot process video: ' + err.message, stderr) // eslint-disable-line
-                        }
-                        reject(err)
-                    })
-                    .once('codecData', (metadata) => {
-                        this.metadata = { ...metadata, duration: parseCodeDuration(metadata.duration)}
-                        database.storeTorrentFileMetadata(
-                            this.torrentHash, 
-                            this.filePath, 
-                            this.metadata
+                    this.command = ffmpeg(source)
+                        .videoCodec('mpeg2video')
+                        .audioCodec('aac')
+                        .addOutputOption('-max_muxing_queue_size 1024')
+                        .addOutputOption('-preset ultrafast')
+                        .addOutputOption('-tune zerolatency')
+                        .addOutputOption('-crf 22')
+                        .addOutputOption('-copyts')
+                        .format('mpegts')
+                        .once('error', (err, stdout, stderr) => {
+                            if (err.message.search('SIGKILL') == -1) { //filter SIGKILL
+                                console.error('Cannot process video: ' + err.message, stderr) // eslint-disable-line
+                            }
+                            reject(err)
+                            this.kill()
+                        })
+                        .once('codecData', (metadata) => {
+                            commandContext.metadata = { ...metadata, duration: parseCodeDuration(metadata.duration)}
+                            resolve(commandContext)
+                        })
+                        .once('start', (commandLine) => {
+                            console.log(`FFMpeg command: ${commandLine}`)
+                        })
+
+                    if (duration)
+                        this.command.duration(duration)
+
+                    if (start)
+                        this.command.seekInput(start)
+
+                    commandContext.transcoderStream = this.command.stream()
+                        .on('data', (chunk) =>
+                            buffer.write(chunk)
                         )
-                        resolve()
-                    })
-                    .once('start', (commandLine) => {
-                        debug(`FFMpeg command: ${commandLine}`)
-                    })
+                        .once('error', (error) => {
+                            console.error(`Transcoding stream closed with error: ${error.message}`)
+                            buffer.final()
+                            this.kill()
+                        })
+                        .once('end', () => {
+                            debug(`Finish transcoding ${this.torrentHash} ${this.filePath}, tile start from ${start}, duration ${duration}`)
+                            debug(`Bytes writed to buffer ${buffer.bytesWrited}`)
+                            buffer.final()
+                            this.kill()
+                        })
+                }
 
-                if (duration)
-                    this.command.duration(duration)
-
-                this.transcoderStream = this.command.stream()
-                    .on('data', (chunk) => buffer.write(chunk))
-                    .once('error', (error) => {
-                        console.error(`Transcoding stream closed with error: ${error.message}`)
-                        buffer.final()
-                    })
-                    .once('end', () => {
-                        debug(`Finish transcoding ${this.torrentHash} ${this.filePath}, tile start from ${start}, duration ${duration}`)
-                        debug(`Bytes writed to buffer ${buffer.bytesWrited}`)
-                        buffer.final()
-                    })
+                if(checkIfTorrentFileReady(file)) {
+                    startFFmpeg(path.join(TORRENTS_DATA_DIR, file.path))
+                } else {
+                    startFFmpeg(new BufferedStream(1024 * 1024, file.createReadStream()))
+                }
             })
+        } else {
+            return this.commandContext
         }
     }
 
@@ -107,7 +111,7 @@ class Transcoder {
                 this.command.kill('SIGSTOP')
             } catch (e) {
                 console.error(e)
-                this.transcoderStream.pause()
+                this.commandContext.transcoderStream.pause()
                 this.command.renice(-5)
             }
         }
@@ -120,27 +124,28 @@ class Transcoder {
                 this.command.kill('SIGCONT')
             } catch (e) {
                 console.error(e)
-                this.transcoderStream.resume()
+                this.commandContext.transcoderStream.resume()
                 this.command.renice(0)
             }
         }
     }
 
     async transcode(torrent, file, start = 0, duration = 0) {
-        await this.spawn(torrent, file, start, duration)
+        const { stream, metadata } = await this.spawn(torrent, file, start, duration)
+        return { stream, metadata }
+    }
 
-        const { buffer, metadata } = this
-        return { buffer, metadata }
+    cleanup() {
+        this.command = null
+        this.commandContext = null
+        this._isRunning = false
     }
 
     kill() {
         if (this.command) {
             debug(`Stop transcoding ${this.torrentHash} ${this.filePath}`)
             this.command.kill()
-            this.command = null
-            this.buffer = null
-            this.transcoderStream = null
-            this._isRunning = false
+            this.cleanup()
         }
     }
 }

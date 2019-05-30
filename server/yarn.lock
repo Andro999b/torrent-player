@@ -180,6 +180,11 @@ bn.js@^4.4.0:
   resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-4.11.8.tgz#2cde09eb5ee341f484746bb0309b3253b1b1442f"
   integrity sha512-ItfYfPLkWHUjckQCk8xC+LwxgK8NYcXywGigJgSwOP8Y2iyWT4f2vsZnoOXTTbo+o5yXmIUJ4gn5538SO5S3gA==
 
+bodec@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/bodec/-/bodec-1.1.0.tgz#185bbc36ab70acde4fe5792375453f835c5add5a"
+  integrity sha1-GFu8NqtwrN5P5XkjdUU/g1xa3Vo=
+
 body-parser@1.18.3:
   version "1.18.3"
   resolved "https://registry.yarnpkg.com/body-parser/-/body-parser-1.18.3.tgz#5b292198ffdd553b3a0f20ded0592b956955c8b4"
@@ -237,6 +242,15 @@ buffer-fill@^1.0.0:
 buffer-from@^1.0.0, buffer-from@^1.1.0:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/buffer-from/-/buffer-from-1.1.1.tgz#32713bc028f75c02fdb710d7c7bcec1f2c6070ef"
+
+bufferedstream@^3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/bufferedstream/-/bufferedstream-3.1.1.tgz#e0390cdf9c08c9cd9691af62accc67d345d974b7"
+  integrity sha1-4DkM35wIyc2Wka9irMxn00XZdLc=
+  dependencies:
+    bodec "^1.1.0"
+    describe-property "^1.0.0"
+    events "~1.0.1"
 
 bufferutil@^4.0.0:
   version "4.0.1"
@@ -450,6 +464,13 @@ depd@~1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/depd/-/depd-1.1.2.tgz#9bcd52e14c097763e749b274c4346ed2e560b5a9"
 
+describe-property@^1.0.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/describe-property/-/describe-property-1.1.0.tgz#bef31540227b51fe691b0c758f873d95b1b286d0"
+  integrity sha1-vvMVQCJ7Uf5pGwx1j4c9lbGyhtA=
+  dependencies:
+    object-assign "^2.0.0"
+
 destroy@~1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/destroy/-/destroy-1.0.4.tgz#978857442c44749e4206613e37946205826abd80"
@@ -579,6 +600,11 @@ escape-html@~1.0.3:
 etag@~1.8.1:
   version "1.8.1"
   resolved "https://registry.yarnpkg.com/etag/-/etag-1.8.1.tgz#41ae2eeb65efa62268aebfea83ac7d79299b0887"
+
+events@~1.0.1:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/events/-/events-1.0.2.tgz#75849dcfe93d10fb057c30055afdbd51d06a8e24"
+  integrity sha1-dYSdz+k9EPsFfDAFWv29UdBqjiQ=
 
 express@^4.16.4:
   version "4.16.4"
@@ -1110,6 +1136,11 @@ nth-check@~1.0.1:
   resolved "https://registry.yarnpkg.com/nth-check/-/nth-check-1.0.2.tgz#b2bd295c37e3dd58a3bf0700376663ba4d9cf05c"
   dependencies:
     boolbase "~1.0.0"
+
+object-assign@^2.0.0:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/object-assign/-/object-assign-2.1.1.tgz#43c36e5d569ff8e4816c4efa8be02d26967c18aa"
+  integrity sha1-Q8NuXVaf+OSBbE76i+AtJpZ8GKo=
 
 object-assign@^4:
   version "4.1.1"

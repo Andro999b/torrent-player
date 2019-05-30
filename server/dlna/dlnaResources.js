@@ -39,42 +39,43 @@ function commonResource({ infoHash, upnpClass, fsEntry }) {
     }
 }
 
-async function videoResource({ infoHash, upnpClass, fsEntry }) {
-    const { title, fileIndex, parentId, id } = fsEntry
+async function videoResource({ id, parentId, upnpClass, fsEntry, clientId }) {
+    const { title, fileIndex } = fsEntry
+    const { type, infoHash } = parseObjetcId(parentId)
 
     const content = [
         { 'dc:title': title },
         { 'upnp:class': upnpClass }
     ]
 
-    // if(transcoded) {
-    //     content.push({
-    //         _name: 'res',
-    //         _attrs: {
-    //             'protocolInfo': 'http-get:*:video/mpegts:DLNA.ORG_PN=MPEG_TS_SD_EU_ISO;DLNA.ORG_OP=10',
-    //             'xmlns:dlna': 'urn:schemas-dlna-org:metadata-1-0/',
-    //             'size': -1,
-    //             'duration': formatedDuration
-    //         },
-    //         _content: `http://${ip.address()}:${WEB_PORT}/api/torrents/${infoHash}/files/${fileIndex}/transcoded?clientId=${clientId}`
-    //     })
-    // } else {
-    content.push({
-        _name: 'res',
-        _attrs: {
-            'protocolInfo': `http-get:*:${mime.lookup(title)}`,
-            'xmlns:dlna': 'urn:schemas-dlna-org:metadata-1-0/',
-            'size': -1
-        },
-        _content: `http://${ip.address()}:${WEB_PORT}/api/torrents/${infoHash}/files/${fileIndex}`
-    })
-    // }
+    if(type == 'transcode') {
+        content.push({
+            _name: 'res',
+            _attrs: {
+                'protocolInfo': 'http-get:*:video/mpegts:DLNA.ORG_PN=MPEG_TS_HD_EU_ISO;DLNA.ORG_OP=10',
+                'xmlns:dlna': 'urn:schemas-dlna-org:metadata-1-0/',
+                'size': -1,
+                // 'duration': formatedDuration
+            },
+            _content: `http://${ip.address()}:${WEB_PORT}/api/torrents/${infoHash}/files/${fileIndex}/transcoded?clientId=${clientId}`
+        })
+    } else {
+        content.push({
+            _name: 'res',
+            _attrs: {
+                'protocolInfo': `http-get:*:${mime.lookup(title)}:*`,
+                'xmlns:dlna': 'urn:schemas-dlna-org:metadata-1-0/',
+                'size': -1
+            },
+            _content: `http://${ip.address()}:${WEB_PORT}/api/torrents/${infoHash}/files/${fileIndex}`
+        })
+    }
 
     return {
         _name: 'item',
         _attrs: {
-            id: `${infoHash}:${id}`,
-            parentID: `${parentId}`,
+            id,
+            parentID: parentId,
             restricted: '1'
         },
         _content: content
@@ -93,15 +94,11 @@ async function mediaResource(params) {
     }
 }
 
-function transcodedResource() {
-
-}
-
-function containerResource({infoHash, id, parentId, count, title}, transcoded) {
+function containerResource({ id, parentId = '0', count = 1, title }) {
     return {
         _name: 'container',
         _attrs: {
-            id: `${infoHash}:${id || '0'}${transcoded? ':t' : '' }`,
+            id,
             parentID: `${parentId}`,
             childCount: `${count}`,
             restricted: '1'
@@ -113,4 +110,19 @@ function containerResource({infoHash, id, parentId, count, title}, transcoded) {
     }
 }
 
-module.exports = { mediaResource, containerResource, transcodedResource}
+
+function parseObjetcId(resId) {
+    const parts = resId.split(':')
+
+    return {
+        type: parts[0],
+        infoHash: parts[1],
+        torrentFsId: parts[2] || 0
+    }
+}
+
+function createObjetcId({ type, infoHash, torrentFsId }) {
+    return [ type, infoHash, torrentFsId ].filter((i) => i).join(':')
+}
+
+module.exports = { mediaResource, containerResource, parseObjetcId, createObjetcId }

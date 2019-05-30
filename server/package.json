@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "bidirectional-map": "^1.0.4",
+    "bufferedstream": "^3.1.1",
     "cheerio": "^1.0.0-rc.3",
     "concat-stream": "^2.0.0",
     "cors": "^2.8.5",

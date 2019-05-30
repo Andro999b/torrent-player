@@ -9,12 +9,9 @@ const {
     HLS_DIRECTORY,
     HLS_TRANSCODER_IDLE_TIMEOUT,
     HLS_FRAGMENT_DURATION,
-    TORRENTS_DATA_DIR,
-    TRANSCODER_COPY_CODECS,
-    VIDEO_ENCODER
+    TORRENTS_DATA_DIR
 } = require('../../config')
 const { waitForFile, touch, parseCodeDuration } = require('../../utils')
-const metadataService = require('../metadata')
 const database = require('../torrents/database')
 const debug = require('debug')('transcode-hls')
 
@@ -62,10 +59,6 @@ class HLSTranscoder {
         const { file, m3uPath, hlsBaseUrl, outputDirectory } = this
         this._needToStartTranscoding = false
 
-        const codecs = await metadataService.getCodecs(file)
-        const copyAudio = TRANSCODER_COPY_CODECS.audio.indexOf(codecs.audio) != -1
-        const copyVideo = TRANSCODER_COPY_CODECS.video.indexOf(codecs.video) != -1
-
         await fs.ensureDir(outputDirectory)
         await new Promise((resolve, reject) => {
             debug(`Start transcoding ${this.torrentHash} ${file.path}`)
@@ -73,12 +66,11 @@ class HLSTranscoder {
             const source = checkIfTorrentFileReady(file) ?
                 path.join(TORRENTS_DATA_DIR, file.path) :
                 file.createReadStream()
-                
+
             this.command = ffmpeg(source)
-                .videoCodec(copyVideo ? 'copy' : VIDEO_ENCODER)
-                .audioCodec(copyAudio ? 'copy' : 'libmp3lame')
-                .seekInput(start_time)
-                .addOutputOption('-max_muxing_queue_size 400')
+                .videoCodec('mpeg2video')
+                .audioCodec('acc')
+                .addOutputOption('-max_muxing_queue_size 1024')
                 .addOutputOption('-preset ultrafast')
                 .addOutputOption('-tune zerolatency')
                 .addOutputOption('-crf 22')
@@ -103,7 +95,7 @@ class HLSTranscoder {
                 .once('codecData', (metadata) => {
                     database.storeTorrentFileMetadata(
                         this.torrentHash,
-                        this.file.path, 
+                        this.file.path,
                         { ...metadata, duration: parseCodeDuration(metadata.duration)}
                     )
                 })
@@ -124,7 +116,11 @@ class HLSTranscoder {
                     touch(path.join(this.outputDirectory, 'finished'))
                     debug(`Finish transcoding ${this.torrentHash} ${file.path}`)
                 })
-                .save(m3uPath)
+
+            if (start_time)
+                this.command.seekInput(start_time)
+
+            this.command.save(m3uPath)
         })
 
         return this

@@ -4,7 +4,7 @@ class TorrentFs {
     constructor(infoHash) {
         this.infoHash = infoHash
         this.maxId = 0
-        this.root = { id: 0, children: [] }
+        this.root = { id: 0, type: 'dir', children: [] }
         this.flatTree = {
             '0': this.root
         }

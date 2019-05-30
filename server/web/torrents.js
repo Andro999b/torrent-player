@@ -129,14 +129,17 @@ router.get('/:torrentId/files/:fileId/transcoded', (req, res, next) => {
     const transcoder = transcodeService.getTranscoder(clientId)
     transcoder
         .transcode(torrent, file, start, duration)
-        .then(({ buffer, metadata }) => {
-            const duration = formatDLNADuration(metadata.duration)
-            const startTime = formatDLNADuration(start)
+        .then(({ stream, metadata }) => {
             const headers = {
-                'Content-Type': 'video/mpegts',
-                'TransferMode.dlna.org': 'Streaming',
-                'TimeSeekRange.dlna.org': 'npt=' + startTime + '-' + duration + '/' + duration,
-                'X-Seek-Range': 'npt=' + startTime + '-' + duration + '/' + duration
+                'Content-Type': 'video/mpeg',
+                'TransferMode.dlna.org': 'Streaming'
+            }
+
+            if(metadata) {
+                const duration = formatDLNADuration(metadata.duration)
+                const startTime = formatDLNADuration(start)
+                headers['TimeSeekRange.dlna.org'] = 'npt=' + startTime + '-' + duration + '/' + duration
+                headers['X-Seek-Range'] = 'npt=' + startTime + '-' + duration + '/' + duration
             }
 
             res.writeHead(200, headers)
@@ -146,7 +149,7 @@ router.get('/:torrentId/files/:fileId/transcoded', (req, res, next) => {
             // Mark the headers as sent
             //res._headerSent = true
 
-            buffer.readStream().pipe(res)
+            stream.pipe(res)
         })
         .catch(next)
 })
@@ -168,7 +171,7 @@ router.get('/:torrentId/files/:fileId/hls', (req, res, next) => {
         .catch(next)
 })
 
-// notify server to not stop hls transcoding 
+// notify server to not stop hls transcoding
 router.get('/:torrentId/files/:fileId/hls/keepAlive', (req, res) => {
     const { torrent, fileId } = getTorrentAndFile(req)
 

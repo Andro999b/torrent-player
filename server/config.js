@@ -35,7 +35,6 @@ console.log('Tools root directory: ', TOOLS_DIR)
 /* eslint-enable */
 
 module.exports = {
-    VIDEO_ENCODER: argv['transcode-video-encoder'] || 'libx264',
     CLIENT_DIR,
     RESOURCES_DIR,
     TOOLS_DIR,
@@ -54,10 +53,6 @@ module.exports = {
     HLS_DIRECTORY: path.join(ROOT_DIR, 'hls'),
     TORRENTS_DIR: path.join(ROOT_DIR, 'torrents'),
     TORRENTS_DATA_DIR: path.join(ROOT_DIR, 'data'),
-    TRANSCODER_COPY_CODECS: {
-        audio: ['acc', 'mp3'],
-        video: ['h264'],
-    },
     TRANSCODING_ENABLED: argv['transcoding'],
     DLNA_ENABLED: argv['dlna'],
     DLNA_RENDERERS_ENABLED: argv['dlna-renderers'],
