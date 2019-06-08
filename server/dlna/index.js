@@ -50,8 +50,8 @@ function browseTorrentsList(inputs, originalOnly = false) {
 
     return {
         Result: toDIDLXml(containers.map(containerResource)),
-        NumberReturned: items.length,
-        TotalMatches: torrents.length,
+        NumberReturned: containers.length,
+        TotalMatches: containers.length,
         UpdateID: 0
     }
 }

@@ -16,6 +16,10 @@ class Database {
         return this.torrentDb.get([ torrentId, 'image' ])
     }
 
+    isEnabledDownloadInBackground(torrentId) {
+        return this.torrentDb.get([ torrentId, 'bownloadInBackground' ]).value()
+    }
+
     setDownLoadInBackgroundStatus(torrentId, status) {
         if(!torrentId) throw Error('torrentId')
 

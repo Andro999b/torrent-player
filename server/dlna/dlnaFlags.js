@@ -1,16 +1,16 @@
 /* 
-DLNA_FLAGS_SENDER_PACED               Content source is the clock source during transport
-DLNA_FLAGS_TIME_BASED_SEEK            Limited Operation: time-seek supported
-DLNA_FLAGS_BYTE_BASED_SEEK            Limited Operation: byte-seek supported
-DLNA_FLAGS_PLAY_CONTAINER             Resource supports 'Container Playback'
-DLNA_FLAGS_S0_INCREASE                Content does not have a fixed beginning
-DLNA_FLAGS_SN_INCREASE                Content does not have a fixed end
-DLNA_FLAGS_RTSP_PAUSE                 RTSP resource supports pausing of media transfer
-DLNA_FLAGS_STREAMING_TRANSFER_MODE    Streaming transfer mode supported
-DLNA_FLAGS_INTERACTIVE_TRANSFER_MODE  Interactive transfer mode supported
-DLNA_FLAGS_BACKGROUND_TRANSFER_MODE   Background transfer mode supported
-DLNA_FLAGS_CONNECTION_STALL           No content transfer when paused.
-DLNA_FLAGS_DLNA_V15                   DLNAv1.5 version flag 
+DLNA_FLAG_SENDER_PACED               Content source is the clock source during transport
+DLNA_FLAG_TIME_BASED_SEEK            Limited Operation: time-seek supported
+DLNA_FLAG_BYTE_BASED_SEEK            Limited Operation: byte-seek supported
+DLNA_FLAG_PLAY_CONTAINER             Resource supports 'Container Playback'
+DLNA_FLAG_S0_INCREASE                Content does not have a fixed beginning
+DLNA_FLAG_SN_INCREASE                Content does not have a fixed end
+DLNA_FLAG_RTSP_PAUSE                 RTSP resource supports pausing of media transfer
+DLNA_FLAG_STREAMING_TRANSFER_MODE    Streaming transfer mode supported
+DLNA_FLAG_INTERACTIVE_TRANSFER_MODE  Interactive transfer mode supported
+DLNA_FLAG_BACKGROUND_TRANSFER_MODE   Background transfer mode supported
+DLNA_FLAG_CONNECTION_STALL           No content transfer when paused.
+DLNA_FLAG_DLNA_V15                   DLNAv1.5 version flag 
  */
 
 
@@ -35,5 +35,5 @@ function toDLNAFlagString(flags) {
 
 module.exports = {
     DLNA_TRANSCODING_FLAGS: toDLNAFlagString(DLNA_ORG_FLAG_DLNA_V15 | DLNA_ORG_FLAG_TIME_BASED_SEEK | DLNA_ORG_FLAG_STREAMING_TRANSFER_MODE),
-    DLNA_ORIGIN_FLAGS: toDLNAFlagString(DLNA_ORG_FLAG_DLNA_V15 | DLNA_ORG_FLAG_BYTE_BASED_SEEK | DLNA_ORG_FLAG_INTERACTIVE_TRANSFERT_MODE)
+    DLNA_ORIGIN_FLAGS: toDLNAFlagString(DLNA_ORG_FLAG_DLNA_V15 | DLNA_ORG_FLAG_CONNECTION_STALL | DLNA_ORG_FLAG_INTERACTIVE_TRANSFERT_MODE)
 }

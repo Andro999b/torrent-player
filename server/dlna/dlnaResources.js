@@ -65,23 +65,23 @@ async function videoResource({ id, parentId, upnpClass, fsEntry, clientId, readM
             [ profileName, contentType ] = await dlnaProfileName(fsEntry.file)
         }
     } else {
-        const duration = torrentsDatabase.getTorrentFileMetadata(infoHash, file.path)
+        const duration = torrentsDatabase.getTorrentFileDuration(infoHash, file.path)
         if(duration) formatedDuration = formatDLNADuration(duration)
     }
 
+    let resItem
     if(type == 'transcode') {
         const { dlnaFeatures } = tanscoderSettings(clientId)
 
-        content.push({
+        resItem = {
             _name: 'res',
             _attrs: {
                 'protocolInfo': `http-get:*:video/mpegts:${dlnaFeatures}`,
                 'xmlns:dlna': 'urn:schemas-dlna-org:metadata-1-0/',
-                'size': file.length,
-                'duration': formatedDuration
+                'size': file.length
             },
             _content: `http://${ip.address()}:${WEB_PORT}/api/torrents/${infoHash}/files/${fileIndex}/transcoded?clientId=${clientId}`
-        })
+        }
     } else {
         let dlnaFeatures
         if(profileName) {
@@ -94,17 +94,22 @@ async function videoResource({ id, parentId, upnpClass, fsEntry, clientId, readM
             contentType = mime.lookup(title)
         }
 
-        content.push({
+        resItem = {
             _name: 'res',
             _attrs: {
                 'protocolInfo': `http-get:*:${contentType}:${dlnaFeatures}`,
                 'xmlns:dlna': 'urn:schemas-dlna-org:metadata-1-0/',
-                'size': file.length,
-                'duration': formatedDuration
+                'size': file.length
             },
             _content: `http://${ip.address()}:${WEB_PORT}/api/torrents/${infoHash}/files/${fileIndex}`
-        })
+        }
     }
+
+    if(formatedDuration){
+        resItem.duration = formatedDuration
+    }
+
+    content.push(resItem)
 
     return {
         _name: 'item',
