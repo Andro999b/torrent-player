@@ -4,7 +4,7 @@ const MediaRendererClient = require('upnp-mediarenderer-client')
 const remote = require('../service/remote')
 const ip = require('ip')
 const debug = require('debug')('dnla-renderer')
-const { WEB_PORT } = require('../config')
+const { WEB_PORT, DLNA_TRANSCODING_FEATURES } = require('../config')
 
 class DLNADevice extends RemoteDevice {
     constructor(client) {
@@ -32,7 +32,7 @@ class DLNADevice extends RemoteDevice {
                 this.seekToPosition = null
             }
 
-            client.getDuration((err, duration) => {
+            client.getDuration((_, duration) => {
                 this.updateState({ duration })
             })
         })
@@ -46,21 +46,31 @@ class DLNADevice extends RemoteDevice {
 
         const title = `${this.playlistName} - ${currentFileIndex + 1}`
 
-        let targetUrl = source.url
+        let targetUrl = source.transcodedUrl
+        
+        if(!targetUrl) {
+            this.updateState({ error: 'Device cant play media' })
+            return
+        }
+        
         if(source.url.startsWith('/')) {
-            targetUrl = `http://${ip.address()}:${WEB_PORT}${source.url}`
+            targetUrl = `http://${ip.address()}:${WEB_PORT}${targetUrl}`
         }
 
         this.seekToPosition = startTime
         this.client.load(targetUrl, {
             autoplay: true,
-            contentType: 'video/mp4',
+            contentType: 'video/mpeg',
             metadata: {
                 title,
-                type: 'video'
+                type: 'video',
+                dlnaFeatures: DLNA_TRANSCODING_FEATURES
             }
         }, (err) => {
             if(err) {
+                if(err.errorCode == 701) { // sumsung transition not avalaible
+                    return
+                }
                 this.updateState({ error: 'Device cant play media' })
                 console.error('client.load', err)
             } else {
@@ -77,6 +87,11 @@ class DLNADevice extends RemoteDevice {
         this.client.pause()
     }
 
+    stop() {
+        this.client.stop()
+        this.clearState()
+    }
+
     seek(currentTime) {
         this.client.seek(currentTime)
     }
@@ -89,9 +104,15 @@ class DLNADevice extends RemoteDevice {
         }
     }
 
-    stop() {
-        this.client.stop()
-        this.clearState()
+    playNext() {
+        const { playlist: { files }, currentFileIndex } = this.state
+        
+        const nextFile = currentFileIndex + 1
+        if(nextFile < files.lenth) {
+            this.updateState({ isPlaying: false })
+        } else {
+            this.selectFile(nextFile)
+        }
     }
 
     selectFile(fileIndex) {
@@ -144,31 +165,27 @@ class DLNADevice extends RemoteDevice {
             const { isLoading, isPlaying } = this.state
             if(isLoading) return
 
-            client.callAction(
-                'AVTransport',
-                'GetTransportInfo',
-                { InstanceID: client.instanceId },
-                (err, result) => {
-                    if(err) {
-                        console.error(err)
-                        return
-                    }
-
-                    switch(result.CurrentTransportState) {
-                        case 'STOPPED':
-                            this.clearState()
-                            break
-                        case 'PLAYING':
-                            if(isPlaying) return
-                            this.updateState({ isPlaying: true })
-                            break
-                        case 'PAUSED_PLAYBACK':
-                            if(!isPlaying) return
-                            this.updateState({ isPlaying: false })
-                            break
-                    }
+            client.getTransportInfo((err, result) => {
+                if(err) {
+                    console.error(err)
+                    this.clearState()
+                    return
                 }
-            )
+
+                switch(result.CurrentTransportState) {
+                    case 'STOPPED':
+                        this.playNext()
+                        break
+                    case 'PLAYING':
+                        if(isPlaying) return
+                        this.updateState({ isPlaying: true })
+                        break
+                    case 'PAUSED_PLAYBACK':
+                        if(!isPlaying) return
+                        this.updateState({ isPlaying: false })
+                        break
+                }
+            })
 
             client.getPosition((err, currentTime) => {
                 if(err) {

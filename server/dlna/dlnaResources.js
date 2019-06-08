@@ -1,9 +1,13 @@
 const mime = require('mime-types')
 const ip = require('ip')
-const database = require('../service/torrents/database')
-const metadataService = require('../service/metadata')
-const { isVideo, isAudio, isPsSupported, formatDLNADuration } = require('../utils')
+const { isVideo, isAudio, formatDLNADuration } = require('../utils')
 const { WEB_PORT } = require('../config')
+const { DLNA_ORIGIN_FLAGS } = require('./dlnaFlags')
+const metadataService = require('../service/metadata')
+const torrentsDatabase = require('../service/torrents/database')
+const checkIfTorrentFileReady = require('../service/torrents/checkIfTorrentFileReady')
+const tanscoderSettings = require('../service/transcode/settings')
+const dlnaProfileName = require('./dlnaProfileName')
 
 function getItemClass(fsEntry) {
     if (isVideo(fsEntry.title))
@@ -39,8 +43,8 @@ function commonResource({ infoHash, upnpClass, fsEntry }) {
     }
 }
 
-async function videoResource({ id, parentId, upnpClass, fsEntry, clientId }) {
-    const { title, fileIndex } = fsEntry
+async function videoResource({ id, parentId, upnpClass, fsEntry, clientId, readMetadata }) {
+    const { title, fileIndex, file } = fsEntry
     const { type, infoHash } = parseObjetcId(parentId)
 
     const content = [
@@ -48,24 +52,55 @@ async function videoResource({ id, parentId, upnpClass, fsEntry, clientId }) {
         { 'upnp:class': upnpClass }
     ]
 
+    let formatedDuration = null
+    let profileName = null
+    let contentType
+    if(readMetadata || checkIfTorrentFileReady(file)) {
+        const duration = await metadataService.getDuration(fsEntry.file)
+        
+        formatedDuration = formatDLNADuration(duration)
+        torrentsDatabase.setTorrentFileDuration(infoHash, file.path, duration)
+
+        if(type != 'transcode') {
+            [ profileName, contentType ] = await dlnaProfileName(fsEntry.file)
+        }
+    } else {
+        const duration = torrentsDatabase.getTorrentFileMetadata(infoHash, file.path)
+        if(duration) formatedDuration = formatDLNADuration(duration)
+    }
+
     if(type == 'transcode') {
+        const { dlnaFeatures } = tanscoderSettings(clientId)
+
         content.push({
             _name: 'res',
             _attrs: {
-                'protocolInfo': 'http-get:*:video/mpegts:DLNA.ORG_PN=MPEG_TS_HD_EU_ISO;DLNA.ORG_OP=10',
+                'protocolInfo': `http-get:*:video/mpegts:${dlnaFeatures}`,
                 'xmlns:dlna': 'urn:schemas-dlna-org:metadata-1-0/',
-                'size': -1,
-                // 'duration': formatedDuration
+                'size': file.length,
+                'duration': formatedDuration
             },
             _content: `http://${ip.address()}:${WEB_PORT}/api/torrents/${infoHash}/files/${fileIndex}/transcoded?clientId=${clientId}`
         })
     } else {
+        let dlnaFeatures
+        if(profileName) {
+            dlnaFeatures = `DLNA.ORG_PN=${profileName};DLNA.ORG_OP=01;DLNA.ORG_FLAGS=${DLNA_ORIGIN_FLAGS}`
+        } else {
+            dlnaFeatures = `DLNA.ORG_OP=01;DLNA.ORG_FLAGS=${DLNA_ORIGIN_FLAGS}`
+        }
+    
+        if(!contentType) {
+            contentType = mime.lookup(title)
+        }
+
         content.push({
             _name: 'res',
             _attrs: {
-                'protocolInfo': `http-get:*:${mime.lookup(title)}:*`,
+                'protocolInfo': `http-get:*:${contentType}:${dlnaFeatures}`,
                 'xmlns:dlna': 'urn:schemas-dlna-org:metadata-1-0/',
-                'size': -1
+                'size': file.length,
+                'duration': formatedDuration
             },
             _content: `http://${ip.address()}:${WEB_PORT}/api/torrents/${infoHash}/files/${fileIndex}`
         })

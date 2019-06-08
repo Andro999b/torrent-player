@@ -5,14 +5,14 @@ const fs = require('fs-extra')
 const ffmpeg = require('fluent-ffmpeg')
 const m3u8 = require('m3u8-parser')
 const checkIfTorrentFileReady = require('../torrents/checkIfTorrentFileReady')
+const torrentsDatabase = require('../torrents/database')
 const {
     HLS_DIRECTORY,
     HLS_TRANSCODER_IDLE_TIMEOUT,
     HLS_FRAGMENT_DURATION,
     TORRENTS_DATA_DIR
 } = require('../../config')
-const { waitForFile, touch, parseCodeDuration } = require('../../utils')
-const database = require('../torrents/database')
+const { waitForFile, touch } = require('../../utils')
 const debug = require('debug')('transcode-hls')
 
 class HLSTranscoder {
@@ -92,15 +92,8 @@ class HLSTranscoder {
                     }
                     reject(err)
                 })
-                .once('codecData', (metadata) => {
-                    database.storeTorrentFileMetadata(
-                        this.torrentHash,
-                        this.file.path,
-                        { ...metadata, duration: parseCodeDuration(metadata.duration)}
-                    )
-                })
                 .once('start', (commandLine) => {
-                    debug(`FFMpeg command: ${commandLine}`)
+                    console.log(`FFMpeg command: ${commandLine}`)  // eslint-disable-line
 
                     this.resetIdle()
                     this._isRunning = true
@@ -111,6 +104,9 @@ class HLSTranscoder {
                             reject('Hls file hasnt bean created')
                             debug(`Hls file ${this.m3uPath} hasnt bean created`)
                         })
+                })
+                .once('codecData', (metadata) => {
+                    torrentsDatabase.setTorrentFileDuration(this.torrentHash, this.filePath, metadata.duration)
                 })
                 .once('end', () => {
                     touch(path.join(this.outputDirectory, 'finished'))

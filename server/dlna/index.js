@@ -1,4 +1,3 @@
-const uuid = require('uuid')
 const UPNPServer = require('./upnp-server/Server')
 const { toXML } = require('jstoxml')
 const torrentsService = require('../service/torrents')
@@ -112,7 +111,7 @@ async function browseFSEntyMetadata(resId, req) {
 
     let didl
     if(fsEntry.type == 'file') {
-        didl = await mediaResource({ id, parentId, fsEntry: fsEntry, clientId: getClientId(req) })
+        didl = await mediaResource({ id, parentId, fsEntry: fsEntry, clientId: getClientId(req), readMetadata: true })
     } else {
         didl = containerResource({ id, parentId, title: fsEntry.title })
     }
@@ -150,8 +149,13 @@ function toDIDLXml(content) {
 function getClientId(req) {
     const userAgent = req.headers['user-agent']
 
-    if(userAgent && userAgent.includes('PlayStation'))
-        return 'ps'
+    if(userAgent) {
+        if(userAgent.includes('PlayStation'))
+            return 'ps'
+
+        if(userAgent.includes('Portable SDK for UPnP devices'))
+            return 'vlc-mobile'
+    }
 
     return req.client.remoteAddress
 }
@@ -187,7 +191,7 @@ module.exports = function () {
                 try{
                     switch (inputs.BrowseFlag) {
                         case 'BrowseDirectChildren': res = await browseContent(inputs, req); break
-                        case 'BrowseMetadata': res = await browseMetadata(inputs); break
+                        case 'BrowseMetadata': res = await browseMetadata(inputs, req); break
                     }
                     // console.log(inputs, res);
                     return res

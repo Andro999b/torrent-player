@@ -9,20 +9,20 @@
     "delay": "2500"
   },
   "scripts": {
-    "start": "nodemon --inspect ./index.js --dlna-uid=1"
+    "start": "nodemon --inspect ./index.js --dlna-uid=d15c6662-40b9-41da-80d8-9d3d1d24a0a2"
   },
   "dependencies": {
     "bidirectional-map": "^1.0.4",
-    "bufferedstream": "^3.1.1",
     "cheerio": "^1.0.0-rc.3",
     "concat-stream": "^2.0.0",
     "cors": "^2.8.5",
     "crypto-js": "^3.1.9-1",
     "debug": "^4.1.1",
     "ejs": "^2.6.1",
-    "express": "^4.16.4",
+    "express": "^4.17.1",
+    "express-async-handler": "^1.1.4",
     "fluent-ffmpeg": "^2.1.2",
-    "fs-extra": "^7.0.1",
+    "fs-extra": "^8.0.1",
     "jstoxml": "^1.4.4",
     "lodash": "^4.17.11",
     "lowdb": "^1.0.0",
@@ -36,12 +36,12 @@
     "rimraf": "^2.6.3",
     "socket.io": "^2.2.0",
     "sprintf-js": "^1.1.2",
-    "superagent": "^5.0.5",
+    "superagent": "^5.0.6",
     "superagent-charset": "^1.2.0",
-    "upnp-mediarenderer-client": "^1.2.4",
+    "upnp-mediarenderer-client": "https://github.com/Andro999b/node-upnp-mediarenderer-client.git",
     "urlencode": "^1.1.0",
     "uuid": "^3.3.2",
-    "webtorrent": "0.102.4",
+    "webtorrent": "0.103.1",
     "xml2js": "^0.4.19"
   }
 }

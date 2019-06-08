@@ -32,15 +32,20 @@ module.exports = {
         return metadata
     },
     async getCodecs(file) {
-        const { streams } = await this.getMetadata(file)
+        const { streams, format } = await this.getMetadata(file)
 
         const videoStream = streams.find((stream) => stream.codec_type == 'video')
         const audioStream = streams.find((stream) => stream.codec_type == 'audio')
 
         return {
-            'video': videoStream && videoStream.codec_name,
-            'audio': audioStream && audioStream.codec_name
+            video: videoStream,
+            audio: audioStream,
+            format
         }
+    },
+    async getDuration(file) {
+        const { format: { duration } } = await this.getMetadata(file)
+        return duration
     },
     async isBrowserSupportedVideo(file) {
         return this.isFileSupportCodecs(file, browserVideoCodecs, browserAudioCodecs)
