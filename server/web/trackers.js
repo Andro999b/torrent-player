@@ -1,4 +1,5 @@
 const express = require('express')
+const asyncHandler = require('express-async-handler')
 const trackers = require('../service/trackers')
 
 const router = express.Router()
@@ -7,7 +8,7 @@ router.get('/', (_, res) => {
     res.json(trackers.getTrackers())
 })
 
-router.get('/:trackerName/search', (req, res, next) => {
+router.get('/:trackerName/search', asyncHandler(async (req, res) => {
     const trackerName = req.params.trackerName
     const query = req.query.q
     const page = req.query.page || 1
@@ -17,19 +18,15 @@ router.get('/:trackerName/search', (req, res, next) => {
         return
     }
 
-    trackers.search(trackerName, query, page)
-        .then((r) => res.json(r))
-        .catch(next)
-})
+    res.json(await trackers.search(trackerName, query, page))
+}))
 
-router.get('/:trackerName/items/:resultId', (req, res, next) => {
+router.get('/:trackerName/items/:resultId', asyncHandler(async (req, res) => {
     const trackerName = req.params.trackerName
     const resultId = req.params.resultId
 
-    trackers.getInfo(trackerName, resultId)
-        .then((r) => res.json(r))
-        .catch(next)
-})
+    res.json(await trackers.getInfo(trackerName, resultId))
+}))
 
 module.exports = router
 

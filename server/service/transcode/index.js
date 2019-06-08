@@ -31,7 +31,7 @@ module.exports = {
 
         let transcoder = transcoders[clientId]
         if (!transcoder) {
-            transcoder = new Transcoder()
+            transcoder = new Transcoder(clientId)
             transcoders[clientId] = transcoder
             return transcoder
         }

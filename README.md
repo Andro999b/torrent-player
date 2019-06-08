@@ -1,20 +1,20 @@
 # Torrent player
 
 Torrents peer player that able to search on popular russian torrent trackers download and play Movies / TV show / Cartoons / Anime.
-In addional to this it able to cast video using dlna protocol or serve as dlna media server. 
+In addional to this it able to cast video using dlna protocol or serve as dlna media server.
 It also support remote controle from mobile or browser and automaticaly transcode video stream using ffmpeg.
 Can be runned as web server or desktop application(electron version)
 
 # Download
 
-Checkout [Release](https://github.com/Andro999b/torrent-player/releases) for prebuilded binaries 
+Checkout [Release](https://github.com/Andro999b/torrent-player/releases) for prebuilded binaries
 
 # Build and run
 
 install dependencies
 ```
-yarn 
-cd client && yarn 
+yarn
+cd client && yarn
 cd ../server && yarn
 ```
 
@@ -60,19 +60,20 @@ Electron version use MPV.js plugin see repo https://github.com/Kagami/mpv.js/ fo
 
 --root-dir - path to directory configuration store. default: `$HOME/webtorrents`
 
---no-dlna - disable dlna media server 
+--no-dlna - disable dlna media server
 
 --no-dlna-renderers - disable lookup for dlna media rendrers
 
 --dlna-port - dlna media server port
 
---dlan-uuid - dlna media server uuid: defult: random 
+--dlan-uid - dlna media server id: defult: uuid()
+
+--dlan-name - dlna media server name
 
 --web-port - web server port: defualt: 8080
 
 --no-transcoding - disable transcoding
 
---transcode-video-encoder - ffmpeg video encoder: default: `libx264`
 
 ## Electron only
 

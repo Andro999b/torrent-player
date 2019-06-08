@@ -1,10 +1,14 @@
 const express = require('express')
+const asyncHandler = require('express-async-handler')
 const fs = require('fs')
 const path = require('path')
 const mimeLookup = require('mime-types').lookup
 const torrentsService = require('../service/torrents')
 const metadataService = require('../service/metadata')
+const dlnaProfileName = require('../dlna/dlnaProfileName')
+const { DLNA_ORIGIN_FLAGS } = require('../dlna/dlnaFlags')
 const checkIfTorrentFileReady = require('../service/torrents/checkIfTorrentFileReady')
+const tanscoderSettings = require('../service/transcode/settings')
 const torrentPlaylist = require('../service/torrents/torrentPlaylist')
 const transcodeService = require('../service/transcode')
 const ResponseError = require('../utils/ResponseError')
@@ -15,7 +19,7 @@ const { TORRENTS_DATA_DIR } = require('../config')
 const router = express.Router()
 
 // get all torrent
-router.get('/', (req, res) => {
+router.get('/', (_, res) => {
     res.json(
         torrentsService.getTorrents()
             .map((torrent) => res.json(mapTorrent(torrent, true)))
@@ -23,14 +27,14 @@ router.get('/', (req, res) => {
 })
 
 // add torrents
-router.post('/', (req, res, next) => {
+router.post('/', asyncHandler(async (req, res) => {
     if (!req.body.magnetUrl && !req.body.torrentUrl)
         throw new ResponseError('magnetUrl or torrentUrl reuired')
 
-    torrentsService.addTorrent(req.body)
-        .then((torrent) => res.json(mapTorrent(torrent, true)))
-        .catch(next)
-})
+    const torrent = await torrentsService.addTorrent(req.body)
+    
+    res.json(mapTorrent(torrent, true))
+}))
 
 // get torrent by id
 router.get('/:id', (req, res) => {
@@ -78,35 +82,70 @@ router.post('/:torrentId/backgroundDownload', (req, res) => {
     res.json({ status: 'OK' })
 })
 
-// get torrent file
-router.get('/:torrentId/files/:fileId', (req, res) => {
-    const { file } = getTorrentAndFile(req)
-    writeFileRange(file, req, res)
-})
 
-router.get('/:torrentId/files/:fileId/browserVideo', (req, res, next) => {
+router.head('/:torrentId/files/:fileId', asyncHandler(async (req, res) => {
+    const { file } = getTorrentAndFile(req)
+    
+    res.set('Accept-Ranges', 'bytes')
+    res.set('Content-Type', mimeLookup(file.name))
+    res.set('Content-Length', file.length)
+
+    if(req.header('getcontentfeatures.dlna.org')) {
+        await setDlnaContentFeaturesHeader(file, res)
+    }
+
+    res.end()
+}))
+
+// get torrent file
+router.get('/:torrentId/files/:fileId', asyncHandler(async (req, res) => {
+    const { file } = getTorrentAndFile(req)
+
+    if(req.header('getcontentfeatures.dlna.org')) {
+        await setDlnaContentFeaturesHeader(file, res)
+    }
+
+    writeFileRange(file, req, res)
+}))
+
+router.get('/:torrentId/files/:fileId/browserVideo', asyncHandler(async (req, res) => {
     const { file } = getTorrentAndFile(req)
 
     if (!isVideo(file.path))
         throw new ResponseError('Not video file', 404)
 
-    metadataService.isBrowserSupportedVideo(file)
-        .then((supported) => {
-            if(!supported) {
-                res.sendStatus(404)
-            } else {
-                writeFileRange(file, req, res)
-            }
-        })
-        .catch(next)
+    const supported = await metadataService.isBrowserSupportedVideo(file)
+
+    if(!supported) {
+        res.sendStatus(404)
+    } else {
+        writeFileRange(file, req, res)
+    }
+}))
+
+router.head('/:torrentId/files/:fileId/transcoded', (req, res) => {
+    let { clientId } = req.query
+
+    if (!clientId) {
+        clientId = req.socket.remoteAddress
+    }
+
+    const { dlnaFeatures } = tanscoderSettings(clientId)
+    res.set({
+        'Content-Type': 'video/mpeg',
+        'ContentFeatures': dlnaFeatures
+    })
+    res.end()
 })
 
 // get torrent video file transcoded stream
-router.get('/:torrentId/files/:fileId/transcoded', (req, res, next) => {
+router.get('/:torrentId/files/:fileId/transcoded', asyncHandler(async (req, res) => {
     const { torrent, file } = getTorrentAndFile(req)
-    const { clientId } = req.query
+    let { clientId } = req.query
 
-    if (!clientId) throw new ResponseError('clientId required', 400)
+    if (!clientId) {
+        clientId = req.socket.remoteAddress
+    }
     if (!isVideo(file.path)) throw new ResponseError('Not video file', 400)
 
     let start = 0, duration = 0
@@ -127,48 +166,47 @@ router.get('/:torrentId/files/:fileId/transcoded', (req, res, next) => {
     if (isNaN(duration)) duration = 0
 
     const transcoder = transcodeService.getTranscoder(clientId)
-    transcoder
-        .transcode(torrent, file, start, duration)
-        .then(({ buffer, metadata }) => {
-            const duration = formatDLNADuration(metadata.duration)
-            const startTime = formatDLNADuration(start)
-            const headers = {
-                'Content-Type': 'video/mpegts',
-                'TransferMode.dlna.org': 'Streaming',
-                'TimeSeekRange.dlna.org': 'npt=' + startTime + '-' + duration + '/' + duration,
-                'X-Seek-Range': 'npt=' + startTime + '-' + duration + '/' + duration
-            }
+    const { stream, metadata } = await transcoder.transcode(torrent, file, start, duration)
 
-            res.writeHead(200, headers)
+    const { dlnaFeatures } = tanscoderSettings(clientId)
+    const headers = {
+        'Content-Type': 'video/mpegts',
+        'TransferMode.dlna.org': 'Streaming',
+        'ContentFeatures': dlnaFeatures
+    }
 
-            // Write the headers to the socket
-            //res.socket.write(res._header)
-            // Mark the headers as sent
-            //res._headerSent = true
+    if(metadata) {
+        const duration = formatDLNADuration(metadata.duration)
+        const startTime = formatDLNADuration(start)
+        headers['TimeSeekRange.dlna.org'] = 'npt=' + startTime + '-' + duration + '/' + duration
+        headers['X-Seek-Range'] = 'npt=' + startTime + '-' + duration + '/' + duration
+    }
 
-            buffer.readStream().pipe(res)
-        })
-        .catch(next)
-})
+    res.writeHead(200, headers)
+
+    // Write the headers to the socket
+    //res.socket.write(res._header)
+    // Mark the headers as sent
+    //res._headerSent = true
+
+    stream.pipe(res)
+}))
 
 // get torrent video file hls m3u file
-router.get('/:torrentId/files/:fileId/hls', (req, res, next) => {
+router.get('/:torrentId/files/:fileId/hls', asyncHandler(async (req, res) => {
     const { torrent, fileId } = getTorrentAndFile(req)
 
-    transcodeService
+    const transcoder = await transcodeService
         .getHLSTranscoder(torrent, fileId)
         .transcode(req.query.hasOwnProperty('force'))
-        .then((transcoder) =>
-            transcoder.readM3U8()
-        )
-        .then((file) => {
-            res.set('Content-Type', 'application/x-mpegURL')
-            res.end(file)
-        })
-        .catch(next)
-})
 
-// notify server to not stop hls transcoding 
+    const file = await transcoder.readM3U8()
+
+    res.set('Content-Type', 'application/x-mpegURL')
+    res.end(file)
+}))
+
+// notify server to not stop hls transcoding
 router.get('/:torrentId/files/:fileId/hls/keepAlive', (req, res) => {
     const { torrent, fileId } = getTorrentAndFile(req)
 
@@ -189,6 +227,19 @@ router.get('/:torrentId/files/:fileId/hls/:segment', (req, res) => {
 
     transcoder.getSegment(req.params.segment).pipe(res)
 })
+
+async function setDlnaContentFeaturesHeader(file, res) {
+    const [ profileName,  contentType ] = await dlnaProfileName(file)
+    if (profileName) {
+        res.set('ContentFeatures', `DLNA.ORG_PN=${profileName};DLNA.ORG_OP=01;DLNA.ORG_FLAGS=${DLNA_ORIGIN_FLAGS}`)
+    } else {
+        res.set('ContentFeatures', '*')
+    }
+
+    if(contentType) {
+        res.set('Content-Type', contentType)
+    }
+}
 
 function getTorrentAndFile(req) {
     const { torrentId, fileId } = req.params

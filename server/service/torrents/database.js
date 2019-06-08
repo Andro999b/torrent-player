@@ -3,29 +3,29 @@ const FileSync = require('lowdb/adapters/FileSync')
 const { ROOT_DIR } = require('../../config')
 const path = require('path')
 
-const torrentDb = lowdb(new FileSync(path.join(ROOT_DIR, 'torrents.db.json')))
+class Database {
+    constructor() {
+        this.torrentDb = lowdb(new FileSync(path.join(ROOT_DIR, 'torrents.db.json')))
+    }
 
-module.exports = {
     setImageCover(torrentId, image) {
-        torrentDb.set([ torrentId, 'image' ], image).write()
-    },
+        this.torrentDb.set([ torrentId, 'image' ], image).write()
+    }
+
     getImageCover(torrentId) {
-        return torrentDb.get([ torrentId, 'image' ])
-    },
-    isTorrentFileCompleted(torrentId, path) {
-        return torrentDb.get([ torrentId, path, 'complete' ]) == true
-    },
-    getTorrentFileMetadata(torrentId, path) {
-        return torrentDb.get([ torrentId, path, 'metadata' ]).value()
-    },
+        return this.torrentDb.get([ torrentId, 'image' ])
+    }
+
     isEnabledDownloadInBackground(torrentId) {
-        return torrentDb.get([ torrentId, 'bownloadInBackground' ]).value() == true
-    },
+        return this.torrentDb.get([ torrentId, 'bownloadInBackground' ]).value()
+    }
+
     setDownLoadInBackgroundStatus(torrentId, status) {
         if(!torrentId) throw Error('torrentId')
 
-        torrentDb.set([ torrentId, 'bownloadInBackground' ], status).write()
-    },
+        this.torrentDb.set([ torrentId, 'bownloadInBackground' ], status).write()
+    }
+
     setTorrentFileCompleted(torrentId, paths) {
         if(!torrentId || !path) throw Error('torrentId or path is null')
 
@@ -33,18 +33,34 @@ module.exports = {
             paths = [paths]
         }
 
-        var chain = torrentDb
+        var chain = this.torrentDb
         paths.forEach((path) =>
             chain = chain.set([ torrentId, path, 'complete' ] , true)
         )
         chain.write()
-    },
-    storeTorrentFileMetadata(torrentId, path, metadata) {
+    }
+
+    isTorrentFileCompleted(torrentId, path) {
+        return this.torrentDb.get([ torrentId, path, 'complete' ]) == true
+    }
+
+    getTorrentFileDuration(torrentId, path) {
+        return this.torrentDb.get([ torrentId, path, 'duration' ]).value()
+    }
+
+    setTorrentFileDuration(torrentId, path, duration) {
         if(!torrentId || !path) throw Error('torrentId or path is null')
 
-        torrentDb.set([ torrentId, path, 'metadata' ], metadata).write()
-    },
+        const key = [ torrentId, path, 'duration' ]
+        if(this.torrentDb.has(key))
+            return
+
+        this.torrentDb.set(key, duration).write()
+    }
+    
     wipeTorrentData(torrentId) {
-        torrentDb.unset(torrentId).write()
+        this.torrentDb.unset(torrentId).write()
     }
 }
+
+module.exports = new Database()

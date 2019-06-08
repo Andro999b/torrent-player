@@ -9,7 +9,6 @@ module.exports = merge(webpackConfig, {
     devServer: {
         port: 3000,
         host: '0.0.0.0',
-        //hot: true,
         proxy: [{
             context: ['/api', '/proxyMedia', '/extractVideo'],
             target: 'http://localhost:8080'
@@ -17,8 +16,5 @@ module.exports = merge(webpackConfig, {
             context: '/',
             target: 'ws://localhost:8080'
         }]
-    },
-    // plugins: [
-    //     new webpack.HotModuleReplacementPlugin()
-    // ]
+    }
 })
