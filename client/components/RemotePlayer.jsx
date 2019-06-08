@@ -82,7 +82,7 @@ class RemotePlayer extends Component {
             >
                 <ShowIf must={[error]}>
                     <Typography className="center" align="center" variant="h4" style={{ width: '100%' }}>
-                        <div>{error}</div>
+                        <div className="shadow-border">{error}</div>
                         <Button variant="contained" onClick={this.handleCloseDevice}>Close device</Button>
                     </Typography>
                 </ShowIf>
