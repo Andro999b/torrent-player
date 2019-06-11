@@ -1,14 +1,13 @@
 const uuid = require('uuid')
 const ejs = require('ejs')
 const fs = require('fs')
+const ip = require('ip')
 const path = require('path')
 const Service = require('./Service')
 const SsdpServer = require('node-ssdp').Server
 const { RESOURCES_DIR } = require('../../config')
 
-const RENDER_DEVICE = ejs.compile(
-    fs.readFileSync(path.join(RESOURCES_DIR, 'xml', 'device-desc.xml'), 'utf8')
-)
+const RENDER_DEVICE = ejs.compile(fs.readFileSync(path.join(RESOURCES_DIR, 'xml', 'device-desc.xml'), 'utf8'))
 
 class Device {
     constructor(server, options) {
@@ -19,14 +18,7 @@ class Device {
         this.version = options.version || '1'
         this.productName = options.productName || 'unknown'
         this.productVersion = options.productVersion || '0.0'
-        this.deviceType =
-            options.deviceType ||
-            'urn:' +
-                (this.domain || '') +
-                ':device:' +
-                (this.type || '') +
-                ':' +
-                this.version
+        this.deviceType = options.deviceType || 'urn:' + (this.domain || '') + ':device:' + (this.type || '') + ':' + this.version
         this.friendlyName = options.friendlyName || null
         this.manufacturer = options.manufacturer || null
         this.manufacturerURL = options.manufacturerURL || null
@@ -38,8 +30,7 @@ class Device {
         this.UDN = 'uuid:' + this.uuid
         this.UPC = options.UPC || null
         this.presentationURL = options.presentationURL || null
-        this.descriptionURL =
-            this.server.prefix + '/device/desc.xml?udn=' + this.uuid
+        this.descriptionURL = this.server.prefix + '/device/desc.xml?udn=' + this.uuid
         this.icons = options.icons || []
         this.configId = 1
         this.services = {}        
@@ -56,10 +47,7 @@ class Device {
 
     start() {
         this.ssdpServer = new SsdpServer({
-            location: {
-                port: this.server.port,
-                path: this.descriptionURL
-            },
+            location: `http://${ip.address()}:${this.server.port}${this.descriptionURL}`,
             udn: this.UDN
         })
 

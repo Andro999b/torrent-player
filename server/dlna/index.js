@@ -7,7 +7,7 @@ const getTorrentFs = require('./torrentFs')
 const debug = require('debug')('dlna')
 
 async function browseContent(inputs, req) {
-    if (inputs.ObjectID == '0') {
+    if (inputs.ObjectID == '0' || !inputs.ObjectID) {
         return browseTorrentsList(inputs)
     } else if(inputs.ObjectID == 'original') {
         return browseTorrentsList(inputs, true)
@@ -17,7 +17,7 @@ async function browseContent(inputs, req) {
 }
 
 async function browseMetadata(inputs, req) {
-    if (inputs.ObjectID == '0') {
+    if (inputs.ObjectID == '0' || !inputs.ObjectID) {
         return browseRootMetadata()
     } else if(inputs.ObjectID == 'original') {
         return browseRootMetadata('original')
@@ -175,7 +175,9 @@ module.exports = function () {
         type: 'MediaServer',
         version: '1',
         friendlyName: DLNA_NAME,
-        modelName: 'MediaServer',
+        modelName: 'Torrents',
+        modelDescription: 'Torrents',
+        modelUrl: 'https://github.com/Andro999b/torrent-player',
         manufacturer: 'andro999b',
         modelNumber: '0.0.1',
     })
@@ -202,6 +204,36 @@ module.exports = function () {
             },
             GetSortCapabilities() {
                 return { SortCaps: '' }
+            },
+            GetSearchCapabilities() {
+                return { SearchCaps: '' }
+            },
+            GetSystemUpdateID() {
+                return { id: 0 }
+            },
+            X_GetFeatureList() {
+                return {
+                    FeatureList:  toXML({
+                        _name: 'Features',
+                        _attrs: {
+                            'xmlns': 'urn:schemas-upnp-org:av:avs',
+                            'xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
+                            'xsi:schemaLocation': 'urn:schemas-upnp-org:av:avs http://www.upnp.org/schemas/av/avs.xsd'
+                        },
+                        _content: {
+                            _name: 'Feature',
+                            _attrs: {
+                                name: 'samsung.com_BASICVIEW'
+                            },
+                            _content: 
+                                ['object.item.audioItem', 'object.item.videoItem', 'object.item.imageItem']
+                                    .map((type) => ({
+                                        _name: 'container',
+                                        _attrs: { id: '0', type }
+                                    }))
+                        }
+                    })
+                }
             }
         },
         // Service Description. this will be converted to XML
@@ -227,10 +259,18 @@ module.exports = function () {
                     outputs: {
                         SortCaps: 'SortCapabilities'
                     }
+                },
+                GetSearchCapabilities: {
+                    outputs: {
+                        SearchCaps: 'SearchCapabilities'
+                    }
+                },
+                GetSystemUpdateID: {
+                    outputs: {
+                        id: 'SystemUpdateID',
+                    }
                 }
             },
-            // declare all state variables: key is the name of the variable and value is the type of the variable.
-            // type can be JSON object in this form {type: "boolean"}.
             variables: {
                 A_ARG_TYPE_ObjectID: 'string',
                 A_ARG_TYPE_BrowseFlag: {
@@ -241,9 +281,96 @@ module.exports = function () {
                 A_ARG_TYPE_Index: 'ui4',
                 A_ARG_TYPE_Count: 'ui4',
                 A_ARG_TYPE_SortCriteria: 'string',
+                A_ARG_TYPE_SearchCriteria: 'string',
                 A_ARG_TYPE_Result: 'string',
                 A_ARG_TYPE_UpdateID: 'ui4',
-                SortCapabilities: 'string'
+                SortCapabilities: 'string',
+                SearchCapabilities: 'string',
+                SystemUpdateID: {
+                    type: 'ui4',
+                    event: true,
+                    defaultValue: 0
+                }
+            }
+        }
+    })
+
+    device.createService({
+        domain: 'schemas-upnp-org',
+        type: 'ConnectionManager',
+        version: '1',
+        // Service Implementation
+        implementation: {
+            GetCurrentConnectionInfo() {
+                return {
+                    CurrentConnectionIDs: []
+                }
+            },
+            GetCurrentConnectionIDs()  {
+                return { }
+            },
+            GetProtocolInfo()  {
+                return {
+                    Source: '',
+                    Sink: ''
+                }
+            }
+        },
+        // Service Description. this will be converted to XML
+        description: {
+            actions: {
+                GetCurrentConnectionInfo: {
+                    outputs: {
+                        ConnectionIDs: 'CurrentConnectionIDs'
+                    }
+                },
+                GetCurrentConnectionIDs: {
+                    inputs: {
+                        ConnectionID: 'A_ARG_TYPE_ConnectionID'
+                    },
+                    outputs: {
+                        RcsID: 'A_ARG_TYPE_RcsID',
+                        AVTransportID: 'A_ARG_TYPE_AVTransportID',
+                        ProtocolInfo: 'A_ARG_TYPE_ProtocolInfo',
+                        PeerConnectionManager: 'A_ARG_TYPE_ConnectionManager',
+                        PeerConnectionID: 'A_ARG_TYPE_ConnectionID',
+                        Direction: 'A_ARG_TYPE_Direction',
+                        Status: 'A_ARG_TYPE_ConnectionStatus',
+                    }
+                },
+                GetProtocolInfo: {
+                    outputs: {
+                        Source: 'SourceProtocolInfo',
+                        Sink: 'SinkProtocolInfo'
+                    }
+                }
+            },
+            variables: {
+                A_ARG_TYPE_ConnectionStatus: {
+                    type: 'string',
+                    enum: ['OK', 'ContentFormatMismatch', 'InsufficientBandwidth', 'UnreliableChannel', 'Unknown']
+                },
+                A_ARG_TYPE_ConnectionID: 'i4',
+                A_ARG_TYPE_AVTransportID: 'i4',
+                A_ARG_TYPE_Direction: {
+                    type: 'string',
+                    enum: ['Input', 'Output']
+                },
+                A_ARG_TYPE_RcsID: 'string',
+                A_ARG_TYPE_ProtocolInfo: 'string',
+                A_ARG_TYPE_ConnectionManager: 'string',
+                SourceProtocolInfo: {
+                    type: 'string',
+                    event: true
+                },
+                SinkProtocolInfo: {
+                    type: 'string',
+                    event: true
+                },
+                CurrentConnectionIDs: {
+                    type: 'string',
+                    event: true
+                }
             }
         }
     })

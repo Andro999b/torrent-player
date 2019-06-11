@@ -150,9 +150,12 @@ class Transcoder {
     constructor(clientId) {
         this.clientId = clientId
         this.fileTranscoders = {}
+        this.idleTimeout = null
     }
 
     async transcode(torrent, file, start = 0, duration = 0) {
+        if(this.idleTimeout) clearTimeout(this.idleTimeout)
+
         const key = this.getFileTrnascoderKey(torrent, file)
 
         let fileTranscoder = this.fileTranscoders[key]
@@ -182,6 +185,10 @@ class Transcoder {
         Object.keys(this.fileTranscoders).forEach((fileKey) => 
             this.fileTranscoders[fileKey].kill()
         )
+    }
+
+    idle() {
+        this.idleTimeout = setTimeout(() => this.kill(), 15000)
     }
 }
 

@@ -183,11 +183,7 @@ router.get('/:torrentId/files/:fileId/transcoded', asyncHandler(async (req, res)
     }
 
     res.writeHead(200, headers)
-
-    // Write the headers to the socket
-    //res.socket.write(res._header)
-    // Mark the headers as sent
-    //res._headerSent = true
+    res.once('close', () => transcoder.idle())
 
     stream.pipe(res)
 }))
