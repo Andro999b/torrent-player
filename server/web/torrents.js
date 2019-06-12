@@ -172,7 +172,7 @@ router.get('/:torrentId/files/:fileId/transcoded', asyncHandler(async (req, res)
     const headers = {
         'Content-Type': 'video/mpegts',
         'TransferMode.dlna.org': 'Streaming',
-        'ContentFeatures': dlnaFeatures
+        'ContentFeatures.dlna.org': dlnaFeatures
     }
 
     if(metadata) {
@@ -227,9 +227,9 @@ router.get('/:torrentId/files/:fileId/hls/:segment', (req, res) => {
 async function setDlnaContentFeaturesHeader(file, res) {
     const [ profileName,  contentType ] = await dlnaProfileName(file)
     if (profileName) {
-        res.set('ContentFeatures', `DLNA.ORG_PN=${profileName};DLNA.ORG_OP=01;DLNA.ORG_FLAGS=${DLNA_ORIGIN_FLAGS}`)
+        res.set('ContentFeatures.dlna.org', `DLNA.ORG_PN=${profileName};DLNA.ORG_OP=01;DLNA.ORG_FLAGS=${DLNA_ORIGIN_FLAGS}`)
     } else {
-        res.set('ContentFeatures', '*')
+        res.set('ContentFeatures.dlna.org', '*')
     }
 
     if(contentType) {
@@ -282,7 +282,8 @@ function writeFileRange(file, req, res) {
         createFileStream(file, { start, end }).pipe(res)
     } else {
         res.writeHead(200, {
-            'Content-Length': file.length
+            'Content-Length': file.length,
+            'Content-Range': 'bytes 0-' + file.length
         })
         createFileStream(file).pipe(res)
     }

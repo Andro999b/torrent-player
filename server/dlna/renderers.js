@@ -46,14 +46,14 @@ class DLNADevice extends RemoteDevice {
 
         const title = `${this.playlistName} - ${currentFileIndex + 1}`
 
-        let targetUrl = source.transcodedUrl
+        let targetUrl = this.transcodingMode ? source.transcodedUrl : source.url
         
         if(!targetUrl) {
             this.updateState({ error: 'Device cant play media' })
             return
         }
         
-        if(source.url.startsWith('/')) {
+        if(targetUrl.startsWith('/')) {
             targetUrl = `http://${ip.address()}:${WEB_PORT}${targetUrl}`
         }
 
@@ -68,11 +68,17 @@ class DLNADevice extends RemoteDevice {
             }
         }, (err) => {
             if(err) {
-                if(err.errorCode == 701) { // sumsung transition not avalaible
+                if(err.errorCode == 701) { // transition not avalaible
                     return
                 }
-                this.updateState({ error: 'Device cant play media' })
-                console.error('client.load', err)
+                if(this.transcodingMode) {
+                    this.updateState({ error: 'Device cant play media' })
+                    console.error('client.load', err)
+                } else {
+                    // try swtich to transcoding mode
+                    this.transcodingMode = true
+                    this.play(startTime)
+                }
             } else {
                 this.startTrackState()
             }
@@ -122,6 +128,7 @@ class DLNADevice extends RemoteDevice {
 
     setPlaylist(playlist, fileIndex, currentTime) {
         this.playlistName = playlist.name
+        this.transcodingMode = false
         this.updateState({
             currentFileIndex: fileIndex,
             currentTime,

@@ -211,6 +211,9 @@ module.exports = function () {
             GetSystemUpdateID() {
                 return { id: 0 }
             },
+            X_SetBookmark() {
+                return null
+            },
             X_GetFeatureList() {
                 return {
                     FeatureList:  toXML({
@@ -307,7 +310,7 @@ module.exports = function () {
                 }
             },
             GetCurrentConnectionIDs()  {
-                return { }
+                return null
             },
             GetProtocolInfo()  {
                 return {

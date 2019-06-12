@@ -41,7 +41,7 @@ class Server extends EventEmitter {
     _handleRequest(req, res) {
         const url = URL.parse(req.url)
         req.query = querystring.parse(url.query)
-
+        
         const handler = this.httpHandlers[`${req.method} ${url.pathname}`]
         if (!handler) {
             res.statusCode = 404
