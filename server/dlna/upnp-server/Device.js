@@ -58,6 +58,10 @@ class Device {
         )
 
         this.ssdpServer.start()
+
+        process.on('exit', function(){
+            this.stop() // advertise shutting down and stop listening
+        })
     }
 
     stop() {

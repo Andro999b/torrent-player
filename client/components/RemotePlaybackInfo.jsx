@@ -16,7 +16,7 @@ class RemotePlaybackInfo extends Component {
         if (device.isPlaying) {
             device.pause()
         } else {
-            device.play()
+            device.resume()
         }
     }
 

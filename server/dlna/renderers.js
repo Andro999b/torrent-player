@@ -1,4 +1,4 @@
-const SSDP = require('node-ssdp').Client
+const SsdpHeader = require('node-ssdp/lib/ssdpHeader')
 const RemoteDevice = require('../service/remote/RemoteDevice')
 const MediaRendererClient = require('upnp-mediarenderer-client')
 const remote = require('../service/remote')
@@ -43,8 +43,9 @@ class DLNADevice extends RemoteDevice {
     play(startTime) {
         const { currentFileIndex, playlist } = this.state
         const source = playlist.files[currentFileIndex]
-
         const title = `${this.playlistName} - ${currentFileIndex + 1}`
+        
+        const transcodingAvaliable = !this.transcodingMode && source.transcodedUrl
 
         let targetUrl = this.transcodingMode ? source.transcodedUrl : source.url
         
@@ -57,6 +58,14 @@ class DLNADevice extends RemoteDevice {
             targetUrl = `http://${ip.address()}:${WEB_PORT}${targetUrl}`
         }
 
+        if(this.lastUrl == targetUrl) {
+            this.client.seek(startTime,  () => {
+                this.client.play()
+            })
+            return
+        }
+
+        this.lastUrl = targetUrl
         this.seekToPosition = startTime
         this.client.load(targetUrl, {
             autoplay: true,
@@ -71,13 +80,13 @@ class DLNADevice extends RemoteDevice {
                 if(err.errorCode == 701) { // transition not avalaible
                     return
                 }
-                if(this.transcodingMode) {
-                    this.updateState({ error: 'Device cant play media' })
-                    console.error('client.load', err)
-                } else {
+                if(transcodingAvaliable) {
                     // try swtich to transcoding mode
                     this.transcodingMode = true
                     this.play(startTime)
+                } else {
+                    this.updateState({ error: 'Device cant play media' })
+                    console.error('client.load', err)
                 }
             } else {
                 this.startTrackState()
@@ -129,6 +138,7 @@ class DLNADevice extends RemoteDevice {
     setPlaylist(playlist, fileIndex, currentTime) {
         this.playlistName = playlist.name
         this.transcodingMode = false
+        this.lastUrl = null
         this.updateState({
             currentFileIndex: fileIndex,
             currentTime,
@@ -208,35 +218,62 @@ class DLNADevice extends RemoteDevice {
     stopTrackState() {
         if(this.trackingId) {
             clearInterval(this.trackingId)
+            this.trackingId = null
         }
     }
 
     clearState(emitEvents = true) {
         this.stopTrackState()
         super.clearState(emitEvents)
+
+        this.playlistName = null
+        this.transcodingMode = false
+        this.lastUrl = null
     }
 }
 
-module.exports = () => {
+module.exports = (ssdpServer) => {
+
     const devices = {}
-    const ssdpClient = new SSDP()
-
-    ssdpClient.on('response', (headers) => {
-        // console.log(headers, statusCode, rinfo)
-
+    function addDevice (headers) {
         const usn = headers.USN
 
         if(!devices[usn]) {
             debug('New dlna device found', headers)
             const device = new DLNADevice(new MediaRendererClient(headers.LOCATION))
-            devices[usn] = device
             remote.addDevice(device)
+            devices[usn] = device
         }
-    })
+    }
 
-    ssdpClient.search('urn:schemas-upnp-org:device:MediaRenderer:1')
+    function removeDevice (headers) {
+        const usn = headers.USN
 
-    setInterval(() => {
-        ssdpClient.search('urn:schemas-upnp-org:device:MediaRenderer:1')
-    }, 5000)
+        if(devices[usn]) {
+            const device = devices[usn]
+            remote.removeDevice(device.id)
+            delete devices[usn]
+        }
+    }
+
+    function search() {
+        const header = new SsdpHeader('m-search', {
+            'HOST': ssdpServer._ssdpServerHost,
+            'ST': 'urn:schemas-upnp-org:device:MediaRenderer:1',
+            'MAN': '"ssdp:discover"',
+            'MX': 3
+        })
+
+        ssdpServer._send(header, (err) => {
+            if (err) {
+                // eslint-disable-next-line no-console
+                console.error('Error: unable to send M-SEARCH request ID %s: %o', header.id(), err)
+            }
+        })
+    }
+
+    ssdpServer.on('response', addDevice)
+    ssdpServer.on('advertise-bye', removeDevice)
+
+    setInterval(search, 5000)
 }

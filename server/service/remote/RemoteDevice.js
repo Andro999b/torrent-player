@@ -6,7 +6,7 @@ class RemoteDevice extends EventEmitter {
     constructor() {
         super()
         this.state = {}
-        this.id = uuid()
+        this.id = this.id || uuid()
         this.avaliable = true
         this.name = `Video Screan ${RemoteDevice.counter++}`
         this.playlistName = null

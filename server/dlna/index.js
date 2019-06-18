@@ -379,4 +379,10 @@ module.exports = function () {
     })
 
     server.start(() => console.log(`DLNA Server started at port ${DLNA_PORT}, uuid ${DLNA_UUID} `))// eslint-disable-line no-console
+
+    return {
+        server,
+        device,
+        ssdpServer: device.ssdpServer
+    }
 }

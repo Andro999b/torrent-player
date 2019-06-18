@@ -46,8 +46,8 @@ torrentsService.restoreTorrents()
 web()
 
 if(DLNA_ENABLED) {
-    dlna()
-    DLNA_RENDERERS_ENABLED && dlnaRenderers()
+    const { ssdpServer } = dlna()
+    DLNA_RENDERERS_ENABLED && dlnaRenderers(ssdpServer)
 }
 
 process.on('uncaughtException', (e) => console.error(e))
