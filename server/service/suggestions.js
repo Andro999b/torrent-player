@@ -2,7 +2,7 @@ const request = require('superagent')
 
 module.exports = {
     async suggest(searchQuery) {
-        const res = await request.get('https://clients1.google.com/complete/search')
+        const res = await request.get('http://suggestqueries.google.com/complete/search')
             .query({
                 q: searchQuery,
                 client: 'firefox'

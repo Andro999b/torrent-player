@@ -1,10 +1,12 @@
 const fs = require('fs-extra')
 const path = require('path')
 const readline = require('readline')
+const urlencode = require('urlencode')
+const ip = require('ip')
 const Stream = require('stream')
 const sprintf = require('sprintf-js').sprintf
 const ResponseError = require('./ResponseError')
-const { RESOURCES_DIR } = require('../config')
+const { RESOURCES_DIR, WEB_PORT } = require('../config')
 
 const videExtensions = JSON.parse(fs.readFileSync(path.join(RESOURCES_DIR, 'video-extensions.json')))
 const audioExtensions = JSON.parse(fs.readFileSync(path.join(RESOURCES_DIR, 'audio-extensions.json')))
@@ -136,6 +138,18 @@ function fileDirectory(path) {
     return lastSeparator > -1 ? path.substring(0, lastSeparator) : ''
 }
 
+function getExtractorUrl(url, extractor) {
+    const { type, params } = extractor
+
+    if(!extractor) return url
+
+    return `http://${ip.address()}:${WEB_PORT}/extractVideo?` + urlencode.stringify({
+        type,
+        url,
+        ...params
+    })
+}
+
 module.exports = {
     isVideo(fileName) {
         return hasOneOfExtensions(videExtensions, fileName)
@@ -152,5 +166,6 @@ module.exports = {
     getLastFileLine,
     waitForFile,
     touch,
-    fileDirectory
+    fileDirectory,
+    getExtractorUrl
 }

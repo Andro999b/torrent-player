@@ -3,18 +3,15 @@ import PropTypes from 'prop-types'
 
 import { ListItemText} from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
-import { isPlayable, getTorrentFileContentLink } from '../utils'
+import { 
+    isPlayable, 
+    createDownloadSecondaryActions, 
+    getTorrentFileContentLink 
+} from '../utils'
 import filesize from 'file-size'
 import CastOrPlayListItem from './CastOrPlayListItem'
 
 class TorrentListItemFile extends Component {
-    handleDownload = () => {
-        const { torrent, file } = this.props
-        const downloadUrl = getTorrentFileContentLink(torrent.infoHash, file.id)
-
-        window.open(downloadUrl, '_blank')
-    }
-
     render() {
         const { torrent, file, fileIndex, onPlayFile, onCastFile } = this.props
 
@@ -35,9 +32,9 @@ class TorrentListItemFile extends Component {
                 playable={playable} 
                 onPlay={() => onPlayFile(torrent, file)}
                 onCast={() => onCastFile(torrent, file)}
-                secondaryActions={[
-                    { title: 'Download', action: this.handleDownload }
-                ]} 
+                secondaryActions={createDownloadSecondaryActions({ 
+                    url: getTorrentFileContentLink(torrent.infoHash, file.id) 
+                })} 
             >
                 <ListItemText primary={text} />
             </CastOrPlayListItem>

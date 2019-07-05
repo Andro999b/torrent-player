@@ -10,6 +10,29 @@ export function getTorrentFileContentLink(hashInfo, fileIndex) {
     return `/api/torrents/${hashInfo}/files/${fileIndex}`
 }
 
+export function getFileContentDownloadLink({ url, extractor, downloadUrl}) {
+    if(downloadUrl)
+        return downloadUrl
+    
+    if(url) {
+        if(extractor) {
+            return createExtractorUrlBuilder(extractor)(url)
+        }
+
+        return url
+    }
+}
+
+export function createDownloadSecondaryActions(file) {
+    const downloadLink = getFileContentDownloadLink(file)
+    return downloadLink ? [
+        { 
+            title: 'Download', 
+            action: () => window.open(downloadLink, '_blank')
+        }
+    ] : null
+}
+
 export function createExtractorUrlBuilder(extractor) {
     let extractorBaseUrl = null
     const { type, params } = extractor

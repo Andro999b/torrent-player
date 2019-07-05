@@ -5,8 +5,8 @@ const $ = require('cheerio')
 class AnimeVostProvider extends DataLifeProvider {
     constructor() {
         super({
-            baseUrl: 'https://animerost.org',
-            searchUrl: 'https://animerost.org/index.php?do=search',
+            baseUrl: 'https://animevost.org',
+            searchUrl: 'https://animevost.org/index.php?do=search',
             scope: '.shortstory',
             pageSize: 50,
             selectors: {

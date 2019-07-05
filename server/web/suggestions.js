@@ -12,7 +12,7 @@ router.get('/', asyncHandler(async (req, res) => {
         return
     }
 
-    const suggestions = suggestionsService.suggest(query)
+    const suggestions = await suggestionsService.suggest(query)
     
     res.json(suggestions)
 }))

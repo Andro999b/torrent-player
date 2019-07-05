@@ -2,9 +2,12 @@ const SsdpHeader = require('node-ssdp/lib/ssdpHeader')
 const RemoteDevice = require('../service/remote/RemoteDevice')
 const MediaRendererClient = require('upnp-mediarenderer-client')
 const remote = require('../service/remote')
+const urlencode = require('urlencode')
 const ip = require('ip')
 const debug = require('debug')('dnla-renderer')
-const { WEB_PORT, DLNA_TRANSCODING_FEATURES } = require('../config')
+const { WEB_PORT } = require('../config')
+const { getExtractorUrl } = require('../utils')
+const { DLNA_ORIGIN_FLAGS, DLNA_TRANSCODING_FLAGS } = require('../dlna/dlnaFlags')
 
 class DLNADevice extends RemoteDevice {
     constructor(client) {
@@ -15,7 +18,7 @@ class DLNADevice extends RemoteDevice {
         client.getDeviceDescription((err, description) => {
             if(err) {
                 console.error(err)
-                this.updateState({ error: 'Device not ready' })
+                this.updateState({ error: 'Device not ready', isLoading: false })
                 return
             }
             this.name = description.friendlyName
@@ -43,25 +46,22 @@ class DLNADevice extends RemoteDevice {
     play(startTime) {
         const { currentFileIndex, playlist } = this.state
         const source = playlist.files[currentFileIndex]
-        const title = `${this.playlistName} - ${currentFileIndex + 1}`
+        const title = `${currentFileIndex + 1} / ${playlist.files.length}`
+        const { transcodedUrl } = source
         
-        const transcodingAvaliable = !this.transcodingMode && source.transcodedUrl
+        const transcodingAvaliable = !this.transcodingMode && transcodedUrl
 
-        let targetUrl = this.transcodingMode ? source.transcodedUrl : source.url
-        
-        if(!targetUrl) {
-            this.updateState({ error: 'Device cant play media' })
-            return
-        }
-        
-        if(targetUrl.startsWith('/')) {
-            targetUrl = `http://${ip.address()}:${WEB_PORT}${targetUrl}`
-        }
+        const targetUrl = this.getVideoUrl(source)
 
         if(this.lastUrl == targetUrl) {
             this.client.seek(startTime,  () => {
                 this.client.play()
             })
+            return
+        }
+
+        if(!targetUrl) {
+            this.updateState({ error: 'Device cant play media', isLoading: false })
             return
         }
 
@@ -73,7 +73,9 @@ class DLNADevice extends RemoteDevice {
             metadata: {
                 title,
                 type: 'video',
-                dlnaFeatures: DLNA_TRANSCODING_FEATURES
+                dlnaFeatures: this.transcodingMode ? 
+                    `DLNA.ORG_OP=10;DLNA.ORG_FLAGS=${DLNA_TRANSCODING_FLAGS}`:
+                    `DLNA.ORG_OP=01;DLNA.ORG_FLAGS=${DLNA_ORIGIN_FLAGS}`
             }
         }, (err) => {
             if(err) {
@@ -92,6 +94,34 @@ class DLNADevice extends RemoteDevice {
                 this.startTrackState()
             }
         })
+    }
+
+    getVideoUrl(source) {
+        const { url, downloadUrl, transcodedUrl, extractor } = source
+
+        let targetUrl = this.transcodingMode ? 
+            transcodedUrl : 
+            (url || downloadUrl)
+
+        if(!targetUrl) {
+            return null
+        }
+        
+        
+        if(targetUrl.startsWith('/')) {
+            targetUrl = `http://${ip.address()}:${WEB_PORT}${targetUrl}`
+        } else if(extractor) { // add video extractor
+            const { type, params } = extractor
+            targetUrl = getExtractorUrl(
+                targetUrl, 
+                {
+                    type, 
+                    params: {...params, noredirect: '' }
+                }
+            )
+        }
+
+        return targetUrl
     }
 
     resume() {
@@ -240,9 +270,17 @@ module.exports = (ssdpServer) => {
 
         if(!devices[usn]) {
             debug('New dlna device found', headers)
-            const device = new DLNADevice(new MediaRendererClient(headers.LOCATION))
+
+            const client = new MediaRendererClient(headers.LOCATION)
+            const device = new DLNADevice(client)
+
             remote.addDevice(device)
             devices[usn] = device
+            
+            client.once('error', () => {
+                remote.removeDevice(device.id)
+                delete devices[usn]
+            })
         }
     }
 
@@ -267,7 +305,7 @@ module.exports = (ssdpServer) => {
         ssdpServer._send(header, (err) => {
             if (err) {
                 // eslint-disable-next-line no-console
-                console.error('Error: unable to send M-SEARCH request ID %s: %o', header.id(), err)
+                console.error(`Error: unable to send M-SEARCH request ID ${header.id()}`, err)
             }
         })
     }

@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { API_BASE_URL } from '../utils/api'
+import { getFileContentDownloadLink } from '../utils'
 import PropTypes from 'prop-types'
 import urljoin from 'url-join'
 
@@ -16,7 +17,7 @@ import GroupFiles from './GroupFiles'
 import { inject } from 'mobx-react'
 import CastOrPlayListItem from './CastOrPlayListItem'
 import watchLater from '../store/watchLater'
-import { creatDirectoryAction } from '../utils'
+import { createDownloadSecondaryActions } from '../utils'
 
 @inject(({ transitionStore }) => ({
     onPlayFile: transitionStore.downloadAndPlay,
@@ -37,6 +38,7 @@ class SearchResultsItemDetails extends Component {
                 playable={playable} 
                 onPlay={() => onPlayFile(details, file)}
                 onCast={() => onCastFile(details, file)}
+                econdaryActions={createDownloadSecondaryActions(file)} 
             > 
                 <ListItemText primary={<span style={{ wordBreak: 'break-all' }}>
                     {file.name}

@@ -58,7 +58,7 @@ class LocalPlayer extends Component {
     }
 
     handleIdle = (idle) => {
-        this.setState({ idle })
+        this.setState({ idle, seekTime: null })
     }
 
     handleSelectFile = (fileIndex) => {

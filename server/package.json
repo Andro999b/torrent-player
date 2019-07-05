@@ -27,6 +27,7 @@
     "lodash": "^4.17.11",
     "lowdb": "^1.0.0",
     "m3u8-parser": "^4.3.0",
+    "m3u8stream": "^0.6.2",
     "mime-types": "^2.1.24",
     "minimist": "^1.2.0",
     "node-ssdp": "^4.0.0",

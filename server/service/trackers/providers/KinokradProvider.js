@@ -49,12 +49,17 @@ class KinokradProvider extends DataLifeProvider {
 
                         if(!matches) return []
 
-                        const singleFile = matches[1]
+                        const manifestUrl = matches[1]
+                        const extractor = { type: 'direct' }
 
                         return [{
                             id: 0, 
-                            extractor: { type: 'direct' },
-                            manifestUrl: singleFile
+                            extractor,
+                            downloadUrl: '/videoStreamConcat?' + urlencode.stringify({
+                                manifestUrl,
+                                extractor
+                            }),
+                            manifestUrl
                         }]
                     }
                 }

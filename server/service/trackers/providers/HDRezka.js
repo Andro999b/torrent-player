@@ -47,9 +47,15 @@ class HDRezka extends Provider {
                             files = this._extractNoTranslationFiles($scope)
                         }
 
+                        const extractor = {}
+
                         return files.map((item, index) => ({
                             id: index,
-                            extractor: { type: 'streamguard' },
+                            extractor,
+                            downloadUrl: '/videoStreamConcat?' + urlencode.stringify({
+                                manifestUrl: item.manifestUrl,
+                                extractor
+                            }),
                             ...item
                         }))
                     }

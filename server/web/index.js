@@ -7,6 +7,7 @@ const suggestionsApi = require('./suggestions')
 const libraryApi = require('./library')
 const proxyMedia = require('./proxyMedia')
 const extractVideo = require('./extractVideo')
+const videoStreamConcat = require('./videoStreamConcat')
 const remote = require('./remote')
 const remoteQrCode = require('./remoteQrCode')
 
@@ -26,6 +27,7 @@ module.exports = function () {
     expressServer.use('/proxyMedia', proxyMedia)
     expressServer.use('/extractVideo', extractVideo)
     expressServer.use('/remoteQrCode', remoteQrCode)
+    expressServer.use('/videoStreamConcat', videoStreamConcat)
 
     expressServer.get('/api/ping', (_, res) => res.status(200).send('pong'))
 
@@ -37,7 +39,7 @@ module.exports = function () {
             res.status(500)
             res.json({ error: err})
         } else {
-            console.error(err.stack)
+            console.error(req.method, req.url, req.query, err.stack)
 
             try {
                 res.status(err.code || 500)
