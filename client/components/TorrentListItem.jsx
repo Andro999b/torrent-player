@@ -1,17 +1,18 @@
 import React, { Component } from 'react'
 
 import {
-    ExpansionPanel,
-    ExpansionPanelDetails,
-    ExpansionPanelSummary,
     Button,
     List,
-    Typography,
+    ListItem,
+    ListItemSecondaryAction,
+    ListItemText,
     FormControlLabel,
-    Checkbox
+    Checkbox,
+    Paper,
+    IconButton
 } from '@material-ui/core'
 import {
-    ExpandMore as ExpandIcon,
+    ListRounded as ListIcon,
     ArrowDownward as DownloadIcon,
     ArrowUpward as UploadIcon,
     Delete as DeleteIcon
@@ -19,6 +20,7 @@ import {
 import { red, green, grey } from '@material-ui/core/colors'
 
 import GroupFiles from './GroupFiles'
+import FullScreanDialog from './FullScreanDialog'
 import TorrentListItemFile from './TorrentListItemFile'
 import PropTypes from 'prop-types'
 import filesize from 'file-size'
@@ -40,12 +42,12 @@ class TorrentListItem extends Component {
         super(props, context)
 
         this.state = {
-            showDetails: false
+            open: false
         }
     }
 
-    handleToggleDetails = () => {
-        this.setState(({ showDetails }) => ({ showDetails: !showDetails }))
+    handleToggleFileList = () => {
+        this.setState(({ open }) => ({ open: !open }))
     }
 
     renderFiles = (files) => {
@@ -62,7 +64,7 @@ class TorrentListItem extends Component {
 
     render() {
         const { torrent, onDelete, onSetBackgroudDownload, onPlayFile, onCastFile } = this.props
-        const { showDetails } = this.state
+        const { open } = this.state
 
         let downloadSize
         if(torrent.downloaded == torrent.length) {
@@ -72,7 +74,7 @@ class TorrentListItem extends Component {
         }
 
         const subtitle = (
-            <div style={{ color: grey[600] }}>
+            <span style={{ color: grey[600] }}>
                 <span style={{ paddingRight: 4 }}>
                     {downloadSize}
                     {torrent.downloadedSpeed && ` (${filesize(torrent.downloadedSpeed).human()}/sec)`}
@@ -84,14 +86,14 @@ class TorrentListItem extends Component {
                     <UploadIcon style={{ verticalAlign: 'middle' }} />
                 </span>
                 {<span style={{ color: torrent.numPeers ? green[500] : red[700] }}>Pears: {torrent.numPeers}</span>}
-            </div>
+            </span>
         )
 
         const title = (
-            <div
+            <span
                 style={{ wordBreak: 'break-all' }}>
                 {torrent.name}
-            </div>
+            </span>
         )
 
         const directoryActions = [
@@ -100,39 +102,41 @@ class TorrentListItem extends Component {
         ]
 
         return (
-            <ExpansionPanel expanded={showDetails} onChange={this.handleToggleDetails}>
-                <ExpansionPanelSummary expandIcon={<ExpandIcon />} classes={{ content: 'expand-header' }}>
-                    <div>
-                        <Typography variant="h6" className='expand-header__row'>{title}</Typography>
-                        <Typography variant='subtitle1' className='expand-header__row'>{subtitle}</Typography>
-                    </div>
-                </ExpansionPanelSummary>
-                <div className="torrent-lits-item_actions">
-                    <FormControlLabel
-                        control={
-                            <Checkbox 
-                                onChange={() => onSetBackgroudDownload(torrent)}
-                                checked={torrent.downloadInBackground}
-                                color="primary"
-                            />
-                        }
-                        label="Download in background"
-                    />
-                    <Button color="secondary" onClick={() => onDelete(torrent)} variant="contained">
-                        <DeleteIcon className="button-icon__left"/>
-                        Delete
-                    </Button>
-                </div>
-                <ExpansionPanelDetails className="files-list">
-                    {showDetails && 
+            <Paper square>
+                <ListItem>
+                    <ListItemText primary={title} secondary={subtitle}/>
+                    <ListItemSecondaryAction>
+                        <IconButton onClick={this.handleToggleFileList}>
+                            <ListIcon/>
+                        </IconButton>
+                    </ListItemSecondaryAction>
+                </ListItem>
+                <FullScreanDialog open={open} onClose={this.handleToggleFileList} title={torrent.name}>
+                    {open && <div className="torrent-item__files-list">
                         <GroupFiles 
                             directoryActions={directoryActions} 
                             files={torrent.files} 
                             renderFiles={this.renderFiles} 
                         />
-                    }
-                </ExpansionPanelDetails>
-            </ExpansionPanel>
+                    </div>}
+                    <div className="torrent-item__actions">
+                        <FormControlLabel
+                            control={
+                                <Checkbox 
+                                    onChange={() => onSetBackgroudDownload(torrent)}
+                                    checked={torrent.downloadInBackground}
+                                    color="primary"
+                                />
+                            }
+                            label="Download in background"
+                        />
+                        <Button color="secondary" onClick={() => onDelete(torrent)} variant="contained">
+                            <DeleteIcon className="button-icon__left"/>
+                            Delete
+                        </Button>
+                    </div>
+                </FullScreanDialog>
+            </Paper>
         )
     }
 }

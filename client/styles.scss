@@ -97,23 +97,6 @@ html {
     padding: 0 10px;
 }
 
-.expand-header {
-    flex-wrap: wrap
-}
-
-.expand-header__row {
-    flex-basis: 100%
-}
-
-.expand {
-    transform: rotate(0deg);
-    transition: transform 300ms !important;
-} 
-
-.expandOpen {
-    transform: rotate(180deg);
-}
-
 .center {
     margin: 0;
     position: absolute;
@@ -125,12 +108,6 @@ html {
 
 .inset {
     padding-left: 32px
-}
-
-.files-list {
-    width: 100%;
-    overflow-y: auto;
-    max-height: 600px;
 }
 
 .player-controls {
@@ -304,8 +281,25 @@ html {
     max-height: 70%;
 }
 
-.torrent-lits-item_actions {
+.torrent-item__actions {
     display: flex;
     padding: 0 24px;
     justify-content: space-between;
+}
+
+.torrent-item__files-list {
+    margin-bottom: 10px
+}
+
+.full-screan-dialog__toolbar {
+    justify-content: space-between;
+}
+
+.full-screan-dialog__title {
+    color: white;
+}
+
+.full-screan-dialog__content {
+    padding-top: 64px;
+    padding-bottom: 10px;
 }
