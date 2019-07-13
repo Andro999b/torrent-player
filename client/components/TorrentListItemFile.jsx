@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
-import { ListItemText} from '@material-ui/core'
+import { ListItemText } from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
 import { 
     isPlayable, 
