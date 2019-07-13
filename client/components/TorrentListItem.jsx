@@ -12,7 +12,6 @@ import {
     IconButton
 } from '@material-ui/core'
 import {
-    ListRounded as ListIcon,
     ArrowDownward as DownloadIcon,
     ArrowUpward as UploadIcon,
     Delete as DeleteIcon
@@ -103,13 +102,8 @@ class TorrentListItem extends Component {
 
         return (
             <Paper square>
-                <ListItem>
+                <ListItem button onClick={this.handleToggleFileList}>
                     <ListItemText primary={title} secondary={subtitle}/>
-                    <ListItemSecondaryAction>
-                        <IconButton onClick={this.handleToggleFileList}>
-                            <ListIcon/>
-                        </IconButton>
-                    </ListItemSecondaryAction>
                 </ListItem>
                 <FullScreanDialog open={open} onClose={this.handleToggleFileList} title={torrent.name}>
                     {open && <div className="torrent-item__files-list">
