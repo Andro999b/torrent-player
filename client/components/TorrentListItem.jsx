@@ -4,12 +4,10 @@ import {
     Button,
     List,
     ListItem,
-    ListItemSecondaryAction,
     ListItemText,
     FormControlLabel,
     Checkbox,
-    Paper,
-    IconButton
+    Paper
 } from '@material-ui/core'
 import {
     ArrowDownward as DownloadIcon,
