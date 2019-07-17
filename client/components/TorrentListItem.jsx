@@ -17,7 +17,7 @@ import {
 import { red, green, grey } from '@material-ui/core/colors'
 
 import GroupFiles from './GroupFiles'
-import FullScreanDialog from './FullScreanDialog'
+import SideContent from './SideContent'
 import TorrentListItemFile from './TorrentListItemFile'
 import PropTypes from 'prop-types'
 import filesize from 'file-size'
@@ -103,7 +103,7 @@ class TorrentListItem extends Component {
                 <ListItem button onClick={this.handleToggleFileList}>
                     <ListItemText primary={title} secondary={subtitle}/>
                 </ListItem>
-                <FullScreanDialog open={open} onClose={this.handleToggleFileList} title={torrent.name}>
+                <SideContent open={open} onClose={this.handleToggleFileList} title={torrent.name}>
                     {open && <div className="torrent-item__files-list">
                         <GroupFiles 
                             directoryActions={directoryActions} 
@@ -127,7 +127,7 @@ class TorrentListItem extends Component {
                             Delete
                         </Button>
                     </div>
-                </FullScreanDialog>
+                </SideContent>
             </Paper>
         )
     }

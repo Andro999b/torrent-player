@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 import CastOrPlayListItem from './CastOrPlayListItem'
 import GroupFiles from './GroupFiles'
-import FullScreanDialog from './FullScreanDialog'
+import SideContent from './SideContent'
 
 import {
     ListItemText,
@@ -47,13 +47,13 @@ class SelectFileDialog extends Component {
         ]
 
         return (
-            <FullScreanDialog open={open} onClose={onClose} title={playlist.name}>
+            <SideContent open={open} onClose={onClose} title={playlist.name}>
                 {open && <GroupFiles 
                     directoryActions={directoryActions} 
                     files={playlist.files} 
                     renderFiles={this.renderFiles} 
                 />}
-            </FullScreanDialog>
+            </SideContent>
         )
     }
 }
@@ -79,14 +79,13 @@ class BookmarkItem extends Component {
         const { 
             item: { 
                 playlist, 
-                currentFileIndex, 
-                currentTime 
+                currentFileIndex
             }
         } = this.props
         const { files } = playlist
         const file = files[currentFileIndex]
         
-        playFun(playlist, file, currentTime)
+        playFun(playlist, file)
     }
 
     handlePlay = () => this.resumePlaying(this.props.onPlay)

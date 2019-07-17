@@ -73,6 +73,14 @@ const theme = createMuiTheme({
                     paddingRight: 16
                 }
             }
+        },
+        MuiDrawer: {
+            paper: {
+                minWidth: '100%',
+                '@media (min-width:600px)': {
+                    minWidth: '40%',
+                }
+            }
         }
     }
 })

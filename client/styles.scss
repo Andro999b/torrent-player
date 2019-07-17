@@ -293,13 +293,10 @@ html {
 
 .full-screan-dialog__toolbar {
     justify-content: space-between;
-}
-
-.full-screan-dialog__title {
-    color: white;
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
 .full-screan-dialog__content {
-    padding-top: 64px;
     padding-bottom: 10px;
 }
