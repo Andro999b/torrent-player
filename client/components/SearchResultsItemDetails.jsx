@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import { API_BASE_URL } from '../utils/api'
-import { getFileContentDownloadLink } from '../utils'
 import PropTypes from 'prop-types'
 import urljoin from 'url-join'
+import { creatDirectoryAction } from '../utils'
 
 import {
     Typography,
