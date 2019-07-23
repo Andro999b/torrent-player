@@ -21,6 +21,7 @@ class SideContent extends Component {
             <SwipeableDrawer 
                 open={open} 
                 onClose={onClose}
+                onOpen={() => null}
                 anchor="right" 
             >
                 <Paper square>
