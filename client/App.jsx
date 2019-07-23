@@ -14,7 +14,7 @@ import stores from './store'
 
 import JssProvider from 'react-jss/lib/JssProvider'
 import { create } from 'jss'
-import { createGenerateClassName, jssPreset } from '@material-ui/core/styles'
+import { createGenerateClassName, jssPreset } from '@material-ui/styles'
 
 const generateClassName = createGenerateClassName()
 const jss = create({
