@@ -90,7 +90,7 @@ class SearchResultsItemDetails extends Component {
         }
 
         return (
-            <Grid container spacing={24}>
+            <Grid container spacing={3}>
                 {posterImage && <Grid item xs={12} md={3}>
                     <img className="poster" src={posterImage} alt='no image' />
                 </Grid>}

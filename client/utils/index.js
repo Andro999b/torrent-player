@@ -25,10 +25,13 @@ export function getFileContentDownloadLink({ url, extractor, downloadUrl}) {
 
 export function createDownloadSecondaryActions(file) {
     const downloadLink = getFileContentDownloadLink(file)
-    return downloadLink ? [
+
+    return (downloadLink && !isElectron()) ? [
         { 
             title: 'Download', 
-            action: () => window.open(downloadLink, '_blank')
+            action: () => {
+                window.open(downloadLink, '_blank')
+            }
         }
     ] : null
 }

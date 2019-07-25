@@ -1,5 +1,4 @@
 import './styles.scss'
-import { hot } from 'react-hot-loader'
 import React, { Component } from 'react'
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
 import { blue, red } from '@material-ui/core/colors'
@@ -45,12 +44,8 @@ const theme = createMuiTheme({
     overrides: {
         MuiListItemIcon: {
             root: {
-                marginRight: 0
-            }
-        },
-        MuiListItemText: {
-            root: {
-                padding: '0 5px 0 16px'
+                marginRight: 0,
+                minWidth: '30px'
             }
         },
         MuiExpansionPanelActions: {
@@ -103,4 +98,4 @@ class App extends Component {
     }
 }
 
-export default hot(module)(App)
+export default App

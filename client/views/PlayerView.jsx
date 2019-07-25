@@ -30,6 +30,8 @@ const playerTheme = (mainTheme) => createMuiTheme({
     },
 })
 
+
+
 @inject('playerStore')
 @observer
 class PlayerView extends Component {

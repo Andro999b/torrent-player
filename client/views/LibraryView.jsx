@@ -87,7 +87,7 @@ class LibraryView extends Component {
                     </Typography>
                 }
                 {bookmarks.length != 0 && bookmarks.map((item) =>
-                    <div key={item.playlist.name}>
+                    <div key={item.playlist.name} className="library__item">
                         <BookmarkItem item={item} 
                             onPlay={playMedia} 
                             onCast={openCastDialog}
@@ -108,7 +108,7 @@ class LibraryView extends Component {
                     </Typography>
                 }
                 {torrents.length != 0 && torrents.map((torrent) =>
-                    <div key={torrent.infoHash}>
+                    <div key={torrent.infoHash} className="library__item">
                         <TorrentListItem torrent={torrent} onDelete={this.handleAskDeleteToprrent.bind(this)} />
                     </div>
                 )}
