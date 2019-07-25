@@ -17,7 +17,7 @@
     "cast-screen": "electron ./electron --cast-screen",
     "start": "cd client && yarn build && cd .. && electron ./electron",
     "start:nobuild": "electron ./electron",
-    "debug": "concurrently -n \"SERVER,ELECTRON,WEBPACK\" -c \"black.bold,white,blue.bold\" \"cd server && yarn start\" \"electron ./electron --debug\" \"cd client && yarn start\"",
+    "debug": "concurrently -n \"SERVER,ELECTRON,WEBPACK\" -c \"black.bold,white,blue.bold\" \"cd server && yarn start\" \"electron ./electron --debug --windowed\" \"cd client && yarn start\"",
     "debug:web": "concurrently -n \"SERVER,WEBPACK\" -c \"black.bold,blue.bold\" \"cd server && yarn start\" \"cd client && yarn start\"",
     "debug:server": "concurrently -n \"SERVER,WEBPACK\" -c \"black.bold,blue.bold\" \"cd server && yarn start\" \"cd client && yarn start\"",
     "server": "cd client && yarn build && cd ../server && yarn start",
@@ -34,6 +34,7 @@
     "eslint-plugin-react": "^7.13.0"
   },
   "dependencies": {
+    "electron-dl": "^1.14.0",
     "minimist": "^1.2.0",
     "rollout": "^0.1.0"
   }

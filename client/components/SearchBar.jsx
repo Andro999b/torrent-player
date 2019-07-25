@@ -30,7 +30,7 @@ function renderInput(inputProps) {
     return <Input fullWidth {...inputProps} />
 }
 
-function renderSuggestionsContainer({ containerProps, children, query }) {
+function renderSuggestionsContainer({ containerProps, children, query }) { // eslint-disable-line
     return (
         <Collapse in={children && query != ''}>
             <List {...containerProps} component="div">{children}</List>

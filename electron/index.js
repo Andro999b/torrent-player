@@ -1,5 +1,6 @@
 const { app, BrowserWindow, globalShortcut } = require('electron')
 const { fork } = require('child_process')
+
 const path = require('path')
 const argv = require('minimist')(process.argv.slice(2))
 
