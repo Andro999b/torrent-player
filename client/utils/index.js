@@ -1,5 +1,4 @@
 import playableExtensions from '../../resources/video-extensions.json'
-import { createElement } from 'react'
 
 export function isPlayable(fileName) {
     return playableExtensions.findIndex((ext) => {
@@ -7,40 +6,6 @@ export function isPlayable(fileName) {
     }) != -1
 }
 
-export function getTorrentFileContentLink(hashInfo, fileIndex) {
-    return `/api/torrents/${hashInfo}/files/${fileIndex}`
-}
-
-export function getFileContentDownloadLink({ url, extractor, downloadUrl}) {
-    if(downloadUrl)
-        return downloadUrl
-    
-    if(url) {
-        if(extractor) {
-            return createExtractorUrlBuilder(extractor, { noredirect: true })(url)
-        }
-
-        return url
-    }
-}
-
-export function createDownloadSecondaryActions(file) {
-    const downloadLink = getFileContentDownloadLink(file)
-
-    return downloadLink ? [
-        { 
-            title: createElement(
-                'a',
-                {
-                    href: downloadLink,
-                    download: file.name,
-                    target: '_blank'
-                },
-                'Download'
-            ), 
-        }
-    ] : null
-}
 
 export function createExtractorUrlBuilder(extractor, additionalParams) {
     let extractorBaseUrl = null
@@ -133,12 +98,4 @@ export function hasArgv(arg) {
     }
 
     return false
-}
-
-export function creatDirectoryAction(details, orginalAction) {
-    return (directory ) => orginalAction({
-        ...details,
-        files: directory.files,
-        name: `${details.name} / ${directory.name}`
-    })
 }

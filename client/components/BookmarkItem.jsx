@@ -14,7 +14,7 @@ import {
 import { 
     creatDirectoryAction, 
     createDownloadSecondaryActions 
-} from '../utils'
+} from '../utils/contextSecondaryActions'
 
 class SelectFileDialog extends Component {
 

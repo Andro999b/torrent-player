@@ -24,5 +24,8 @@
         "no-console": ["warn", { "allow": ["warn", "error"] }],
         "brace-style": ["warn"],
         "arrow-parens": ["warn"]
+    },
+    "globals": {
+        "mobileApp": true
     }
 }

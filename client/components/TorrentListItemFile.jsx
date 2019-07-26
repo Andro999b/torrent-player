@@ -3,11 +3,8 @@ import PropTypes from 'prop-types'
 
 import { ListItemText } from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
-import { 
-    isPlayable, 
-    createDownloadSecondaryActions, 
-    getTorrentFileContentLink 
-} from '../utils'
+import { isPlayable } from '../utils'
+import { getTorrentFileContentLink, createDownloadSecondaryActions } from '../utils/contextSecondaryActions'
 import filesize from 'file-size'
 import CastOrPlayListItem from './CastOrPlayListItem'
 
