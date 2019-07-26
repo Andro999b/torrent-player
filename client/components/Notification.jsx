@@ -22,6 +22,7 @@ class Notification extends Component {
                 autoHideDuration={2000}
                 open={open}
                 onClose={this.handleClose}
+                onClick={this.handleClose}
                 message={message}
             />
         )

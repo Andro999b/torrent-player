@@ -10,6 +10,9 @@ module.exports = async ({ url }, res) => {
         .on('response', (resp) => 
             PROXY_HEADERS.forEach((headerName) => {
                 const header = resp.header[headerName]
+
+                res.set('Content-Disposition', 'attachment')
+                
                 if(header) res.set(headerName, header)
             })
         )
