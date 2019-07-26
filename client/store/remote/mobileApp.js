@@ -1,4 +1,3 @@
-/* global mobileApp */
 import { observable, action } from 'mobx'
 import { Device } from '../player-store'
 import { ALLOWED_REMOTE_STATE_FIELDS } from '../../constants'

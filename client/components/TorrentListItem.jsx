@@ -22,7 +22,7 @@ import TorrentListItemFile from './TorrentListItemFile'
 import PropTypes from 'prop-types'
 import filesize from 'file-size'
 import { inject, observer } from 'mobx-react'
-import { creatDirectoryAction } from '../utils'
+import { creatDirectoryAction } from '../utils/contextSecondaryActions'
 
 @inject(({
     transitionStore: { playTorrentMedia, openCastTorrentDialog }, 
