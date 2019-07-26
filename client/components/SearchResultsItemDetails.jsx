@@ -17,7 +17,7 @@ import GroupFiles from './GroupFiles'
 import { inject } from 'mobx-react'
 import CastOrPlayListItem from './CastOrPlayListItem'
 import watchLater from '../store/watchLater'
-import { createDownloadSecondaryActions } from '../utils'
+import { createDownloadSecondaryActions } from '../utils/contextSecondaryActions'
 
 @inject(({ transitionStore }) => ({
     onPlayFile: transitionStore.downloadAndPlay,
