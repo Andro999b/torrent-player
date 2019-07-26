@@ -9,7 +9,8 @@
     "delay": "2500"
   },
   "scripts": {
-    "start": "nodemon --inspect ./index.js --dlna-uid=d15c6662-40b9-41da-80d8-9d3d1d24a0a2"
+    "start": "nodemon --inspect ./index.js --dlna-uid=d15c6662-40b9-41da-80d8-9d3d1d24a0a2",
+    "start:cloud": "nodemon --inspect ./index.js --no-dlna --no-torrents-providers --no-transcoding"
   },
   "dependencies": {
     "bidirectional-map": "^1.0.4",

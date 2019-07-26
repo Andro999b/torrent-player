@@ -11,7 +11,7 @@ const videoStreamConcat = require('./videoStreamConcat')
 const remote = require('./remote')
 const remoteQrCode = require('./remoteQrCode')
 
-const { WEB_PORT, CLIENT_DIR } = require('../config')
+const { WEB_PORT, CLIENT_DIR, CLIENT_CONFIG } = require('../config')
 
 module.exports = function () {
     const expressServer = express()
@@ -30,6 +30,7 @@ module.exports = function () {
     expressServer.use('/videoStreamConcat', videoStreamConcat)
 
     expressServer.get('/api/ping', (_, res) => res.status(200).send('pong'))
+    expressServer.get('/api/config', (_, res) => res.json(CLIENT_CONFIG))
 
     // eslint-disable-next-line no-unused-vars
     expressServer.use((err, req, res, next) => {

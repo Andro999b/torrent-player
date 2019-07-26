@@ -99,4 +99,4 @@ class LibraryStore {
     }
 }
 
-export default new LibraryStore
+export default new LibraryStore()

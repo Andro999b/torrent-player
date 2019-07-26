@@ -10,7 +10,14 @@ import PropTypes from 'prop-types'
 class SearchView extends Component {
     render() {
         const { searchStore } = this.props
-        const { suggestions, searchResults, searchProviders, loading } = searchStore
+        const { 
+            suggestions, 
+            searchResults, 
+            searchProviders, 
+            avalaibleSearchProviders,
+            avalaibleSearchPresets,
+            loading 
+        } = searchStore
         
         return (
             <div className="search-view">
@@ -21,6 +28,8 @@ class SearchView extends Component {
                     onRemoveHistory={(s) => searchStore.removeFromHistory(s)}
                     suggestions={suggestions}
                     searchProviders={searchProviders}
+                    avalaibleSearchProviders={avalaibleSearchProviders}
+                    avalaibleSearchPresets={avalaibleSearchPresets}
                 />
                 { loading && <div className="center"><CircularProgress/></div> }
                 { !loading && <SearchResults results={searchResults} /> }

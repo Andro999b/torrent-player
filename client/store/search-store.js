@@ -1,7 +1,14 @@
 import { observable, action } from 'mobx'
-import { request, fetchOnce } from '../utils/api'
+import { request, fetchOnce, getConfig } from '../utils/api'
 import notificationStore from './notifications-store'
-import { SEARCH_RPOVIDERS, SEARCH_HISTORY_MAX_SIZE, DEFUALT_SEARCH_PROVIDERS } from '../constants'
+import { 
+    SEARCH_RPOVIDERS, 
+    SEARCH_RPVODERS_PRESET, 
+    SEARCH_HISTORY_MAX_SIZE, 
+    DEFUALT_SEARCH_PROVIDERS, 
+    NO_TORRENTS_SEARCH_RPOVIDERS,
+    NO_TORRENTS_SEARCH_RPVODERS_PRESET
+} from '../constants'
 import localStore from 'store'
 
 const fetchSuggestions = fetchOnce()
@@ -68,11 +75,33 @@ class SearchStore {
     @observable suggestions = []
     @observable searchResults = []
     @observable loading = false
-    @observable searchProviders = localStore.get('searchProviders') || DEFUALT_SEARCH_PROVIDERS
+    @observable searchProviders = []
+    @observable avalaibleSearchProviders = []
+    @observable avalaibleSearchPresets = []
     
     searchHistory = localStore.get('searchHistory') || []
-
     waitingSuggestions = true
+
+    constructor() {
+        this.initialize()
+    }
+
+    @action
+    initialize() {
+        getConfig().then(({torrentsProviders}) => {
+            const storedSearchProviders = localStore.get('searchProviders') || DEFUALT_SEARCH_PROVIDERS
+            const avalaibleSearchProviders = torrentsProviders ? 
+                Object.keys(SEARCH_RPOVIDERS):
+                Object.keys(NO_TORRENTS_SEARCH_RPOVIDERS)
+            
+            this.avalaibleSearchProviders = avalaibleSearchProviders
+            this.avalaibleSearchPresets = torrentsProviders ? 
+                SEARCH_RPVODERS_PRESET:
+                NO_TORRENTS_SEARCH_RPVODERS_PRESET
+    
+            this.searchProviders = storedSearchProviders.filter((p) => avalaibleSearchProviders.includes(p))
+        })
+    }
 
     @action selectProviders(providers) {
         localStore.set('searchProviders', providers)

@@ -1,7 +1,8 @@
 const defaultArgc = {
     'dlna': true,
     'dlna-renderers': true,
-    'transcoding': true
+    'transcoding': true,
+    'torrents-providers': true
 }
 
 const uuid = require('uuid')
@@ -28,6 +29,7 @@ const TOOLS_DIR = !argv['system-ffmpeg'] && firstExistPath([
 ])
 
 /* eslint-disable */
+console.log('Arguments', argv)
 console.log('Config root directory: ', ROOT_DIR)
 console.log('Resources directory: ', RESOURCES_DIR)
 console.log('UI directory: ', CLIENT_DIR)
@@ -56,5 +58,10 @@ module.exports = {
     TRANSCODING_ENABLED: argv['transcoding'],
     DLNA_ENABLED: argv['dlna'],
     DLNA_RENDERERS_ENABLED: argv['dlna-renderers'],
-    PROXY_HEADERS: ['Content-Type', 'Content-Length', 'Cache-Control', 'ETag', 'Expires', 'Date', 'Last-Modified']
+    PROXY_HEADERS: ['Content-Type', 'Content-Length', 'Cache-Control', 'ETag', 'Expires', 'Date', 'Last-Modified'],
+    // configuration for client
+    CLIENT_CONFIG: {
+        'torrentsProviders': argv['torrents-providers'],
+        'transcoding': argv['transcoding']
+    }
 }

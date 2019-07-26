@@ -1,10 +1,7 @@
 import React, { Component, Fragment } from 'react'
 import PropTypes from 'prop-types'
 
-import { 
-    SEARCH_RPOVIDERS, 
-    SEARCH_RPVODERS_PRESET
-} from '../constants'
+import { SEARCH_RPOVIDERS } from '../constants'
 
 import {
     Menu,
@@ -58,7 +55,10 @@ class SearchBarSettings extends Component {
 
     selectPreset = (preset) => this.props.onSelectProviders(preset)
     handleClearProviders = () => this.props.onSelectProviders([])
-    handleAllProviders = () => this.props.onSelectProviders(Object.keys(SEARCH_RPOVIDERS))
+    handleAllProviders = () => { 
+        const { avalaibleSearchProviders, onSelectProviders } = this.props
+        onSelectProviders(avalaibleSearchProviders)
+    }
 
     renderPreset(searchProviders, preset, inset) {
         let count = preset.providers.reduce(
@@ -80,7 +80,8 @@ class SearchBarSettings extends Component {
     }
 
     renderPresets(searchProviders) {
-        return SEARCH_RPVODERS_PRESET.map((preset) => {
+        const { avalaibleSearchPresets } = this.props
+        return avalaibleSearchPresets.map((preset) => {
             if(preset.presets) {
                 return (
                     <MenuList 
@@ -100,6 +101,7 @@ class SearchBarSettings extends Component {
 
     renderProviders(searchProviders) {
         const { openCustom } = this.state
+        const { avalaibleSearchProviders } = this.props
 
         return(
             <Fragment>
@@ -113,7 +115,7 @@ class SearchBarSettings extends Component {
                             Deselect All
                         </MenuItem>
                         {/* List of all providers */}
-                        {Object.keys(SEARCH_RPOVIDERS).map((provider) => (
+                        {avalaibleSearchProviders.map((provider) => (
                             <MenuItem key={provider} onClick={() => this.toggleProvider(provider)}>
                                 <Checkbox color="primary" disableRipple checked={searchProviders.indexOf(provider) != -1} />
                                 <ListItemText primary={SEARCH_RPOVIDERS[provider]} />
@@ -156,6 +158,8 @@ class SearchBarSettings extends Component {
 
 SearchBarSettings.propTypes = {
     searchProviders: PropTypes.array.isRequired,
+    avalaibleSearchProviders: PropTypes.array.isRequired,
+    avalaibleSearchPresets: PropTypes.array.isRequired,
     onSelectProviders: PropTypes.func.isRequired
 }
 

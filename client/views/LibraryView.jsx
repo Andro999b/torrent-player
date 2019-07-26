@@ -116,48 +116,70 @@ class LibraryView extends Component {
         )
     }
 
-    render() {
-        const { libraryStore: { library: { torrents, bookmarks }, loading }} = this.props
-        const { torrentToDelete, filter, tab } = this.state
-        
+    renderContent() {
+        const { libraryStore: { library: { torrents, bookmarks } }} = this.props
+        const { filter, tab } = this.state
+
         const filteredBookmarks = this.filterBookmarks(bookmarks, filter)
         const filteredTorrets = this.filterTorrents(torrents, filter)
 
         const emptyLibrary = torrents.length == 0 && bookmarks.length == 0
 
+        if(emptyLibrary) {
+            return (
+                <Typography className="center" align="center" variant="h4">
+                    Library is empty
+                </Typography>
+            )
+        } else {
+            let content
+            let fixedFilter = false
+
+            if(torrents.length == 0) {
+                fixedFilter = true
+                content = this.renderBookmarks(filteredBookmarks)
+            } else {
+                content = (
+                    <Fragment>
+                        <Tabs 
+                            className="library__tabs"
+                            indicatorColor="primary" 
+                            value={tab} 
+                            onChange={this.handleSelectTab}
+                        >
+                            <Tab label="Continue Watching"/>
+                            <Tab label="Torrents"/>
+                        </Tabs>
+                        {tab == 0 && this.renderBookmarks(filteredBookmarks)}
+                        {tab == 1 && this.renderTorrents(filteredTorrets)}
+                    </Fragment>
+                )
+            }
+
+            return (
+                <Fragment>
+                    <div className={`library__filter${fixedFilter?'-fixed':''}`}>
+                        <TextField
+                            placeholder="Filter"
+                            value={filter}
+                            onChange={this.handleFilterChange}
+                            fullWidth
+                        />
+                    </div>
+                    {content}
+                </Fragment>
+            )
+        }
+    }
+
+    render() {
+        const { libraryStore: { loading }} = this.props
+        const { torrentToDelete } = this.state
+        
         return (
             <div className="library">
                 {loading && <div className="center"><CircularProgress/></div>}
-                {!loading && 
-                    <Fragment>
-                        {!emptyLibrary && <Fragment>
-                            <div className="library__filter">
-                                <TextField
-                                    placeholder="Filter"
-                                    value={filter}
-                                    onChange={this.handleFilterChange}
-                                    fullWidth
-                                />
-                            </div>
-                            <Tabs 
-                                className="library__tabs"
-                                indicatorColor="primary" 
-                                value={tab} 
-                                onChange={this.handleSelectTab}
-                            >
-                                <Tab label="Continue Watching"/>
-                                <Tab label="Torrents"/>
-                            </Tabs>
-                            {tab == 0 && this.renderBookmarks(filteredBookmarks)}
-                            {tab == 1 && this.renderTorrents(filteredTorrets)}
-                        </Fragment>}
-                        {emptyLibrary && 
-                            <Typography className="center" align="center" variant="h4">
-                                Library is empty
-                            </Typography>
-                        }
-                    </Fragment>
-                }
+                {!loading && this.renderContent()}
                 <DeleteTorrentDialog
                     item={torrentToDelete}
                     onAccept={this.handleAcceptDeleteToprrent.bind(this)}

@@ -99,7 +99,13 @@ class SearchBar extends Component {
 
     render() {
         const { searchQuery } = this.state
-        const { suggestions, searchProviders, onSelectProviders } = this.props
+        const { 
+            suggestions, 
+            searchProviders,
+            onSelectProviders,
+            avalaibleSearchProviders,
+            avalaibleSearchPresets,
+        } = this.props
 
         return (
             <Paper className="search-bar">
@@ -135,6 +141,8 @@ class SearchBar extends Component {
                                 </IconButton>
                                 <SearchBarSettings
                                     searchProviders={searchProviders}
+                                    avalaibleSearchProviders={avalaibleSearchProviders}
+                                    avalaibleSearchPresets={avalaibleSearchPresets}
                                     onSelectProviders={onSelectProviders}
                                 />
                             </InputAdornment>
@@ -148,6 +156,8 @@ class SearchBar extends Component {
 
 SearchBar.propTypes = {
     searchProviders: PropTypes.array.isRequired,
+    avalaibleSearchProviders: PropTypes.array.isRequired,
+    avalaibleSearchPresets: PropTypes.array.isRequired,
     onInput: PropTypes.func.isRequired,
     onSubmit: PropTypes.func.isRequired,
     onSelectProviders: PropTypes.func.isRequired,

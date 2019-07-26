@@ -1,6 +1,6 @@
 import './styles.scss'
 import React, { Component } from 'react'
-import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
+import { createMuiTheme } from '@material-ui/core/styles'
 import { blue, red } from '@material-ui/core/colors'
 import { Provider } from 'mobx-react'
 
@@ -13,7 +13,7 @@ import stores from './store'
 
 import JssProvider from 'react-jss/lib/JssProvider'
 import { create } from 'jss'
-import { createGenerateClassName, jssPreset } from '@material-ui/styles'
+import { createGenerateClassName, jssPreset, ThemeProvider } from '@material-ui/styles'
 
 const generateClassName = createGenerateClassName()
 const jss = create({
@@ -88,11 +88,11 @@ class App extends Component {
 
         return (
             <JssProvider jss={jss} generateClassName={generateClassName}>
-                <MuiThemeProvider theme={theme}>
+                <ThemeProvider theme={theme}>
                     <Provider {...stores}>
                         {root}
                     </Provider>
-                </MuiThemeProvider>
+                </ThemeProvider>
             </JssProvider>
         )
     }

@@ -31,3 +31,15 @@ export function fetchOnce() {
         return req
     }
 }
+
+let configCache
+export function getConfig() {
+    if(configCache) {
+        return Promise.resolve(configCache)
+    } else {
+        return request.get('/api/config').then((res) => {
+            configCache = res.body
+            return configCache
+        })
+    }
+}
