@@ -55,13 +55,19 @@ class AnidubProvider extends DataLifeProvider {
                                     file.extractor = { type: 'stormTv' }
                                     file.url = playerUrl
                                 } else {
-                                    file.manifestUrl = playerUrl
-                                    file.extractor = {
+                                    const extractor = {
                                         type: 'anidub',
                                         params: {
                                             referer: urlencode(playerUrl)
                                         }
                                     }
+                                    file.manifestUrl = playerUrl
+                                    // Encrypted semnets :(
+                                    // file.downloadUrl = '/videoStreamConcat?' + urlencode.stringify({
+                                    //     manifestUrl: playerUrl,
+                                    //     extractor
+                                    // })
+                                    file.extractor = extractor
                                 }
 
                                 return file

@@ -33,7 +33,8 @@ class TorrentListItemFile extends Component {
                 onPlay={() => onPlayFile(torrent, file)}
                 onCast={() => onCastFile(torrent, file)}
                 secondaryActions={createDownloadSecondaryActions({ 
-                    url: getTorrentFileContentLink(torrent.infoHash, file.id) 
+                    url: getTorrentFileContentLink(torrent.infoHash, file.id),
+                    name: file.name
                 })} 
             >
                 <ListItemText primary={text} />

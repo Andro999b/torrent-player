@@ -4,7 +4,7 @@ const { PROXY_HEADERS } = require('../../config')
 module.exports = async ({ url, referer }, res) => {
     let targetUrl
 
-    if(url.startsWith('https://anime')) {
+    if(url.startsWith('https://anime') || url.startsWith('https://online')) {
         targetUrl = url.split('url=')[0]
         targetUrl = targetUrl.replace('index', 'noad')
         referer = url

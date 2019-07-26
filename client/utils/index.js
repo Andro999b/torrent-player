@@ -1,4 +1,5 @@
 import playableExtensions from '../../resources/video-extensions.json'
+import { createElement } from 'react'
 
 export function isPlayable(fileName) {
     return playableExtensions.findIndex((ext) => {
@@ -16,7 +17,7 @@ export function getFileContentDownloadLink({ url, extractor, downloadUrl}) {
     
     if(url) {
         if(extractor) {
-            return createExtractorUrlBuilder(extractor)(url)
+            return createExtractorUrlBuilder(extractor, { noredirect: true })(url)
         }
 
         return url
@@ -26,27 +27,32 @@ export function getFileContentDownloadLink({ url, extractor, downloadUrl}) {
 export function createDownloadSecondaryActions(file) {
     const downloadLink = getFileContentDownloadLink(file)
 
-    return (downloadLink && !isElectron()) ? [
+    return downloadLink ? [
         { 
-            title: 'Download', 
-            action: () => {
-                window.open(downloadLink, '_blank')
-            }
+            title: createElement(
+                'a',
+                {
+                    href: downloadLink,
+                    download: file.name,
+                    target: '_blank'
+                },
+                'Download'
+            ), 
         }
     ] : null
 }
 
-export function createExtractorUrlBuilder(extractor) {
+export function createExtractorUrlBuilder(extractor, additionalParams) {
     let extractorBaseUrl = null
     const { type, params } = extractor
     extractorBaseUrl = '/extractVideo?'
     extractorBaseUrl += `type=${type}`
 
-    if(params) {
-        Object.keys(params).forEach((key) => 
-            extractorBaseUrl += `&${key}=${params[key]}`
-        )
-    }
+    const finalParams = {...params, ...additionalParams}
+
+    Object.keys(finalParams).forEach((key) => 
+        extractorBaseUrl += `&${key}=${finalParams[key]}`
+    )
 
     return (url) => {
         return `${extractorBaseUrl}&url=${encodeURIComponent(url)}`

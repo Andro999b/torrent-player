@@ -38,7 +38,7 @@ class SearchResultsItemDetails extends Component {
                 playable={playable} 
                 onPlay={() => onPlayFile(details, file)}
                 onCast={() => onCastFile(details, file)}
-                econdaryActions={createDownloadSecondaryActions(file)} 
+                secondaryActions={createDownloadSecondaryActions(file)} 
             > 
                 <ListItemText primary={<span style={{ wordBreak: 'break-all' }}>
                     {file.name}

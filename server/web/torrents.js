@@ -89,6 +89,7 @@ router.head('/:torrentId/files/:fileId', asyncHandler(async (req, res) => {
     res.set('Accept-Ranges', 'bytes')
     res.set('Content-Type', mimeLookup(file.name))
     res.set('Content-Length', file.length)
+    res.set('Content-Disposition', `attachment; filename="${file.name}"`)
 
     if(req.header('getcontentfeatures.dlna.org')) {
         await setDlnaContentFeaturesHeader(file, res)
@@ -172,7 +173,8 @@ router.get('/:torrentId/files/:fileId/transcoded', asyncHandler(async (req, res)
     const headers = {
         'Content-Type': 'video/mpegts',
         'TransferMode.dlna.org': 'Streaming',
-        'ContentFeatures.dlna.org': dlnaFeatures
+        'ContentFeatures.dlna.org': dlnaFeatures,
+        'Content-Disposition': `attachment; filename="${file.name}"`
     }
 
     if(metadata) {
@@ -253,6 +255,8 @@ function writeFileRange(file, req, res) {
     // indicate this resource can be partially requested
     res.set('Accept-Ranges', 'bytes')
     res.set('Content-Type', mimeLookup(file.name))
+    res.set('Content-Disposition', 'attachment')
+    res.set('Content-Disposition', `attachment; filename="${file.name}"`)
     // if this is a partial request
 
     var ranges = req.range(file.length)

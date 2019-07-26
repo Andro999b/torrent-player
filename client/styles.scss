@@ -8,6 +8,13 @@ html {
     min-height: 100%
 }
 
+.MuiButtonBase-root {
+    a {
+        color: rgba(0, 0, 0, 0.87);
+        text-decoration: none;
+    }
+}
+
 .main-navigation {
     position: fixed;
     bottom: 0;

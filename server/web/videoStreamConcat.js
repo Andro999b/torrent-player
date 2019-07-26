@@ -36,7 +36,7 @@ router.get('/', asyncHandler(async (req, res) => {
         const { playlists } = parser.manifest
 
         if(playlists && playlists.length > 0) {
-            playlistUrl = getExtractorUrl(playlists[0].uri, extractor)
+            playlistUrl = playlists[0].uri //getExtractorUrl(playlists[0].uri, extractor)
         }
     }
 
@@ -47,7 +47,8 @@ router.get('/', asyncHandler(async (req, res) => {
     res.set({
         'ContentFeatures.dlna.org': `DLNA.ORG_OP=01;DLNA.ORG_FLAGS=${DLNA_ORIGIN_FLAGS}`,
         'Content-Type': 'video/mpeg',
-        'TransferMode.dlna.org': 'Streaming'
+        'TransferMode.dlna.org': 'Streaming',
+        'Content-Disposition': 'attachment'
     })
 
     m3u8stream(playlistUrl, { begin: time })
@@ -61,7 +62,7 @@ router.get('/', asyncHandler(async (req, res) => {
                     'X-Seek-Range': 'npt=' + timeFormated + '-' + durationFormated + '/' + durationFormated
                 })
             }
-        }) // eslint-disable-line no-console
+        })
         .pipe(res)
 }))
 
