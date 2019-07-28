@@ -7,8 +7,8 @@ const $ = require('cheerio')
 class HDRezka extends Provider {
     constructor() {
         super({
-            baseUrl: 'http://hdrezka-ag.com/',
-            searchUrl: 'http://hdrezka-ag.com/index.php?do=search&subaction=search',
+            baseUrl: 'http://hdrezkaag.net/',
+            searchUrl: 'http://hdrezkaag.net/index.php?do=search&subaction=search',
             scope: '.b-content__inline_item',
             pageSize: 50,
             selectors: {
@@ -189,7 +189,7 @@ class HDRezka extends Provider {
     }
 
     getSearchUrl(query) {
-        return `${this.config.searchUrl}&q=${query}`
+        return `${this.config.searchUrl}&story=${urlencode(query, 'windows-1251')}`
     }
 
     getInfoUrl(resultsId) {

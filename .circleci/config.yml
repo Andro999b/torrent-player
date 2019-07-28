@@ -123,12 +123,12 @@ workflows:
           filters:
             branches:
               only: master
-      # - build-electron:
-      #     requires:
-      #       - prepare
+      - build-electron:
+          requires:
+            - prepare
       - release-heroku:
           requires:
             - prepare
-      # - publish:
-      #     requires:
-      #       - build-electron
+      - publish:
+          requires:
+            - build-electron

@@ -17,7 +17,7 @@ class DataLifeProvider extends Provider {
         return urlencode.decode(resultsId)
     }
 
-    _crawlerRequestGenerator(query) {
+    _crawlerSearchRequestGenerator(query) {
         const { searchUrl, headers } = this.config
 
         return () => {

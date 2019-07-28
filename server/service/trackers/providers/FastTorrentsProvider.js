@@ -84,7 +84,7 @@ class FastTorrentsProvider extends Provider {
         return `fastTorrent${subtype ? '-' + subtype : ''}`
     }
 
-    _crawlerRequestGenerator(query) {
+    _crawlerSearchRequestGenerator(query) {
         const { searchUrl, headers, categories } = this.config
 
         return () => {

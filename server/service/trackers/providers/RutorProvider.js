@@ -37,7 +37,7 @@ class RutorProvider extends Provider {
 
     getSearchUrl(query) {
         const { searchUrl } = this.config
-        return `${searchUrl}/${query}`
+        return `${searchUrl}/${encodeURIComponent(query)}`
     }
 
     getInfoUrl(resultsId) {

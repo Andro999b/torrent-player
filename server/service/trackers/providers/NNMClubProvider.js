@@ -87,9 +87,9 @@ class NNMClubProvider extends Provider {
     getSearchUrl(query) {
         const { searchUrl, categories } = this.config
         if(categories)
-            return `${searchUrl}?f=${categories.join(',')}&nm=${query}`
+            return `${searchUrl}?f=${categories.join(',')}&nm=${encodeURIComponent(query)}`
         else
-            return `${searchUrl}?nm=${query}`
+            return `${searchUrl}?nm=${encodeURIComponent(query)}`
     }
 
     getInfoUrl(resultsId) {

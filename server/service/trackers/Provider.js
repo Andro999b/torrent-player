@@ -1,14 +1,12 @@
 const crawler = require('../../utils/crawler')
 const parseTorrent = require('parse-torrent')
 const superagent = require('superagent')
-const urlencode = require('urlencode')
 
 class Provider {
     constructor(config) {
         this.config = Object.assign(
             {
                 pageSize: 50,
-                encoding: 'utf-8',
                 scope: '',
                 slectors: {},
                 pagenatorSelector: '',
@@ -61,16 +59,15 @@ class Provider {
             selectors,
             pagenatorSelector,
             headers,
-            pageSize,
-            encoding
+            pageSize
         } = this.config
 
         const limit = pageCount * pageSize
 
         let results = await crawler
             .get(
-                this.getSearchUrl(urlencode(query, encoding), page),
-                this._crawlerRequestGenerator(query, page)
+                this.getSearchUrl(query, page),
+                this._crawlerSearchRequestGenerator(query, page)
             )
             .headers(headers)
             .scope(scope)
@@ -138,7 +135,7 @@ class Provider {
         return details
     }
 
-    _crawlerRequestGenerator(query, page) {} // eslint-disable-line
+    _crawlerSearchRequestGenerator(query, page) {} // eslint-disable-line
 
     async  _loadTorrentFileInfo(details) {
         if(!details.torrentUrl) {
