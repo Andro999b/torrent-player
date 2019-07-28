@@ -123,10 +123,9 @@ workflows:
       - build-electron:
           requires:
             - prepare
-      - build-docker:
+      - release-heroku:
           requires:
             - prepare
       - publish:
           requires:
             - build-electron
-            - build-server
