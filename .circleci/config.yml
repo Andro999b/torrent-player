@@ -91,7 +91,7 @@ jobs:
       - run:
           name: Build Docker Image
           command: |
-            docker login --email=$HEROKU_LOGIN --username=$HEROKU_LOGIN --password=$HEROKU_API_KEY registry.heroku.com
+            docker login --username=$HEROKU_LOGIN --password=$HEROKU_API_KEY registry.heroku.com
             docker build --rm=false -t registry.heroku.com/$HEROKU_APP_NAME/web .
             docker push registry.heroku.com/$HEROKU_APP_NAME/web:latest
 
@@ -120,12 +120,12 @@ workflows:
           filters:
             branches:
               only: master
-      - build-electron:
-          requires:
-            - prepare
+      # - build-electron:
+      #     requires:
+      #       - prepare
       - release-heroku:
           requires:
             - prepare
-      - publish:
-          requires:
-            - build-electron
+      # - publish:
+      #     requires:
+      #       - build-electron
