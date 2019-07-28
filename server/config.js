@@ -6,6 +6,7 @@ const defaultArgc = {
 }
 
 const uuid = require('uuid')
+const ip = require('ip')
 const os = require('os')
 const path = require('path')
 const argv = require('minimist')(process.argv.slice(2), { default: defaultArgc })
@@ -13,6 +14,7 @@ const firstExistPath = require('./utils/firstExistPath')
 
 const ROOT_DIR = argv['root-dir'] || path.join(os.homedir(), 'webtorrents')
 const CLIENT_DIR = firstExistPath([
+    path.join(__dirname, 'client'),
     path.join(__dirname, 'client', 'dist'),
     path.join(__dirname, '..', 'client', 'dist'),
     path.join(__dirname, '..', 'client')
@@ -40,10 +42,12 @@ module.exports = {
     CLIENT_DIR,
     RESOURCES_DIR,
     TOOLS_DIR,
+    HOSTNAME: argv['hostname'] || ip.address(),
     DLNA_UUID: argv['dlna-uid'] || uuid(),
     DLNA_NAME: argv['dlna-name'] || 'Torrents',
     DLNA_PORT: argv['dlna-port'] || 5004,
     WEB_PORT: argv['web-port'] || 8080,
+    INTERNAL_WEB_PORT: argv['internal-web-port'] || argv['web-port'] || 8080, 
     TRANSCODER_IDLE_TIMEOUT: 60 * 1000,
     HLS_FRAGMENT_DURATION: 10,
     /*

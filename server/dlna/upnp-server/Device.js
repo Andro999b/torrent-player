@@ -1,11 +1,10 @@
 const uuid = require('uuid')
 const ejs = require('ejs')
 const fs = require('fs')
-const ip = require('ip')
 const path = require('path')
 const Service = require('./Service')
 const SsdpServer = require('node-ssdp').Server
-const { RESOURCES_DIR } = require('../../config')
+const { RESOURCES_DIR, HOSTNAME } = require('../../config')
 
 const RENDER_DEVICE = ejs.compile(fs.readFileSync(path.join(RESOURCES_DIR, 'xml', 'device-desc.xml'), 'utf8'))
 
@@ -47,7 +46,7 @@ class Device {
 
     start() {
         this.ssdpServer = new SsdpServer({
-            location: `http://${ip.address()}:${this.server.port}${this.descriptionURL}`,
+            location: `http://${HOSTNAME}:${this.server.port}${this.descriptionURL}`,
             udn: this.UDN
         })
 

@@ -11,7 +11,7 @@ const videoStreamConcat = require('./videoStreamConcat')
 const remote = require('./remote')
 const remoteQrCode = require('./remoteQrCode')
 
-const { WEB_PORT, CLIENT_DIR, CLIENT_CONFIG } = require('../config')
+const { INTERNAL_WEB_PORT, CLIENT_DIR, CLIENT_CONFIG } = require('../config')
 
 module.exports = function () {
     const expressServer = express()
@@ -53,7 +53,7 @@ module.exports = function () {
     })
 
     // eslint-disable-next-line no-console
-    const httpServer = expressServer.listen(WEB_PORT, () => console.log(`WEB Server started at port ${WEB_PORT}`))
+    const httpServer = expressServer.listen(INTERNAL_WEB_PORT, () => console.log(`WEB Server started at port ${INTERNAL_WEB_PORT}`))
 
     remote(httpServer)
 

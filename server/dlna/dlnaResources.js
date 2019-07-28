@@ -1,7 +1,6 @@
 const mime = require('mime-types')
-const ip = require('ip')
 const { isVideo, isAudio, formatDLNADuration } = require('../utils')
-const { WEB_PORT } = require('../config')
+const { WEB_PORT, HOSTNAME } = require('../config')
 const { DLNA_ORIGIN_FLAGS } = require('./dlnaFlags')
 const metadataService = require('../service/metadata')
 const torrentsDatabase = require('../service/torrents/database')
@@ -37,7 +36,7 @@ function commonResource({ infoHash, upnpClass, fsEntry }) {
                     'xmlns:dlna': 'urn:schemas-dlna-org:metadata-1-0/',
                     'size': file.length
                 },
-                _content: `http://${ip.address()}:${WEB_PORT}/api/torrents/${infoHash}/files/${fileIndex}`
+                _content: `http://${HOSTNAME}:${WEB_PORT}/api/torrents/${infoHash}/files/${fileIndex}`
             }
         ]
     }
@@ -80,7 +79,7 @@ async function videoResource({ id, parentId, upnpClass, fsEntry, clientId, readM
                 'xmlns:dlna': 'urn:schemas-dlna-org:metadata-1-0/',
                 'size': file.length
             },
-            _content: `http://${ip.address()}:${WEB_PORT}/api/torrents/${infoHash}/files/${fileIndex}/transcoded?clientId=${clientId}`
+            _content: `http://${HOSTNAME}:${WEB_PORT}/api/torrents/${infoHash}/files/${fileIndex}/transcoded?clientId=${clientId}`
         }
     } else {
         let dlnaFeatures
@@ -101,7 +100,7 @@ async function videoResource({ id, parentId, upnpClass, fsEntry, clientId, readM
                 'xmlns:dlna': 'urn:schemas-dlna-org:metadata-1-0/',
                 'size': file.length
             },
-            _content: `http://${ip.address()}:${WEB_PORT}/api/torrents/${infoHash}/files/${fileIndex}`
+            _content: `http://${HOSTNAME}:${WEB_PORT}/api/torrents/${infoHash}/files/${fileIndex}`
         }
     }
 

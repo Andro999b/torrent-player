@@ -81,7 +81,7 @@ jobs:
           paths: 
             - "build/out/electron/*.zip" 
 
-  build-server:
+  release-heroku:
     executor: node-x86
     
     steps:
@@ -89,17 +89,11 @@ jobs:
           at: /tmp/repo
 
       - run:
-          name: Build Binaries
+          name: Build Docker Image
           command: |
-            sudo npm i -g pkg
-            pkg --version
-            chmod +x build/server-binaries.sh
-            cd build && sudo ./server-binaries.sh
-
-      - persist_to_workspace:
-          root: /tmp/repo
-          paths: 
-            - "build/out/server/*.zip" 
+            docker login --email=$HEROKU_LOGIN --username=$HEROKU_LOGIN --password=$HEROKU_API_KEY registry.heroku.com
+            docker build --rm=false -t registry.heroku.com/$HEROKU_APP_NAME/web .
+            docker push registry.heroku.com/$HEROKU_APP_NAME/web:latest
 
   publish:
     docker:
@@ -114,7 +108,7 @@ jobs:
             echo "Release version ${VERSION}"
             cd /tmp/repo/build/out
             # find electron server -name "*.zip" -exec sh -c 'mv "$1" "${1%.zip}-$2.zip"' _ {} ${VERSION} \;
-            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} ${VERSION} server
+            # ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} ${VERSION} server
             ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} ${VERSION} electron
 
 
@@ -129,7 +123,7 @@ workflows:
       - build-electron:
           requires:
             - prepare
-      - build-server:
+      - build-docker:
           requires:
             - prepare
       - publish:

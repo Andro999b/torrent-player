@@ -3,7 +3,6 @@ const asyncHandler = require('express-async-handler')
 const superagent = require('superagent')
 const m3u8 = require('m3u8-parser')
 const m3u8stream = require('m3u8stream')
-const ip = require('ip')
 const { WEB_PORT } = require('../config')
 const { DLNA_ORIGIN_FLAGS } = require('../dlna/dlnaFlags')
 const { getExtractorUrl, formatDLNADuration, parseRange } = require('../utils')
@@ -41,7 +40,7 @@ router.get('/', asyncHandler(async (req, res) => {
     }
 
     if(playlistUrl.startsWith('/')) {
-        playlistUrl = `http://${ip.address()}:${WEB_PORT}${playlistUrl}`
+        playlistUrl = `http://localhost:${WEB_PORT}${playlistUrl}`
     }
 
     res.set({

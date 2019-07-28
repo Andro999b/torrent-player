@@ -2,11 +2,10 @@ const fs = require('fs-extra')
 const path = require('path')
 const readline = require('readline')
 const urlencode = require('urlencode')
-const ip = require('ip')
 const Stream = require('stream')
 const sprintf = require('sprintf-js').sprintf
 const ResponseError = require('./ResponseError')
-const { RESOURCES_DIR, WEB_PORT } = require('../config')
+const { RESOURCES_DIR, WEB_PORT, HOSTNAME } = require('../config')
 
 const videExtensions = JSON.parse(fs.readFileSync(path.join(RESOURCES_DIR, 'video-extensions.json')))
 const audioExtensions = JSON.parse(fs.readFileSync(path.join(RESOURCES_DIR, 'audio-extensions.json')))
@@ -143,7 +142,7 @@ function getExtractorUrl(url, extractor) {
 
     if(!extractor) return url
 
-    return `http://${ip.address()}:${WEB_PORT}/extractVideo?` + urlencode.stringify({
+    return `http://${HOSTNAME}:${WEB_PORT}/extractVideo?` + urlencode.stringify({
         type,
         url,
         ...params

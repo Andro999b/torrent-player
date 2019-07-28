@@ -2,9 +2,8 @@ const SsdpHeader = require('node-ssdp/lib/ssdpHeader')
 const RemoteDevice = require('../service/remote/RemoteDevice')
 const MediaRendererClient = require('upnp-mediarenderer-client')
 const remote = require('../service/remote')
-const ip = require('ip')
 const debug = require('debug')('dnla-renderer')
-const { WEB_PORT } = require('../config')
+const { WEB_PORT, HOSTNAME } = require('../config')
 const { getExtractorUrl } = require('../utils')
 const { DLNA_ORIGIN_FLAGS, DLNA_TRANSCODING_FLAGS } = require('../dlna/dlnaFlags')
 
@@ -108,7 +107,7 @@ class DLNADevice extends RemoteDevice {
         
         
         if(targetUrl.startsWith('/')) {
-            targetUrl = `http://${ip.address()}:${WEB_PORT}${targetUrl}`
+            targetUrl = `http://${HOSTNAME}:${WEB_PORT}${targetUrl}`
         } else if(extractor) { // add video extractor
             const { type, params } = extractor
             targetUrl = getExtractorUrl(
