@@ -91,7 +91,8 @@ jobs:
       - run:
           name: Build Docker Image
           command: |
-            docker login --username=$HEROKU_LOGIN --password=$HEROKU_API_KEY registry.heroku.com
+            cd /tmp/repo/
+            echo $HEROKU_API_KEY | docker login --username=$HEROKU_LOGIN --password-stdin registry.heroku.com
             docker build --rm=false -t registry.heroku.com/$HEROKU_APP_NAME/web .
             docker push registry.heroku.com/$HEROKU_APP_NAME/web:latest
 
