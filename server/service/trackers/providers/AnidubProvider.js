@@ -38,48 +38,57 @@ class AnidubProvider extends DataLifeProvider {
                     }
                 },
                 files: {
-                    selector: '.players>div:first-child select>option',
-                    transform: ($el) =>
-                        $el.toArray()
-                            .map((node) => {
-                                const $node = $(node)
-                                const playerUrl = $node.attr('value').split('|')[0]
-
-                                const file = {
-                                    name: $node.text()
-                                }
-
-                                if(playerUrl.indexOf('sibnet') != -1) {
-                                    return null
-                                } else if (playerUrl.indexOf('storm') != -1) {
-                                    file.extractor = { type: 'stormTv' }
-                                    file.url = playerUrl
-                                } else {
-                                    const extractor = {
-                                        type: 'anidub',
-                                        params: {
-                                            referer: urlencode(playerUrl)
-                                        }
-                                    }
-                                    file.manifestUrl = playerUrl
-                                    // Encrypted semnets :(
-                                    // file.downloadUrl = '/videoStreamConcat?' + urlencode.stringify({
-                                    //     manifestUrl: playerUrl,
-                                    //     extractor
-                                    // })
-                                    file.extractor = extractor
-                                }
-
-                                return file
-                            })
-                            .filter((file) => file)
-                            .map((file, index) => ({
-                                id: index,
-                                ...file
-                            }))
+                    selector: '.players',
+                    transform: ($players) => {
+                        let $player = $players.find('#our1, .active').first()
+                        if($player.lenght == 0) {
+                            $player = $players.first()
+                        }
+                        return this.extractPlayerFiles($player.find('select>option'))
+                    }  
                 }
             }
         })
+    }
+
+    extractPlayerFiles($playerOptions) {
+        return $playerOptions.toArray()
+            .map((node) => {
+                const $node = $(node)
+                const playerUrl = $node.attr('value').split('|')[0]
+
+                const file = {
+                    name: $node.text()
+                }
+
+                if(playerUrl.indexOf('sibnet') != -1) {
+                    return null
+                } else if (playerUrl.indexOf('storm') != -1) {
+                    file.extractor = { type: 'stormTv' }
+                    file.url = playerUrl
+                } else {
+                    const extractor = {
+                        type: 'anidub',
+                        params: {
+                            referer: urlencode(playerUrl)
+                        }
+                    }
+                    file.manifestUrl = playerUrl
+                    // Encrypted semnets :(
+                    // file.downloadUrl = '/videoStreamConcat?' + urlencode.stringify({
+                    //     manifestUrl: playerUrl,
+                    //     extractor
+                    // })
+                    file.extractor = extractor
+                }
+
+                return file
+            })
+            .filter((file) => file)
+            .map((file, index) => ({
+                id: index,
+                ...file
+            }))
     }
 
     getName() {
