@@ -12,8 +12,9 @@ import {
     Fullscreen as FullscreenIcon,
     FullscreenExit as FullscreenExitIcon
 } from '@material-ui/icons'
+import MobileSoundControl from './MobileSoundControl'
 import SoundControl from './SoundControl'
-import { isElectron } from '../utils'
+import { isElectron, isMobile } from '../utils'
 
 import { observer } from 'mobx-react'
 
@@ -36,6 +37,8 @@ class MediaControls extends Component {
             currentFileIndex,
             playlist: { files }
         } = device
+
+        const mobile = isMobile()
 
         return (
             <Slide direction="up" in mountOnEnter unmountOnExit>
@@ -69,7 +72,8 @@ class MediaControls extends Component {
                                     <NextIcon />
                                 </IconButton>
                             }
-                            <SoundControl device={device}/>
+                            {mobile && <MobileSoundControl device={device}/>}
+                            {!mobile && <SoundControl device={device}/>}
                         </div>
                         <div className="player-controls__panel-section">
                             {showFullscrean &&

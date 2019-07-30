@@ -16,7 +16,7 @@ import {
     InsertDriveFile as NotPlayableIcon
 } from '@material-ui/icons'
 
-import { isMobile } from '../utils'
+import { isMobileApp } from '../utils'
 
 class CastOrPlayListItem extends Component {
     constructor(props, context) {
@@ -30,13 +30,13 @@ class CastOrPlayListItem extends Component {
     render() {
         const { playable, onPlay, onCast, secondaryActions } = this.props
         const { anchorEl } = this.state
-        const mobile = isMobile()
+        const mobileApp = isMobileApp()
 
-        const primartyIcon = playable ? (mobile ? <CastIcon/> : <PlayableIcon />) : <NotPlayableIcon/>
-        const primaryAction = mobile ? onCast : onPlay
-        const secondaryAction = mobile ? onPlay : onCast
-        const secondaryTitle = mobile ? 'Play' : 'Cast'
-        const secondaryIcon = mobile ? <PlayableIcon/> : <CastIcon/>
+        const primartyIcon = playable ? (mobileApp ? <CastIcon/> : <PlayableIcon />) : <NotPlayableIcon/>
+        const primaryAction = mobileApp ? onCast : onPlay
+        const secondaryAction = mobileApp ? onPlay : onCast
+        const secondaryTitle = mobileApp ? 'Play' : 'Cast'
+        const secondaryIcon = mobileApp ? <PlayableIcon/> : <CastIcon/>
 
         return (
             <ListItem button={playable} onClick={primaryAction} ContainerComponent="div">

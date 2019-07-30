@@ -249,13 +249,11 @@ html {
     right: 0;
 }
 
-.sound-conrol__slider {
-    height: 60px;
-    width: 160px;
-    padding: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.sound-control__slider {
+    width: 120px;
+    vertical-align: middle;
+    display: inline-block;
+    padding: 5px 5px 0;
 }
 
 .idle {

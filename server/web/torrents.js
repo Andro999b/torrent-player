@@ -89,7 +89,7 @@ router.head('/:torrentId/files/:fileId', asyncHandler(async (req, res) => {
     res.set('Accept-Ranges', 'bytes')
     res.set('Content-Type', mimeLookup(file.name))
     res.set('Content-Length', file.length)
-    res.set('Content-Disposition', `attachment; filename="${file.name}"`)
+    res.set('Content-Disposition', `attachment; filename="${encodeURIComponent(file.name)}"`)
 
     if(req.header('getcontentfeatures.dlna.org')) {
         await setDlnaContentFeaturesHeader(file, res)
@@ -256,7 +256,7 @@ function writeFileRange(file, req, res) {
     res.set('Accept-Ranges', 'bytes')
     res.set('Content-Type', mimeLookup(file.name))
     res.set('Content-Disposition', 'attachment')
-    res.set('Content-Disposition', `attachment; filename="${file.name}"`)
+    res.set('Content-Disposition', `attachment; filename="${encodeURIComponent(file.name)}"`)
     // if this is a partial request
 
     var ranges = req.range(file.length)

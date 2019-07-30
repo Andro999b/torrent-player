@@ -5,86 +5,44 @@ import {
     VolumeOffRounded as VolumeOffIcon
 } from '@material-ui/icons'
 import { 
-    IconButton,
-    Paper,
-    Popover,
-    Typography
+    Slider,
+    IconButton
 } from '@material-ui/core'
 import PropTypes from 'prop-types'
 import { observer } from 'mobx-react'
-
-const VOLUME_LEVELS = 15
 
 @observer
 class SoundControl extends Component {
     constructor(props, context) {
         super(props, context)
-
-        this.state = {
-            anchorEl: null
-        }
     }
 
-    changeVolue(inc) {
-        const { device } = this.props
-        const newVolume = (Math.ceil(device.volume * VOLUME_LEVELS) + inc ) / VOLUME_LEVELS
-        device.setVolume(Math.max(Math.min(newVolume, 1), 0))
+    handleVolumDown = () => {
+        this.props.device.setVolume(0)
     }
 
-    handleVolumeUp = () => this.changeVolue(1)
-
-    handleVolumeDown = () => this.changeVolue(-1)
-
-    handleCloseRequest = () => {
-        this.setState({
-            anchorEl: null
-        })
+    handleVolumUp = () => {
+        this.props.device.setVolume(1)
     }
 
-    toggleVolumePopup = (event) => {
-        const { currentTarget } = event
-        this.setState((state) => ({
-            anchorEl: state.anchorEl ? null : currentTarget
-        }))
+    handleVolume = (_, volume) => {
+        this.props.device.setVolume(volume / 100)
     }
 
     render() {
         const { device: { volume } } = this.props
-        const { anchorEl } = this.state
 
         return (
             <Fragment>
-                <IconButton onClick={this.toggleVolumePopup}>
-                    {volume == 0 && <VolumeOffIcon />}
-                    {volume > 0 && <VolumeUpIcon />}
+                <IconButton onClick={this.handleVolumDown}>
+                    <VolumeDownIcon/>
                 </IconButton>
-                <Popover 
-                    anchorEl={anchorEl}
-                    anchorOrigin={{
-                        vertical: 'top',
-                        horizontal: 'center',
-                    }}
-                    transformOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'left',
-                    }}
-                    open={anchorEl != null}
-                    onClose={this.handleCloseRequest}
-                >
-                    <Paper>
-                        <div className="sound-conrol__slider">
-                            <IconButton onClick={this.handleVolumeDown}>
-                                <VolumeDownIcon/>
-                            </IconButton>
-                            <Typography variant="body2" align="center">
-                                {Math.ceil(volume * VOLUME_LEVELS)}
-                            </Typography>
-                            <IconButton onClick={this.handleVolumeUp}>
-                                <VolumeUpIcon/>
-                            </IconButton>
-                        </div>
-                    </Paper>
-                </Popover>
+                <div className="sound-control__slider">
+                    <Slider value={volume * 100} onChange={this.handleVolume} />
+                </div>
+                <IconButton onClick={this.handleVolumUp}>
+                    <VolumeUpIcon/>
+                </IconButton>
             </Fragment>
         )
     }
