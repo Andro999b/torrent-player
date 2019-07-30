@@ -3,7 +3,8 @@ const providers = [
     new (require('./providers/AnimeVostProvider'))(),
     new (require('./providers/AnidubProvider'))(),
     new (require('./providers/KinokradProvider'))(),
-    new (require('./providers/HDRezka'))(),
+    new (require('./providers/HDRezkaProvider'))(),
+    new (require('./providers/BaskinoProvider'))(),
     ...require('./providers/RutrackerProvider').providers,
     ...require('./providers/NNMClubProvider').providers,
     ...require('./providers/FastTorrentsProvider').providers

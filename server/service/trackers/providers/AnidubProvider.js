@@ -74,7 +74,7 @@ class AnidubProvider extends DataLifeProvider {
                         }
                     }
                     file.manifestUrl = playerUrl
-                    // Encrypted semnets :(
+                    // Encrypted seпmeтts :(
                     // file.downloadUrl = '/videoStreamConcat?' + urlencode.stringify({
                     //     manifestUrl: playerUrl,
                     //     extractor
