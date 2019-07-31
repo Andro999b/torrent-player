@@ -6,7 +6,9 @@ const { ROOT_DIR } = require('../../../config')
 let bb_cookie = ''
 try{
     const buf = fs.readFileSync(path.join(ROOT_DIR, 'rutracker-session'))
-    bb_cookie = `bb_session=${buf.toString('utf-8')}`
+    const token = buf.toString('utf-8')
+    bb_cookie = `bb_session=${token}`
+    console.log(`Rutracker token: ${token}`) // eslint-disable-line no-console
 } catch(err) {
     console.error(`Fail to read ru tracker seesion file: ${err}`)
 }

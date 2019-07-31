@@ -3,7 +3,8 @@ export const NO_TORRENTS_SEARCH_RPOVIDERS ={
     'anidub': 'AniDub',
     'kinokrad': 'Kinokrad',
     'hdrezka': 'HD Rezka',
-    'baskino': 'Baskino'
+    'baskino': 'Baskino',
+    // 'moonwalk': 'MoonWalk'
 }
 
 export const SEARCH_RPOVIDERS = {
