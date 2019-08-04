@@ -104,7 +104,7 @@ class BookmarkItem extends Component {
             <Paper square>
                 <CastOrPlayListItem playable onPlay={this.handlePlay} onCast={this.handleCast} secondaryActions={[
                     { title: 'Clean', action: this.handleRemove },
-                    { title: 'Show File', action: this.handleToggleFiles }
+                    { title: 'Show Files', action: this.handleToggleFiles }
                 ]}>
                     <ListItemText primary={name} secondary={
                         <span style={{ wordBreak: 'break-all' }}>

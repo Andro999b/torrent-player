@@ -5,7 +5,7 @@ const providers = [
     new (require('./providers/KinokradProvider'))(),
     new (require('./providers/HDRezkaProvider'))(),
     new (require('./providers/BaskinoProvider'))(),
-    new (require('./providers/MoonWalkProvider'))(),
+    // new (require('./providers/MoonWalkProvider'))(),
     ...require('./providers/RutrackerProvider').providers,
     ...require('./providers/NNMClubProvider').providers,
     ...require('./providers/FastTorrentsProvider').providers
@@ -17,7 +17,7 @@ module.exports = {
     },
     getTracker(name) {
         const provider = providers.find((provider) => provider.getName() == name)
-        if(provider) {
+        if (provider) {
             return Promise.resolve(provider)
         }
         return Promise.reject(`No provider found for ${name}`)
