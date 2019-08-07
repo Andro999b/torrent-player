@@ -75,10 +75,7 @@ class SearchResultsItemDetails extends Component {
         if (!details) return null
 
         const { files, description, torrents } = details
-        const posterImage = details.image ? 
-            urljoin(API_BASE_URL, `/proxyMedia?url=${encodeURIComponent(details.image)}`)
-            : null
-
+        const posterImage = details.image 
         // setup actions for directory
         const directoryActions = [
             { title: 'Cast Group', action: creatDirectoryAction(details, onCastFile) },
