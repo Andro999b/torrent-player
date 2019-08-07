@@ -7,8 +7,9 @@ const $ = require('cheerio')
 class HDRezkaProvider extends Provider {
     constructor() {
         super({
-            baseUrl: 'https://hdrezka-ag.com/',
-            searchUrl: 'https://hdrezka-ag.com/index.php?do=search&subaction=search',
+            baseUrl: 'http://hdrezka-ag.com/',
+            searchUrl: 'http://hdrezka-ag.com/index.php?do=search&subaction=search',
+            useProxy: true,
             scope: '.b-content__inline_item',
             pageSize: 50,
             selectors: {

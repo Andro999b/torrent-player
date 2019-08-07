@@ -10,7 +10,7 @@
   },
   "scripts": {
     "start": "nodemon --inspect ./index.js --dlna-uid=d15c6662-40b9-41da-80d8-9d3d1d24a0a2",
-    "start:cloud": "nodemon --inspect ./index.js --no-dlna --no-torrents-providers --no-transcoding"
+    "start:cloud": "nodemon --inspect ./index.js --no-dlna --no-torrents-providers --no-transcoding --http-proxy http://88.147.244.124:8080"
   },
   "dependencies": {
     "bidirectional-map": "^1.0.4",
@@ -41,6 +41,7 @@
     "sprintf-js": "^1.1.2",
     "superagent": "^5.1.0",
     "superagent-charset": "^1.2.0",
+    "superagent-proxy": "^2.0.0",
     "upnp-mediarenderer-client": "https://github.com/Andro999b/node-upnp-mediarenderer-client.git",
     "urlencode": "^1.1.0",
     "uuid": "^3.3.2",

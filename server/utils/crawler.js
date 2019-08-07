@@ -1,8 +1,10 @@
 const cheerio = require('cheerio')
 const { URL } = require('url')
 const superagent = require('superagent')
+const setRequestProxy = require('./setRequestProxy')
 
 require('superagent-charset')(superagent)
+require('superagent-proxy')(superagent)
 
 cheerio.prototype[Symbol.iterator] = function* () {
     for (let i = 0; i < this.length; i += 1) {
@@ -11,17 +13,23 @@ cheerio.prototype[Symbol.iterator] = function* () {
 }
 
 class Crawler {
-    constructor(url, requestGenerator) {
+    constructor(url, requestGenerator, useProxy) {
         this._requestGenerator = requestGenerator || (async (nextUrl) => {
             const targetUrl = nextUrl != this._url ? 
                 new URL(nextUrl, this._url).toString() :
                 nextUrl
 
-            return superagent
+            const request = superagent
                 .get(targetUrl)
                 .buffer(true)
                 .charset()
                 .set(this._headers)
+            
+            if(useProxy) {
+                return setRequestProxy(request)
+            }
+
+            return request
         })
         this._url = url
     }
@@ -116,7 +124,7 @@ class Crawler {
 
 module.exports = {
     Crawler,
-    get(url, requestGenerator) {
-        return new Crawler(url, requestGenerator)
+    get(url, requestGenerator, useProxy = false) {
+        return new Crawler(url, requestGenerator, useProxy)
     }
 }

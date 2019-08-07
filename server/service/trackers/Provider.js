@@ -14,7 +14,8 @@ class Provider {
                     'User-Agent': 'Mozilla/5.0 Gecko/20100101 Firefox/59.0'
                 },
                 detailsScope: 'body',
-                filterDescription: []
+                filterDescription: [],
+                useProxy: false
             },
             config
         )
@@ -59,7 +60,8 @@ class Provider {
             selectors,
             pagenatorSelector,
             headers,
-            pageSize
+            pageSize,
+            useProxy
         } = this.config
 
         const limit = pageCount * pageSize
@@ -67,7 +69,8 @@ class Provider {
         let results = await crawler
             .get(
                 this.getSearchUrl(query, page),
-                this._crawlerSearchRequestGenerator(query, page)
+                this._crawlerSearchRequestGenerator(query, page),
+                useProxy
             )
             .headers(headers)
             .scope(scope)
@@ -87,10 +90,10 @@ class Provider {
     }
 
     async getInfo(resultsId) {
-        const { detailsScope, detailsSelectors, headers } = this.config
+        const { detailsScope, detailsSelectors, headers, useProxy } = this.config
 
         let details = await crawler
-            .get(this.getInfoUrl(resultsId))
+            .get(this.getInfoUrl(resultsId), null, useProxy)
             .limit(1)
             .headers(headers)
             .scope(detailsScope)

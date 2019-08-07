@@ -15,7 +15,14 @@ ENV HOST ''
 ENV WEB_PORT '80' 
 #internal port
 ENV PORT '80'
+ENV HTTP_PROXY ''
 
 EXPOSE $PORT
 
-CMD node /usr/app/index.js --no-dlna --no-torrents-providers --no-transcoding --internal-web-port $PORT --web-port $WEB_PORT --hostname $HOST
+CMD node /usr/app/index.js \
+    --no-dlna --no-torrents-providers \
+    --no-transcoding \
+    --internal-web-port $PORT \
+    --web-port $WEB_PORT \
+    --hostname $HOST \
+    --http-proxy=$HTTP_PROXY

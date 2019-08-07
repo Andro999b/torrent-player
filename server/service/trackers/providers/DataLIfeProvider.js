@@ -1,6 +1,9 @@
 const Provider = require('../Provider')
 const superagent = require('superagent')
 const urlencode = require('urlencode')
+const setRequestProxy = require('../../../utils/setRequestProxy')
+
+require('superagent-proxy')(superagent)
 
 class DataLifeProvider extends Provider {
     constructor(config) {
@@ -18,10 +21,10 @@ class DataLifeProvider extends Provider {
     }
 
     _crawlerSearchRequestGenerator(query) {
-        const { searchUrl, headers } = this.config
+        const { searchUrl, headers, useProxy } = this.config
 
         return () => {
-            return superagent
+            const request = superagent
                 .post(searchUrl)
                 .type('form')
                 .field({ 
@@ -33,6 +36,12 @@ class DataLifeProvider extends Provider {
                     story: query
                 })
                 .set(headers)
+
+            if(useProxy) {
+                return setRequestProxy(request)
+            }
+
+            return request
         }
     }
 }

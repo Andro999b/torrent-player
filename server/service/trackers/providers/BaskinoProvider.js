@@ -7,6 +7,7 @@ class BaskinoProvider extends DataLifeProvider {
         super({
             baseUrl: 'http://baskino.me/',
             searchUrl: 'http://baskino.me/index.php?do=search',
+            useProxy: true,
             scope: '.shortpost',
             pageSize: 50,
             selectors: {

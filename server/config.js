@@ -67,5 +67,6 @@ module.exports = {
     CLIENT_CONFIG: {
         'torrentsProviders': argv['torrents-providers'],
         'transcoding': argv['transcoding']
-    }
+    },
+    HTTP_PROXY: argv['http-proxy']
 }
