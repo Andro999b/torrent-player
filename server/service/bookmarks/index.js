@@ -9,8 +9,6 @@ const db = lowdb(new FileSync(path.join(ROOT_DIR, 'bookmarks.db.json')))
 
 db.defaults({ bookmarks: {}}).write()
 
-const END_FILE_TIME_OFFSET = 60 // do not remeber last 60 sec
-
 module.exports = {
     getAllBookmarks() {
         return Object.values(
@@ -38,26 +36,18 @@ module.exports = {
         if(!playlistName) return
 
         const state = pick(rawState, [
-            'playlist.name',
-            'playlist.files',
-            'playlist.torrentInfoHash',
-            'playlist.image',
-            'currentFileIndex'
+            'playlist',
+            'marks',
+            'currentFileIndex',
         ])
 
         if(Object.keys(state).length == 0) return
 
         state.ts = Date.now()
 
-        const { currentTime, currentFileIndex, duration } = rawState
-        const timeLimit = Math.max(0, duration - END_FILE_TIME_OFFSET)
-        const file = state.playlist.files[currentFileIndex]
-
-        file.currentTime = Math.min(currentTime, timeLimit)
-
         if(db.has(['bookmarks', playlistName]).value()){
             db.get(['bookmarks', playlistName])
-                .assign(state)
+                .merge(state)
                 .write()
         } else {
             db.set(['bookmarks', playlistName], {

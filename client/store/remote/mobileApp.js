@@ -57,10 +57,10 @@ class MobileAppRemoteDevice extends Device {
         this.sendAction('toggleMute')
     }
 
-    @action setPlaylist(playlist, fileIndex) {
+    @action setPlaylist(playlist, fileIndex, marks) {
         this.playlist = playlist
         this.currentFileIndex = fileIndex
-        this.sendAction('openPlaylist', { playlist, fileIndex })
+        this.sendAction('openPlaylist', { playlist, fileIndex, marks })
     }
 
     closePlaylist(ack) {
@@ -75,7 +75,7 @@ class MobileAppRemoteDevice extends Device {
     @action.bound onSync(state) {
         const filteredState = pick(state, ALLOWED_REMOTE_STATE_FIELDS)
         Object.keys(filteredState).forEach((key) => {
-            this[key] = filteredState[key]
+            this[key] = state[key]
         })
     }
 

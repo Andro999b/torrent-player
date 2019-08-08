@@ -30,7 +30,7 @@ export class Device {
     disconnect() { }
     setVolume(volume) { }
     selectFile(fileIndex) { }
-    setPlaylist(playlist, fileIndex) { }
+    setPlaylist(playlist, fileIndex, marks) { }
     /* eslint-enable */
 
     skip(sec) {
@@ -46,6 +46,7 @@ export class LocalDevice extends Device {
     @observable seekTime = null
     @observable source = null
     @observable progress = null
+    @observable marks = {}
 
     constructor() {
         super()
@@ -54,7 +55,7 @@ export class LocalDevice extends Device {
 
     @action setSource(source) {
         this.source = source
-        this.currentTime = source.currentTime || 0
+        this.currentTime = this.marks[source.id] || source.currentTime || 0
         this.duration = 0
         this.buffered = 0
     }
@@ -87,13 +88,15 @@ export class LocalDevice extends Device {
 
             if (this.duration) {
                 const timeLimit = Math.max(0, this.duration - END_FILE_TIME_OFFSET)
-                this.source.currentTime = Math.min(currentTime, timeLimit)
+                const newMark = { [this.source.id]: Math.min(currentTime, timeLimit) }
+                this.marks = { ...this.marks, ...newMark}
             }
         }
     }
 
-    @action setPlaylist(playlist, fileIndex) {
+    @action setPlaylist(playlist, fileIndex, marks) {
         this.playlist = playlist
+        this.marks = marks || {}
         this.selectFile(fileIndex || 0)
         this.play()
 
@@ -168,7 +171,7 @@ class PlayerStore {
         this.device.connect()
     }
 
-    @action openPlaylist(device, playlist, fileIndex) {
+    @action openPlaylist(device, playlist, fileIndex, marks) {
         if (playlist.files.length === 0) return
 
         const prevDevice = this.device
@@ -176,7 +179,7 @@ class PlayerStore {
 
         this.device = device
         this.device.connect()
-        this.device.setPlaylist(playlist, fileIndex)
+        this.device.setPlaylist(playlist, fileIndex, marks)
     }
 
     @action.bound switchFile(fileIndex) {

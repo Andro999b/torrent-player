@@ -58,8 +58,9 @@ export function isMobileApp() {
 export function diff(oldObject, newObject) {
     const result = {}
     Object.keys(newObject).forEach((key) => {
-        if(newObject[key] != oldObject[key])
+        if(newObject[key] != oldObject[key]) {
             result[key] = newObject[key]
+        }
     })
     return result
 }

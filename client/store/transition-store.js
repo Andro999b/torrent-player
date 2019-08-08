@@ -70,40 +70,28 @@ class TransitionStore {
         )
     }
 
-    @action.bound playMedia(results, selectedItem) {
+    @action.bound playMedia(results, selectedItem, marks) {
         this.goToScreen('player')
         this._downloadPlaylist(results, selectedItem)
             .then((params) => this.playMediaOnDevice({ 
                 ...params, 
-                results 
+                results,
+                marks
             }))
             .catch(console.error)
-    }
-
-    @action.bound playMediaOnDevice({ 
-        playlist, 
-        startIndex, 
-        device
-    }) {
-        playerStore.openPlaylist(
-            device ? remoteControl.getRemoteDevice(device) : new LocalDevice(), 
-            playlist, 
-            startIndex
-        )
-
-        this.castDialog = null
     }
 
     @action.bound openCastTorrentDialog (results, selectedItem) {
         this.openCastDialog({...results, type: 'torrent' }, selectedItem)
     }
 
-    @action.bound openCastDialog(results, selectedItem) {
+    @action.bound openCastDialog(results, selectedItem, marks) {
         const onDeviceSelected = (device) => {
             this.downloadAndPlayMediaOnDevice(
                 results, 
                 selectedItem, 
-                device
+                device,
+                marks
             )
         }
 
@@ -114,6 +102,17 @@ class TransitionStore {
         }
 
         this.castDialog = { onDeviceSelected }
+    }
+
+    @action.bound playMediaOnDevice({ playlist, startIndex, marks, device }) {
+        playerStore.openPlaylist(
+            device ? remoteControl.getRemoteDevice(device) : new LocalDevice(), 
+            playlist, 
+            startIndex,
+            marks
+        )
+
+        this.castDialog = null
     }
 
     showConnectToDeviceDialog() {

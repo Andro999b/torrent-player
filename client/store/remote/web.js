@@ -3,7 +3,7 @@ import playerStore, { Device, LocalDevice } from '../player-store'
 import transitionStore from '../transition-store'
 import urljoin from 'url-join'
 import { diff, isMobile } from '../../utils'
-import { API_BASE_URL } from '../../utils/api'
+import { API_BASE_URL, request } from '../../utils/api'
 import io from 'socket.io-client'
 import pick from 'lodash.pick'
 import { ALLOWED_REMOTE_STATE_FIELDS } from '../../constants'
@@ -97,10 +97,10 @@ class RemoteDevice extends Device {
         this.sendAction('toggleMute')
     }
 
-    @action setPlaylist(playlist, fileIndex) {
+    @action setPlaylist(playlist, fileIndex, marks) {
         this.playlist = playlist
         this.currentFileIndex = fileIndex
-        this.sendAction('openPlaylist', { playlist, fileIndex })
+        this.sendAction('openPlaylist', { playlist, fileIndex, marks })
     }
 
     closePlaylist(ack) {
@@ -114,7 +114,7 @@ class RemoteDevice extends Device {
     @action.bound onSync(state) {
         const filteredState = pick(state, ALLOWED_REMOTE_STATE_FIELDS)
         Object.keys(filteredState).forEach((key) => {
-            this[key] = filteredState[key]
+            this[key] = state[key]
         })
     }
 }
@@ -134,12 +134,14 @@ export default () => {
         autorun(() => {
             const { device } = playerStore
             if (device && device.isLocal()) {
-                let newState = pick(device, ALLOWED_REMOTE_STATE_FIELDS)
-
+                const newState = pick(device, ALLOWED_REMOTE_STATE_FIELDS)
                 const stateDiff = diff(prevState, newState)
+
                 prevState = newState
 
-                socket.emit('sync', stateDiff)
+                if(Object.keys(stateDiff).length > 0) {
+                    socket.emit('sync', stateDiff)
+                }
             } else {
                 prevState = {}
                 socket.emit('clear')
@@ -156,15 +158,37 @@ export default () => {
         })
     }
 
+    function trackMobileState() {
+        let prevState = {}
+        autorun(() => {
+            const { device } = playerStore
+            if (device && device.isLocal()) {
+                const playlistName = device.playlist.name
+                const newState = pick(device, ['playlist', 'marks', 'currentFileIndex'])
+                
+                const stateDiff = diff(prevState, newState)
+                
+                prevState = newState
+
+                if(Object.keys(stateDiff).length > 0) {
+                    request
+                        .post(`/api/library/bookmarks/${encodeURIComponent(playlistName)}`)
+                        .send(stateDiff)
+                        .then()
+                }
+            }
+        }, { delay: 10000 })
+    }
+
     function listenIncomeControls(socket) {
         socket.on('action', ({ action, payload }) => {
             const { device } = playerStore
 
             switch (action) {
                 case 'openPlaylist': {
-                    const { playlist, fileIndex } = payload
+                    const { playlist, fileIndex, marks } = payload
                     transitionStore.goToScreen('player')
-                    playerStore.openPlaylist(new LocalDevice(), playlist, fileIndex)
+                    playerStore.openPlaylist(new LocalDevice(), playlist, fileIndex, marks)
                     return
                 }
                 case 'closePlaylist':
@@ -198,6 +222,8 @@ export default () => {
             lastAvaliable = avaliable
             deviceSocket.emit('setAvailability', avaliable)
         }
+    } else {
+        trackMobileState()
     }
 
     function listenDeviceList(socket) {

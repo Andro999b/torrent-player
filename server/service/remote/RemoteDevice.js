@@ -1,5 +1,6 @@
 const uuid = require('uuid')
 const { EventEmitter } = require('events')
+const { merge } = require('lodash')
 
 class RemoteDevice extends EventEmitter {
 
@@ -18,13 +19,20 @@ class RemoteDevice extends EventEmitter {
     }
 
     updateState(state) {
-        Object.keys(state).forEach((key) => {
-            this.state[key] = state[key]
-        })
+        let newPlaylist = false
+        if(state.playlist) {
+            const playlistName = state.playlist.name
+            if(playlistName != this.playlistName) {
+                this.playlistName = playlistName
+                newPlaylist = true
+            }
+        }
+
+        merge(this.state, state)
+
         this.emit(RemoteDevice.Events.Sync, state)
 
-        if (state.playlist) {
-            this.playlistName = state.playlist.name
+        if (newPlaylist) {
             this.emit(RemoteDevice.Events.UpdateList)
         }
     }

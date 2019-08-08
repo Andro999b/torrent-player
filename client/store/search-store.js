@@ -134,8 +134,10 @@ class SearchStore {
     }
 
     @action search(searchQuery) {
-        if(this.searchProviders.length == 0) 
+        if(this.searchProviders.length == 0) {
+            notificationStore.showMessage('No search providers selected')
             return
+        }
 
         searchQuery = searchQuery.toLowerCase()
 

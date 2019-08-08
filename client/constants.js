@@ -67,6 +67,7 @@ export const SEARCH_HISTORY_MAX_SIZE = 100
 
 export const ALLOWED_REMOTE_STATE_FIELDS = [
     'playlist',
+    'marks',
     'currentFileIndex',
     'currentTime',
     'duration',

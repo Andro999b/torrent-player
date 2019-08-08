@@ -79,13 +79,14 @@ class BookmarkItem extends Component {
         const { 
             item: { 
                 playlist, 
+                marks,
                 currentFileIndex
             }
         } = this.props
         const { files } = playlist
         const file = files[currentFileIndex]
         
-        playFun(playlist, file)
+        playFun(playlist, file, marks)
     }
 
     handlePlay = () => this.resumePlaying(this.props.onPlay)

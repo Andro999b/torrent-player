@@ -22,6 +22,12 @@ router.delete('/bookmarks/:playlistName', (req, res) => {
     res.json({ status: 'OK' })
 })
 
+router.post('/bookmarks/:playlistName', (req, res) => {
+    continueWatchingService.update(req.params.playlistName, req.body)
+    res.json({ status: 'OK' })
+})
+
+
 router.post('/bookmarks', (req, res) => {
     const playerState = continueWatchingService.addPlaylist(req.body)
     res.json(playerState)
