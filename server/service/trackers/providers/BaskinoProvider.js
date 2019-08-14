@@ -84,7 +84,7 @@ class BaskinoProvider extends DataLifeProvider {
 
         const getEpisodeUrl = (s, e) => {
             const url = new URL(cdnPlayerUrl)
-            url.searchParams.set('season', 1)
+            url.searchParams.set('season', s)
             url.searchParams.set('episode', e)
             return url.toString()
         }
@@ -106,7 +106,7 @@ class BaskinoProvider extends DataLifeProvider {
                     files.push({
                         path: `Season ${s}`,
                         name: `Season ${s} / Episode ${e}`,
-                        manifestUrl: getEpisodeUrl(1, e)
+                        manifestUrl: getEpisodeUrl(s, e)
                     })
                 }
             }

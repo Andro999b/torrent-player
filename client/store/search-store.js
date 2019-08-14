@@ -41,7 +41,6 @@ class SearchReusltItem {
             (this.details.magnetUrl || this.details.torrentUrl)
     }
 
-
     hasFiles() {
         return this.details && 
             this.details.files && 

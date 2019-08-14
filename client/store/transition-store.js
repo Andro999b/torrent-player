@@ -106,7 +106,7 @@ class TransitionStore {
 
     @action.bound playMediaOnDevice({ playlist, startIndex, marks, device }) {
         playerStore.openPlaylist(
-            device ? remoteControl.getRemoteDevice(device) : new LocalDevice(), 
+            device ? remoteControl.getRemoteDevice(device) : new LocalDevice(),  
             playlist, 
             startIndex,
             marks

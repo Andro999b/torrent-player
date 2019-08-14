@@ -7,8 +7,8 @@ const $ = require('cheerio')
 class HDRezkaProvider extends Provider {
     constructor() {
         super({
-            baseUrl: 'http://hdrezka-ag.com/',
-            searchUrl: 'http://hdrezka-ag.com/index.php?do=search&subaction=search',
+            baseUrl: 'http://rezka.ag',
+            searchUrl: 'http://rezka.ag/index.php?do=search&subaction=search',
             useProxy: true,
             scope: '.b-content__inline_item',
             pageSize: 50,
@@ -131,7 +131,7 @@ class HDRezkaProvider extends Provider {
 
         const getEpisodeUrl = (s, e) => {
             const url = new URL(cdnPlayerUrl)
-            url.searchParams.set('season', 1)
+            url.searchParams.set('season', s)
             url.searchParams.set('episode', e)
             return url.toString()
         }
@@ -153,7 +153,7 @@ class HDRezkaProvider extends Provider {
                     files.push({
                         path: `Season ${s}`,
                         name: `Season ${s} / Episode ${e}`,
-                        manifestUrl: getEpisodeUrl(1, e)
+                        manifestUrl: getEpisodeUrl(s, e)
                     })
                 }
             }

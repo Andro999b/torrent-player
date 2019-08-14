@@ -34,7 +34,8 @@ export const NO_TORRENTS_SEARCH_RPVODERS_PRESET = [
     },
     {
         name: 'Video Hostings',
-        providers: ['baskino', 'hdrezka', 'kinokrad']
+        providers: ['hdrezka', 'kinokrad']
+        // providers: ['baskino', 'hdrezka', 'kinokrad']
     }
 ]
 

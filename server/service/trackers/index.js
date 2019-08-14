@@ -8,7 +8,8 @@ const providers = [
     // new (require('./providers/MoonWalkProvider'))(),
     ...require('./providers/RutrackerProvider').providers,
     ...require('./providers/NNMClubProvider').providers,
-    ...require('./providers/FastTorrentsProvider').providers
+    ...require('./providers/FastTorrentsProvider').providers,
+    ...require('./providers/Movies123Provider').providers,
 ]
 
 module.exports = {
