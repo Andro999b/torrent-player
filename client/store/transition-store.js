@@ -48,18 +48,6 @@ class TransitionStore {
             .catch(console.error)
     }
 
-        
-    @action.bound downloadAndPlayMediaOnDevice(results, selectedItem, device) {
-        this.goToScreen('player')
-        this._downloadPlaylist(results, selectedItem)
-            .then((params) => this.playMediaOnDevice({
-                ...params, 
-                device, 
-                results
-            }))
-            .catch(console.error)
-    }
-
     @action.bound playTorrentMedia(results, selectedItem) {
         this.playMedia(
             {
@@ -87,12 +75,15 @@ class TransitionStore {
 
     @action.bound openCastDialog(results, selectedItem, marks) {
         const onDeviceSelected = (device) => {
-            this.downloadAndPlayMediaOnDevice(
-                results, 
-                selectedItem, 
-                device,
-                marks
-            )
+            this.goToScreen('player')
+            this._downloadPlaylist(results, selectedItem)
+                .then((params) => this.playMediaOnDevice({
+                    ...params, 
+                    marks,
+                    device, 
+                    results
+                }))
+                .catch(console.error)
         }
 
         //do not show dialog if only one device avaliable
@@ -102,17 +93,6 @@ class TransitionStore {
         }
 
         this.castDialog = { onDeviceSelected }
-    }
-
-    @action.bound playMediaOnDevice({ playlist, startIndex, marks, device }) {
-        playerStore.openPlaylist(
-            device ? remoteControl.getRemoteDevice(device) : new LocalDevice(),  
-            playlist, 
-            startIndex,
-            marks
-        )
-
-        this.castDialog = null
     }
 
     showConnectToDeviceDialog() {
@@ -141,6 +121,18 @@ class TransitionStore {
     }
 
     @action.bound closeCastDailog() {
+        this.castDialog = null
+    }
+
+    
+    @action.bound playMediaOnDevice({ playlist, startIndex, marks, device }) {
+        playerStore.openPlaylist(
+            device ? remoteControl.getRemoteDevice(device) : new LocalDevice(),  
+            playlist, 
+            startIndex,
+            marks
+        )
+
         this.castDialog = null
     }
 

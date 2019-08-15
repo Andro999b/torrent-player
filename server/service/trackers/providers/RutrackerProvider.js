@@ -40,9 +40,7 @@ class RuTrackerProvider extends Provider {
             detailsSelectors: {
                 image: { 
                     selector: '.postImg', 
-                    transform: ($el) => {
-                        return $el.attr('title')
-                    }
+                    transform: ($el) => $el.attr('src')
                 },
                 description: '.post_body',
                 torrentUrl: {

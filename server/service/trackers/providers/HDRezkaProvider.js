@@ -23,7 +23,7 @@ class HDRezkaProvider extends Provider {
             detailsSelectors: {
                 image: {
                     selector: '.b-sidecover img',
-                    transform: ($el) => $el.attr('src')
+                    transform: ($el) => this.config.baseUrl + $el.attr('src')
                 },
                 description: {
                     selector: '.b-post__info tr',
