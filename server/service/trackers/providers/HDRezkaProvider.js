@@ -7,8 +7,8 @@ const $ = require('cheerio')
 class HDRezkaProvider extends Provider {
     constructor() {
         super({
-            baseUrl: 'http://rezka.ag',
-            searchUrl: 'http://rezka.ag/index.php?do=search&subaction=search',
+            baseUrl: 'https://rezka.ag',
+            searchUrl: 'https://rezka.ag/index.php?do=search&subaction=search',
             useProxy: true,
             scope: '.b-content__inline_item',
             pageSize: 50,
@@ -79,9 +79,10 @@ class HDRezkaProvider extends Provider {
                     const translatorId = $translation.attr('data-translator_id')
 
                     const res = await superagent
-                        .post(`${this.config.baseUrl}ajax/get_cdn_series/`)
+                        .post(`${this.config.baseUrl}/ajax/get_cdn_series/`)
+                        .set(this.config.headers)
                         .type('form')
-                        .field({
+                        .send({
                             'id': posterId,
                             'translator_id': translatorId,
                         })

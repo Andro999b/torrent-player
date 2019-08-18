@@ -53,7 +53,7 @@ class BaskinoProvider extends DataLifeProvider {
     }
 
     _extractNoTranslationFiles($scope) {
-        const $seasons = $scope.find('.tvs_slides_seasons')
+        const $seasons = $scope.find('.tvs_slides_seasons span')
         const cdnPlayerUrl = this._extractPLayerUrl($scope)
 
         if(!cdnPlayerUrl) return []
