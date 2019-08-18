@@ -1,7 +1,7 @@
 const Provider = require('../Provider')
 const fs = require('fs-extra')
 const path = require('path')
-const { ROOT_DIR } = require('../../../config')
+const { ROOT_DIR, WEB_PORT, HOSTNAME } = require('../../../config')
 
 let bb_cookie = ''
 try{
@@ -40,7 +40,7 @@ class RuTrackerProvider extends Provider {
             detailsSelectors: {
                 image: { 
                     selector: '.postImg', 
-                    transform: ($el) => $el.attr('src')
+                    transform: ($el) => `http://${HOSTNAME}:${WEB_PORT}/proxyMedia?url=` + encodeURIComponent($el.attr('src'))
                 },
                 description: '.post_body',
                 torrentUrl: {
