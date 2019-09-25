@@ -69,7 +69,7 @@ async function browseTorrentFs(inputs, req) {
         const didl = await Promise.all(children.map(async (child) => {
             const id = createObjetcId({ type, infoHash, torrentFsId: child.id })
             if(child.type == 'file') {
-                return await mediaResource({ id, parentId, fsEntry: child, clientId: getClientId(req) })
+                return mediaResource({ id, parentId, fsEntry: child, clientId: getClientId(req) })
             } else {
                 return containerResource({ id, parentId, title: child.title })
             }

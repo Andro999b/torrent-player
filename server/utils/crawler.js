@@ -70,7 +70,7 @@ class Crawler {
 
         $el = selector ? $el.find(selector) : $el
 
-        return await transform($el)
+        return transform($el)
     }
 
     async gather() {
@@ -115,10 +115,10 @@ class Crawler {
                 return results.slice(0, this._limit)
             }
 
-            return await step(nextUrl)
+            return step(nextUrl)
         }
 
-        return await step(this._url)
+        return step(this._url)
     }
 }
 

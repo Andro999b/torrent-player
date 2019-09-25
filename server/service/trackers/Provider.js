@@ -108,7 +108,7 @@ class Provider {
             type: this.getType()
         }
 
-        return await this._loadTorrentFileInfo(details)
+        return this._loadTorrentFileInfo(details)
     }
 
     // eslint-disable-next-line no-unused-vars
