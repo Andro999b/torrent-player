@@ -5,11 +5,10 @@ const providers = [
     new (require('./providers/KinokradProvider'))(),
     new (require('./providers/HDRezkaProvider'))(),
     new (require('./providers/BaskinoProvider'))(),
-    // new (require('./providers/MoonWalkProvider'))(),
+    new (require('./providers/KinogoProvider'))(),
     ...require('./providers/RutrackerProvider').providers,
     ...require('./providers/NNMClubProvider').providers,
     ...require('./providers/FastTorrentsProvider').providers,
-    ...require('./providers/Movies123Provider').providers,
 ]
 
 module.exports = {

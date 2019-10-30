@@ -42,7 +42,7 @@ class KinokradProvider extends DataLifeProvider {
                     } 
                 },
                 files: {
-                    selector: 'script',
+                    selector: '.boxfilm script',
                     transform: ($el) => {
                         const script = $el.toArray()[0].children[0].data
                         const matches = script.match(/var filmSource = "([^]+)" \|\|/)
