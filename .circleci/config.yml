@@ -82,27 +82,27 @@ jobs:
           paths: 
             - "build/out/electron/*.zip" 
 
-  release-heroku:
-    executor: node-x86
+  # release-heroku:
+  #   executor: node-x86
     
-    steps:
-      - attach_workspace:
-          at: /tmp/repo
+  #   steps:
+  #     - attach_workspace:
+  #         at: /tmp/repo
 
-      - setup_remote_docker
+  #     - setup_remote_docker
 
-      - run:
-          name: Build Docker Image
-          command: |
-            echo $HEROKU_API_KEY | docker login --username=$HEROKU_LOGIN --password-stdin registry.heroku.com
-            docker build --rm=false -t registry.heroku.com/$HEROKU_APP_NAME/web .
-            docker inspect registry.heroku.com/$HEROKU_APP_NAME/web --format={{.Id}} > WEB_DOCKER_IMAGE_ID_FILE
-            docker push registry.heroku.com/$HEROKU_APP_NAME/web:latest
-            curl -n -X PATCH https://api.heroku.com/apps/$HEROKU_APP_NAME/formation \
-              -d '{ "updates": [ { "type": "web", "docker_image": "'"$WEB_DOCKER_IMAGE_ID"'" }]}' \
-              -H "Content-Type: application/json" \
-              -H "Accept: application/vnd.heroku+json; version=3.docker-releases" \
-              -H "Authorization: Bearer $HEROKU_API_KEY"
+  #     - run:
+  #         name: Build Docker Image
+  #         command: |
+  #           echo $HEROKU_API_KEY | docker login --username=$HEROKU_LOGIN --password-stdin registry.heroku.com
+  #           docker build --rm=false -t registry.heroku.com/$HEROKU_APP_NAME/web .
+  #           docker inspect registry.heroku.com/$HEROKU_APP_NAME/web --format={{.Id}} > WEB_DOCKER_IMAGE_ID_FILE
+  #           docker push registry.heroku.com/$HEROKU_APP_NAME/web:latest
+  #           curl -n -X PATCH https://api.heroku.com/apps/$HEROKU_APP_NAME/formation \
+  #             -d '{ "updates": [ { "type": "web", "docker_image": "'"$WEB_DOCKER_IMAGE_ID"'" }]}' \
+  #             -H "Content-Type: application/json" \
+  #             -H "Accept: application/vnd.heroku+json; version=3.docker-releases" \
+  #             -H "Authorization: Bearer $HEROKU_API_KEY"
 
   publish:
     docker:
@@ -132,9 +132,9 @@ workflows:
       - build-electron:
           requires:
             - prepare
-      - release-heroku:
-          requires:
-            - prepare
+      # - release-heroku:
+      #     requires:
+      #       - prepare
       - publish:
           requires:
             - build-electron
