@@ -19,9 +19,9 @@ function hasOneOfExtensions(extensions, fileName) {
 
 function parseCodeDuration(codecDuration) {
     const timeParts = codecDuration.split(':')
-    return parseInt(timeParts[0]) * 3600 + 
-            parseInt(timeParts[1]) * 60 + 
-            parseFloat(timeParts[2])
+    return parseInt(timeParts[0]) * 3600 +
+        parseInt(timeParts[1]) * 60 +
+        parseFloat(timeParts[2])
 }
 
 function formatDLNADuration(duration) {
@@ -113,7 +113,7 @@ function waitForFile(path, timeout) {
                 reject()
                 return
             }
-            
+
             fs.exists(path)
                 .then((exits) => {
                     if (exits) {
@@ -140,13 +140,30 @@ function fileDirectory(path) {
 function getExtractorUrl(url, extractor) {
     const { type, params } = extractor
 
-    if(!extractor) return url
+    if (!extractor) return url
 
     return `http://${HOSTNAME}:${WEB_PORT}/extractVideo?` + urlencode.stringify({
         type,
         url,
         ...params
     })
+}
+
+function getBestPlayerJSQuality(input) {
+    return input
+        .replace(/\\/g, '')
+        .split(' or ')
+        .flatMap((it) => it.split(','))
+        .map((link) => {
+            const res = link.match(/(\[\d+p\])?(?<url>.*\/(?<quality>\d+).mp4)/)
+            return res && {
+                url: res.groups.url,
+                quality: parseInt(res.groups.quality)
+            }
+        })
+        .filter((it) => it)
+        .sort((a, b) => b.quality - a.quality)
+        .map((it) => it.url)[0]
 }
 
 module.exports = {
@@ -166,5 +183,6 @@ module.exports = {
     waitForFile,
     touch,
     fileDirectory,
-    getExtractorUrl
+    getExtractorUrl,
+    getBestPlayerJSQuality
 }

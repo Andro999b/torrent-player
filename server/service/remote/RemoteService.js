@@ -223,10 +223,10 @@ class RemoteService extends EventEmitter {
         if(this.anyStateChanged) {
             this.anyStateChanged = false
 
-            Object.values(this.devices).forEach((device) => {
+            Object.values(this.devices).forEach(async (device) => {
                 const { playlistName, state } = device
                 if(playlistName) {
-                    bookmarks.update(playlistName, state)
+                    await bookmarks.update(playlistName, state)
                 }
             })
         }

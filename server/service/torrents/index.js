@@ -133,8 +133,8 @@ module.exports = {
         torrentClient.remove(torrentId)
         remote.stopPlayTorrent(torrentId)
         database.wipeTorrentData(torrentId)
-        bookmarks.removeByTorrentInfoHash(torrentId)
-
+        
+        await bookmarks.removeByTorrentInfoHash(torrentId)
         await fs.unlink(torrentFileName(torrent))
 
         //remove downloader data

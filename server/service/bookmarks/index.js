@@ -10,15 +10,15 @@ const db = lowdb(new FileSync(path.join(ROOT_DIR, 'bookmarks.db.json')))
 db.defaults({ bookmarks: {}}).write()
 
 module.exports = {
-    getAllBookmarks() {
+    async getAllBookmarks() {
         return Object.values(
             db.get('bookmarks').value()
         )
     },
-    getBookmark(playlistName) {
+    async getBookmark(playlistName) {
         return db.get(['bookmarks', playlistName]).value()
     },
-    addPlaylist(playlist) {
+    async addPlaylist(playlist) {
         const state = {
             currentTime: 0,
             currentFileIndex: 0,
@@ -32,7 +32,7 @@ module.exports = {
 
         return state
     },
-    update(playlistName, rawState) {
+    async update(playlistName, rawState) {
         if(!playlistName) return
 
         const state = pick(rawState, [
@@ -60,20 +60,18 @@ module.exports = {
             }).write()
         }
     },
-    remove(playlistName) {
+    async remove(playlistName) {
         if(!playlistName) return
 
         db.unset(['bookmarks', playlistName])
             .write()
     },
-    removeByTorrentInfoHash(torrentInfoHash) {
-        const item = this.getAllBookmarks()
-            .find((ps) =>
-                ps.playlist.torrentInfoHash == torrentInfoHash
-            )
+    async removeByTorrentInfoHash(torrentInfoHash) {
+        const bookmarks = await this.getAllBookmarks()
+        const bookmark = bookmarks.find((ps) => ps.playlist.torrentInfoHash == torrentInfoHash)
 
-        if(item) {
-            this.remove(item.playlist.name)
+        if(bookmark) {
+            await this.remove(bookmark.playlist.name)
         }
     }
 }

@@ -59,7 +59,7 @@ class Crawler {
         return this
     }
 
-    async _extractData($el, config) {
+    async _extractData($el, $root, config) {
         let transform = ($el) => $el.text().trim()
         let selector = config
 
@@ -70,7 +70,7 @@ class Crawler {
 
         $el = selector ? $el.find(selector) : $el
 
-        return transform($el)
+        return transform($el, $root)
     }
 
     async gather() {
@@ -100,7 +100,7 @@ class Crawler {
 
                 for(const selectorName in this._selectors) {
                     const selector = this._selectors[selectorName]
-                    item[selectorName] = await this._extractData($(el), selector)
+                    item[selectorName] = await this._extractData($(el), $.root(), selector)
                 }
 
                 results.push(item)

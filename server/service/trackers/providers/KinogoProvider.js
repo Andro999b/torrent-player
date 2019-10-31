@@ -1,4 +1,5 @@
 const DataLifeProvider = require('./DataLIfeProvider')
+const { getBestPlayerJSQuality } = require('../../../utils')
 const urlencode = require('urlencode')
 
 class KinogoProvider extends DataLifeProvider {
@@ -78,8 +79,7 @@ class KinogoProvider extends DataLifeProvider {
         const parts = script.match(/fmp4 = "([^"]+)"/)
 
         if(parts && parts.length > 1) {
-            const url = this._extractManifest(parts[1])
-
+            const url = getBestPlayerJSQuality(parts[1])
             return [{ url }]
         }
     }
@@ -93,33 +93,18 @@ class KinogoProvider extends DataLifeProvider {
                     if(it.file) {
                         return [{
                             name: `Episode ${season + 1}`,
-                            url: this._extractManifest(it.file)
+                            url: getBestPlayerJSQuality(it.file)
                         }]
                     } else {
                         return it.folder.map(({ file } , episode) => ({
                             path: `Season ${season + 1}`,
                             name: `Season ${season + 1} / Episode ${episode + 1}`,
-                            url: this._extractManifest(file)
+                            url: getBestPlayerJSQuality(file)
                         }))
                     }
                 })
                 .flatMap((it) => it)
         }
-    }
-
-    _extractManifest(input) {
-        return input
-            .split(' or ')
-            .flatMap((it) => it.split(','))
-            .map((link) => {
-                const res = link.match(/(\[\d+p\])?(?<url>.*\/(?<quality>\d+).(m3u8|mp4))/)
-                return res && {
-                    url: res.groups.url,
-                    quality: parseInt(res.groups.quality)
-                }
-            })
-            .sort((a, b) => b.quality - a.quality)
-            .map((it) => it.url)[0]
     }
 
     async _postProcessResultDetails(details) {
