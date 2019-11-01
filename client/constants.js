@@ -19,8 +19,9 @@ export const SEARCH_RPOVIDERS = {
     'nnm-cartoons': 'NNMClub Cartoons',
     'nnm-tv-shows': 'NNMClub TV Shows',
     'nnm-anime': 'NNMClub Anime',
-    'rarbg-movies': 'RarBG Movies',
-    'rarbg-tv-shows': 'RarBG TV Shows',
+    'limetorrents-movies': 'LimeTorrents Movies',
+    'limetorrents-tv-shows': 'LimeTorrents TV Shows',
+    'limetorrents-anime': 'LimeTorrents Anime',
     ...NO_TORRENTS_SEARCH_RPOVIDERS
 }
 
@@ -40,6 +41,23 @@ export const NO_TORRENTS_SEARCH_RPVODERS_PRESET = [
 ]
 
 export const SEARCH_RPVODERS_PRESET = [
+    {
+        name: 'Torrents ENG',
+        presets: [
+            {
+                name: 'Movies',
+                providers: ['limetorrents-movies']
+            },
+            {
+                name: 'TV Shows',
+                providers: ['limetorrents-tv-shows']
+            },
+            {
+                name: 'Anime',
+                providers: ['limetorrents-anime']
+            }
+        ]
+    },
     {
         name: 'Torrents',
         presets: [

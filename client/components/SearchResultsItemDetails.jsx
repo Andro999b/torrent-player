@@ -89,14 +89,14 @@ class SearchResultsItemDetails extends Component {
                 {posterImage && <Grid item xs={12} md={3}>
                     <img className="poster" src={posterImage} alt='no image' />
                 </Grid>}
-                <Grid item xs={12} md={5}>
+                <Grid item xs={12} md={posterImage ? 5 : 6}>
                     {description && description.map((item, index) => (
                         <Typography variant="body2" key={index}>
                             {item.name && <b>{item.name}: </b>}{item.value}
                         </Typography>
                     ))}
                 </Grid>
-                <Grid item xs={12} md={4}>
+                <Grid item xs={12} md={posterImage ? 4 : 6}>
                     <List className="files-list">
                         { files && <GroupFiles files={files} renderFiles={this.renderFiles} directoryActions={directoryActions} /> }
                         { torrents && torrents.map(this.renderTorrent) }

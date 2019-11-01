@@ -9,7 +9,7 @@ const providers = [
     ...require('./providers/RutrackerProvider').providers,
     ...require('./providers/NNMClubProvider').providers,
     ...require('./providers/FastTorrentsProvider').providers,
-    ...require('./providers/RarBGProvider').providers,
+    ...require('./providers/LimeTorrentsProvider').providers,
 ]
 
 module.exports = {
