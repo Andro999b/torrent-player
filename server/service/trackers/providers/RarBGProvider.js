@@ -21,8 +21,14 @@ class RarBGProvider extends Provider {
                 seeds: 'td:nth-child(5)',
                 leechs: 'td:nth-child(6)',
             },
-            detailsScope: '.film_page',
-            detailsSelectors: {}
+            detailsScope: '.table.lista-rounded>tbody>tr>td>div>table.lista',
+            detailsSelectors: {
+                image: {
+                    selector: 'tr:nth-child(3)>td:nth-child(2)>img',
+                    transform: ($el) => $el.attr('src')
+                },
+                description: ''
+            }
         })
     }
 
