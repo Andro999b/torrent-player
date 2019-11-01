@@ -19,6 +19,8 @@ export const SEARCH_RPOVIDERS = {
     'nnm-cartoons': 'NNMClub Cartoons',
     'nnm-tv-shows': 'NNMClub TV Shows',
     'nnm-anime': 'NNMClub Anime',
+    'rarbg-movies': 'RarBG Movies',
+    'rarbg-show': 'RarBG TV Shows',
     ...NO_TORRENTS_SEARCH_RPOVIDERS
 }
 

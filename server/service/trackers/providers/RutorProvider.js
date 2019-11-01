@@ -22,12 +22,24 @@ class RutorProvider extends Provider {
                 description: '>tbody>tr:first-child>td'
             },
             filterDescription: [
+                'Перевод',
+                'Субтитры',
+                'Формат',
+                'Страна',
+                'Режиссер',
+                'Жанр',
+                'Продолжительность',
+                'Год выпуска',
+                'В ролях',
+                'Описание',
+                'Видео',
+                'Аудио',
                 'Качество',
                 'Бюджет',
                 'Премьера',
                 'Доп.инфо',
                 'Также роли дублировали'
-            ]   
+            ]  
         })
     }
 
@@ -46,7 +58,7 @@ class RutorProvider extends Provider {
     }
 
     _postProcessResultDetails(details, resultsId) {
-        const { config: { baseUrl }, filterDescription } = this
+        const { config: { baseUrl, filterDescription } } = this
 
         const rawDescription = details.description.replace(/[\n\r]+/g, '\n').trim()
         let parts = rawDescription.split('\n').slice(0, -1)

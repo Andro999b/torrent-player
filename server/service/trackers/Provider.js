@@ -14,7 +14,6 @@ class Provider {
                     'User-Agent': 'Mozilla/5.0 Gecko/20100101 Firefox/59.0'
                 },
                 detailsScope: 'body',
-                filterDescription: [],
                 useProxy: false
             },
             config
@@ -29,21 +28,6 @@ class Provider {
             },
             this.config.detailsSelectors
         )
-
-        this.filterDescription = [
-            'Перевод',
-            'Субтитры',
-            'Формат',
-            'Страна',
-            'Режиссер',
-            'Жанр',
-            'Продолжительность',
-            'Год выпуска',
-            'В ролях',
-            'Описание',
-            'Видео',
-            'Аудио',
-        ].concat(this.config.filterDescription)
     }
 
     getName() {

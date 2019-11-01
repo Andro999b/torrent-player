@@ -53,8 +53,20 @@ class RuTrackerProvider extends Provider {
                 }
             },
             filterDescription: [
+                'Перевод',
+                'Субтитры',
+                'Формат',
+                'Страна',
+                'Режиссер',
+                'Жанр',
+                'Продолжительность',
+                'Год выпуска',
+                'В ролях',
+                'Описание',
+                'Видео',
+                'Аудио',
                 'Качество'
-            ]  
+            ]    
         })
     }
 
@@ -77,7 +89,7 @@ class RuTrackerProvider extends Provider {
     }
 
     _postProcessResultDetails(details) {
-        const { filterDescription } = this
+        const { config: { filterDescription } } = this
 
         const rawDescription = details.description.replace(/[\n\r]+/g, '\n').trim()
         let parts = rawDescription.split('\n').slice(0, -1)
