@@ -55,7 +55,12 @@ class KinogoProvider extends DataLifeProvider {
                             files = this._tryExtractFiles(script)
                         }
 
-                        return files || []
+                        files = files || []
+
+                        return files.map((item, index) => ({
+                            id: index,
+                            ...item
+                        }))
                     }
                 }
             }
