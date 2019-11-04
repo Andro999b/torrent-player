@@ -17,7 +17,7 @@ class LimeTorrentsProvider extends Provider {
                     transform: ($el) => urlencode.encode($el.attr('href'))
                 },
                 name: 'td:nth-child(1) a:nth-child(2)',
-                size: 'td:nth-child(2)',
+                size: 'td:nth-child(3)',
                 seeds: 'td:nth-child(4)',
                 leechs: 'td:nth-child(5)',
             },

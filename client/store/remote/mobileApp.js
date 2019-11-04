@@ -1,7 +1,5 @@
 import { observable, action } from 'mobx'
 import { Device } from '../player-store'
-import { ALLOWED_REMOTE_STATE_FIELDS } from '../../constants'
-import pick from 'lodash.pick'
 import transitionStore from '../transition-store'
 
 class MobileAppRemoteDevice extends Device {
@@ -24,45 +22,6 @@ class MobileAppRemoteDevice extends Device {
         mobileApp.disconnectDevice()
     }
 
-    resume() {
-        this.sendAction('resume')
-    }
-
-    pause() {
-        this.sendAction('pause')
-    }
-
-    play(currentTime) {
-        this.sendAction('play', currentTime)
-        if(currentTime != null) {
-            this.currentTime = currentTime
-        }
-    }
-
-    @action seek(currentTime) {
-        this.currentTime = currentTime
-        this.sendAction('seek', currentTime)
-    }
-
-    @action setVolume(volume) {
-        this.volume = volume
-        this.sendAction('setVolume', volume)
-    }
-
-    selectFile(fileIndex) {
-        this.sendAction('selectFile', fileIndex)
-    }
-
-    toggleMute() {
-        this.sendAction('toggleMute')
-    }
-
-    @action setPlaylist(playlist, fileIndex, marks) {
-        this.playlist = playlist
-        this.currentFileIndex = fileIndex
-        this.sendAction('openPlaylist', { playlist, fileIndex, marks })
-    }
-
     closePlaylist(ack) {
         this.sendAction('closePlaylist')
         setTimeout(ack, 200)
@@ -70,13 +29,6 @@ class MobileAppRemoteDevice extends Device {
 
     @action sendAction(action, payload) {
         mobileApp.sendDeviceAction(JSON.stringify({ action, payload }))
-    }
-
-    @action.bound onSync(state) {
-        const filteredState = pick(state, ALLOWED_REMOTE_STATE_FIELDS)
-        Object.keys(filteredState).forEach((key) => {
-            this[key] = state[key]
-        })
     }
 
     @action.bound onConnected(state) {

@@ -12,22 +12,22 @@ class HLSLoader extends Hls.DefaultConfig.loader {
         super(config)
 
         const load = this.load.bind(this)
-        
+
         let extractorUrlBuilder = null
-        if(config.extractor) {
+        if (config.extractor) {
             extractorUrlBuilder = createExtractorUrlBuilder(config.extractor)
         }
 
         this.load = function (context, config, callbacks) {
-            if(extractorUrlBuilder) {
-                if(context.url.startsWith(window.location.origin)) { // replaces rlative urls
+            if (extractorUrlBuilder) {
+                if (context.url.startsWith(window.location.origin)) { // replaces relative urls
                     const baseUrl = decodeURIComponent(context.frag.baseurl.split('&url=')[1])
                     context.url = new URL(context.frag.relurl, baseUrl).toString()
                 }
 
                 context.url = extractorUrlBuilder(context.url)
             }
-            
+
             load(context, config, callbacks)
         }
     }
@@ -41,9 +41,6 @@ class VideoScrean extends BaseScrean {
         this.state = {
             videoScale: 'hor'
         }
-
-        this.handleClick = this.handleClick
-        this.handleKeyUp = this.handleKeyUp
     }
 
     /**
@@ -113,7 +110,21 @@ class VideoScrean extends BaseScrean {
     }
 
     initVideo() {
-        const { props: { device: { source: { browserUrl, url, manifestUrl, extractor } } } } = this
+        const {
+            props: {
+                device: {
+                    source: {
+                        browserUrl,
+                        url,
+                        manifestUrl,
+                        alternativeUrls 
+                    }
+                } 
+            } 
+        } = this
+
+        this.alternativeUrls = alternativeUrls
+
         const { video } = this
 
         this.disposeHls()
@@ -121,11 +132,7 @@ class VideoScrean extends BaseScrean {
         if (browserUrl) {
             video.src = browserUrl
         } else if (url) {
-            if(extractor) {
-                video.src = createExtractorUrlBuilder(extractor)(url)
-            } else {
-                video.src = url
-            }
+            this.setVideoSource(url)
         } else if (manifestUrl) {
             this.startHlsVideo()
         } else {
@@ -137,6 +144,17 @@ class VideoScrean extends BaseScrean {
         }
 
         this.restoreVideoState()
+    }
+
+    setVideoSource(url) {
+        const { props: { device: { source: { extractor } } } } = this
+        const { video } = this
+
+        if (extractor) {
+            video.src = createExtractorUrlBuilder(extractor)(url)
+        } else {
+            video.src = url
+        }
     }
 
     startHlsVideo() {
@@ -213,7 +231,13 @@ class VideoScrean extends BaseScrean {
     }
 
     handleError = () => {
-        const { device } = this.props
+        const { props: { device }, alternativeUrls } = this
+
+        if (alternativeUrls && alternativeUrls.length > 0) {
+            this.setVideoSource(alternativeUrls.pop())
+            this.restoreVideoState()
+            return
+        }
 
         if (!this.hlsMode && this.isHlsAvaliable()) { // retry with hls
             this.startHlsVideo()
@@ -287,7 +311,7 @@ class VideoScrean extends BaseScrean {
                     handleHeight
                     onResize={this.handleResize}
                 />
-                <video 
+                <video
                     ref={(el) => this.video = el}
                     onDurationChange={this.handleUpdate}
                     onProgress={this.handleUpdate}

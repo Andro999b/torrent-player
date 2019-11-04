@@ -25,6 +25,10 @@ function getTorrentHLSKeepAliveLink(infoHash, fileIndex) {
     return `/api/torrents/${infoHash}/files/${fileIndex}/hls/keepAlive`
 }
 
+function getMediaMetadataUrlLink(infoHash, fileIndex) {
+    return `/api/torrents/${infoHash}/files/${fileIndex}/mediaMetadata`
+}
+
 module.exports = function(torrent) {
     const files = torrent.files
         .map((file, fileIndex) => { 
@@ -43,6 +47,7 @@ module.exports = function(torrent) {
                 source['manifestUrl'] = getTorrentFileHLSLink(torrent.infoHash, fileIndex)
                 source['transcodedUrl'] = getTorrentTranscodedLink(torrent.infoHash, fileIndex)
                 source['keepAliveUrl'] = getTorrentHLSKeepAliveLink(torrent.infoHash, fileIndex)
+                source['mediaMetadataUrl'] = getMediaMetadataUrlLink(torrent.infoHash, fileIndex)
             }
 
             if(checkIfTorrentFileReady(file)) {

@@ -16,6 +16,8 @@ export class Device {
     @observable error = null
     @observable volume = 1
     @observable isMuted = false
+    @observable audioTracks = []
+    @observable audioTrack = null
     
     isLocal() {
         return true
@@ -31,6 +33,7 @@ export class Device {
     setVolume(volume) { }
     selectFile(fileIndex) { }
     setPlaylist(playlist, fileIndex, marks) { }
+    setAudioTrack(id) { }
     /* eslint-enable */
 
     skip(sec) {
@@ -58,6 +61,23 @@ export class LocalDevice extends Device {
         this.currentTime = this.marks[source.id] || source.currentTime || 0
         this.duration = 0
         this.buffered = 0
+        this.audioTrack = null
+        this.audioTracks = []
+
+        if(source.mediaMetadataUrl) {
+            request
+                .get(source.mediaMetadataUrl)
+                .then((res) => {
+                    const { body: { streams } } = res
+                    const audioTracks = []
+                    streams.forEach(({ index, codec_type }) => {
+                        if(codec_type === 'audio') {
+                            audioTracks.push(index)
+                        }
+                    })
+                    this.audioTracks = audioTracks
+                })
+        }
     }
 
     @action play(currentTime) {
@@ -138,6 +158,10 @@ export class LocalDevice extends Device {
     @action setVolume(volume) {
         this.volume = volume
         localStore.set('volume', volume)
+    }
+
+    @action setAudioTrack(id) {
+        this.audioTrack = id
     }
 
     @action toggleMute() {

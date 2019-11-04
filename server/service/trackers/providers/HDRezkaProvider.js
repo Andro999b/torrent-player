@@ -143,10 +143,12 @@ class HDRezkaCDNProvider extends HDRezkaProvider {
 
             if (parts && parts.length > 1) {
                 const name = $scope.find('.b-post__title>h1').text()
+                const urls = getBestPlayerJSQuality(parts[1])
 
                 return [{
                     name,
-                    url: getBestPlayerJSQuality(parts[1])
+                    url: urls.pop(),
+                    alternativeUrls: urls
                 }]
             }
 
@@ -160,18 +162,20 @@ class HDRezkaCDNProvider extends HDRezkaProvider {
         const files = []
 
         const createFile = ($el, e, s) => {
-            const url = getBestPlayerJSQuality($el.attr('data-cdn_url'))
+            const urls = getBestPlayerJSQuality($el.attr('data-cdn_url'))
 
             if (s != undefined) {
                 return {
                     path: `Season ${s}`,
                     name: `Season ${s} / Episode ${e}`,
-                    url
+                    url: urls.pop(),
+                    alternativeUrls: urls
                 }
             } else {
                 return {
                     name: `Episode ${e}`,
-                    url
+                    url: urls.pop(),
+                    alternativeUrls: urls
                 }
             }
         }

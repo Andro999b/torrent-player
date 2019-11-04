@@ -17,6 +17,7 @@ import SoundControl from './SoundControl'
 import { isElectron, isMobile } from '../utils'
 
 import { observer } from 'mobx-react'
+import AudioTrackSelector from './AudioTrackSelector'
 
 @observer
 class MediaControls extends Component {
@@ -39,6 +40,7 @@ class MediaControls extends Component {
         } = device
 
         const mobile = isMobile()
+        const hasAudioTracks = device.audioTracks.length != 0
 
         return (
             <Slide direction="up" in mountOnEnter unmountOnExit>
@@ -74,6 +76,7 @@ class MediaControls extends Component {
                             }
                             {mobile && <MobileSoundControl device={device}/>}
                             {!mobile && <SoundControl device={device}/>}
+                            {hasAudioTracks && <AudioTrackSelector device={device}/>}
                         </div>
                         <div className="player-controls__panel-section">
                             {showFullscrean &&

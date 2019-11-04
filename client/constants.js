@@ -42,23 +42,6 @@ export const NO_TORRENTS_SEARCH_RPVODERS_PRESET = [
 
 export const SEARCH_RPVODERS_PRESET = [
     {
-        name: 'Torrents ENG',
-        presets: [
-            {
-                name: 'Movies',
-                providers: ['limetorrents-movies']
-            },
-            {
-                name: 'TV Shows',
-                providers: ['limetorrents-tv-shows']
-            },
-            {
-                name: 'Anime',
-                providers: ['limetorrents-anime']
-            }
-        ]
-    },
-    {
         name: 'Torrents',
         presets: [
             {
@@ -95,7 +78,9 @@ export const ALLOWED_REMOTE_STATE_FIELDS = [
     'isLoading',
     'error',
     'volume',
-    'isMuted'
+    'isMuted',
+    'audioTracks',
+    'audioTrack',
 ]
 
 export const END_FILE_TIME_OFFSET = 60

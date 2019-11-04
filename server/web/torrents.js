@@ -124,6 +124,15 @@ router.get('/:torrentId/files/:fileId/browserVideo', asyncHandler(async (req, re
     }
 }))
 
+router.get('/:torrentId/files/:fileId/mediaMetadata', asyncHandler(async (req, res) => {
+    const { file } = getTorrentAndFile(req)
+
+    if (!isVideo(file.path))
+        throw new ResponseError('Not video file', 404)
+
+    res.json(await metadataService.getMetadata(file))
+}))
+
 router.head('/:torrentId/files/:fileId/transcoded', (req, res) => {
     let { clientId } = req.query
 

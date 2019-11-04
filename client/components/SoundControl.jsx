@@ -1,8 +1,7 @@
 import React, { Component, Fragment } from 'react'
 import {
     VolumeUpRounded as VolumeUpIcon,
-    VolumeDownRounded as VolumeDownIcon,
-    VolumeOffRounded as VolumeOffIcon
+    VolumeDownRounded as VolumeDownIcon
 } from '@material-ui/icons'
 import { 
     Slider,

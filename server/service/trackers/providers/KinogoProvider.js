@@ -84,8 +84,11 @@ class KinogoProvider extends DataLifeProvider {
         const parts = script.match(/fmp4 = "([^"]+)"/)
 
         if(parts && parts.length > 1) {
-            const url = getBestPlayerJSQuality(parts[1])
-            return [{ url }]
+            const urls = getBestPlayerJSQuality(parts[1])
+            return [{ 
+                url: urls.unshift(), 
+                alternativeUrls: urls 
+            }]
         }
     }
 
@@ -96,16 +99,22 @@ class KinogoProvider extends DataLifeProvider {
             return JSON.parse(parts[1])
                 .map((it, season) => {
                     if(it.file) {
+                        const urls = getBestPlayerJSQuality(it.file)
                         return [{
                             name: `Episode ${season + 1}`,
-                            url: getBestPlayerJSQuality(it.file)
+                            url: urls.pop(), 
+                            alternativeUrls: urls 
                         }]
                     } else {
-                        return it.folder.map(({ file } , episode) => ({
-                            path: `Season ${season + 1}`,
-                            name: `Season ${season + 1} / Episode ${episode + 1}`,
-                            url: getBestPlayerJSQuality(file)
-                        }))
+                        return it.folder.map(({ file } , episode) => {
+                            const urls = getBestPlayerJSQuality(file)
+                            return {
+                                path: `Season ${season + 1}`,
+                                name: `Season ${season + 1} / Episode ${episode + 1}`,
+                                url: urls.pop(), 
+                                alternativeUrls: urls 
+                            }
+                        })
                     }
                 })
                 .flatMap((it) => it)

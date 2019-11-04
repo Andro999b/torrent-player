@@ -162,8 +162,9 @@ function getBestPlayerJSQuality(input) {
             }
         })
         .filter((it) => it)
-        .sort((a, b) => b.quality - a.quality)
-        .map((it) => it.url)[0]
+        .sort((a, b) => a.quality - b.quality)
+        .map((it) => it.url)
+        .filter((v, i, a) => a.indexOf(v) === i)
 }
 
 module.exports = {

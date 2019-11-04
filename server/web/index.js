@@ -19,7 +19,7 @@ module.exports = function () {
     expressServer.use(cors())
     expressServer.use(express.static(CLIENT_DIR))
 
-    expressServer.use(bodyParser.json())
+    expressServer.use(bodyParser.json({ limit: '5mb' }))
     expressServer.use('/api/torrents', torrentsApi)
     expressServer.use('/api/trackers', trackersApi)
     expressServer.use('/api/library', libraryApi)

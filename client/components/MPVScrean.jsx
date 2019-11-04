@@ -30,6 +30,12 @@ class MPVScrean extends BaseScrean {
         this.mpv.property('ao-volume', volume * 100)
     }
 
+    onAudioTrack(id) {
+        if(!isNaN(id)) {
+            this.mpv.property('aid', id)
+        }
+    }
+
     onSource({ url, fsPath, extractor}, startTime = 0) {
         const { mpv, props: { device } } = this
         const { volume, isMute } = device

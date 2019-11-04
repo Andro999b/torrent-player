@@ -1,5 +1,5 @@
 import { autorun, observable, action } from 'mobx'
-import playerStore, { Device, LocalDevice } from '../player-store'
+import playerStore, { LocalDevice } from '../player-store'
 import transitionStore from '../transition-store'
 import urljoin from 'url-join'
 import { diff, isMobile } from '../../utils'
@@ -7,8 +7,9 @@ import { API_BASE_URL, request } from '../../utils/api'
 import io from 'socket.io-client'
 import pick from 'lodash.pick'
 import { ALLOWED_REMOTE_STATE_FIELDS } from '../../constants'
+import BaseRemoteDevice from './BaseRemoteDevice'
 
-class RemoteDevice extends Device {
+class RemoteDevice extends BaseRemoteDevice {
     @observable isConnected = false
 
     constructor(socket, device) {
@@ -64,58 +65,12 @@ class RemoteDevice extends Device {
         this.isConnected = false
     }
 
-    resume() {
-        this.sendAction('resume')
-    }
-
-    pause() {
-        this.sendAction('pause')
-    }
-
-    play(currentTime) {
-        this.sendAction('play', currentTime)
-        if(currentTime != null) {
-            this.currentTime = currentTime
-        }
-    }
-
-    @action seek(currentTime) {
-        this.currentTime = currentTime
-        this.sendAction('seek', currentTime)
-    }
-
-    @action setVolume(volume) {
-        this.volume = volume
-        this.sendAction('setVolume', volume)
-    }
-
-    selectFile(fileIndex) {
-        this.sendAction('selectFile', fileIndex)
-    }
-
-    toggleMute() {
-        this.sendAction('toggleMute')
-    }
-
-    @action setPlaylist(playlist, fileIndex, marks) {
-        this.playlist = playlist
-        this.currentFileIndex = fileIndex
-        this.sendAction('openPlaylist', { playlist, fileIndex, marks })
-    }
-
     closePlaylist(ack) {
         this.sendAction('closePlaylist', null, ack)
     }
 
     @action sendAction(action, payload, ack) {
         this.socket.emit('action', { action, payload }, ack)
-    }
-
-    @action.bound onSync(state) {
-        const filteredState = pick(state, ALLOWED_REMOTE_STATE_FIELDS)
-        Object.keys(filteredState).forEach((key) => {
-            this[key] = state[key]
-        })
     }
 }
 
