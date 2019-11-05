@@ -1,8 +1,8 @@
 import { observable, action } from 'mobx'
-import { Device } from '../player-store'
 import transitionStore from '../transition-store'
+import BaseRemoteDevice from './BaseRemoteDevice'
 
-class MobileAppRemoteDevice extends Device {
+class MobileAppRemoteDevice extends BaseRemoteDevice {
     isConnected = false
 
     isLocal = () => false
