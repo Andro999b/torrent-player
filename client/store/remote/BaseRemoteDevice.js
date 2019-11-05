@@ -1,5 +1,6 @@
 import { Device } from '../player-store'
 import { action } from 'mobx'
+import pick from 'lodash.pick'
 import { ALLOWED_REMOTE_STATE_FIELDS } from '../../constants'
 
 export default class BaseRemoteDevice extends Device {
