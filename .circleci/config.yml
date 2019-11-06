@@ -117,7 +117,7 @@ jobs:
             echo "Release version ${VERSION}"
             cd /tmp/repo/build/out
             echo $VERSION >> release
-            find electron -name "*.zip" -exec sh -c 'zip -ur *.zip release' {} \;
+            find electron -name "*.zip" -exec sh -c 'zip -ur $1 release' {} \;
             ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} ${VERSION} electron
 
 
