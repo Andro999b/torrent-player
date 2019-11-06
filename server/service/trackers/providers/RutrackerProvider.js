@@ -70,6 +70,14 @@ class RuTrackerProvider extends Provider {
         })
     }
 
+    async search(query, page, pageCount) {
+        if(!bb_cookie) {
+            return []
+        }
+
+        return super.search(query, page, pageCount)
+    }
+
     getName() {
         const { subtype } = this.config
         return `rutracker${subtype ? '-' + subtype : ''}`

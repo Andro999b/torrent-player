@@ -103,6 +103,7 @@ class SearchStore {
     }
 
     @action selectProviders(providers) {
+        providers = providers.filter((v, i) => providers.indexOf(v) === i)
         localStore.set('searchProviders', providers)
         this.searchProviders = providers
     }
