@@ -2,7 +2,7 @@ const { app, BrowserWindow, globalShortcut } = require('electron')
 const { fork } = require('child_process')
 
 const path = require('path')
-const argv = require('minimist')(process.argv.slice(2))
+const argv = require('minimist')(process.argv)
 
 const fullscreen = !argv['windowed']
 const noMpv = argv['no-mpv']

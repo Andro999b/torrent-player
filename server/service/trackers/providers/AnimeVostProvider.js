@@ -1,6 +1,6 @@
 const DataLifeProvider = require('./DataLIfeProvider')
 const urlencode = require('urlencode')
-const $ = require('cheerio')
+const { rowsLikeExtractor } = require('../../../utils/detailsExtractors')
 
 class AnimeVostProvider extends DataLifeProvider {
     constructor() {
@@ -21,21 +21,7 @@ class AnimeVostProvider extends DataLifeProvider {
                 },
                 description: {
                     selector: 'p',
-                    transform: ($el) => {
-                        return $el.toArray()
-                            .map((node) => $(node).text())
-                            .map((text) => {
-                                const parts = text.split(':')
-
-                                if(parts.lenght < 2) return
-
-                                const name = parts[0]
-                                const value = parts.slice(1).join().trimLeft().replace(/\n+/, '')
-
-                                return { name, value }
-                            })
-                            .filter((item) => item && item.name && item.value)
-                    }
+                    transform: rowsLikeExtractor
                 },
                 files: {
                     selector: 'script',

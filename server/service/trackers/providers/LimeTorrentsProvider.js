@@ -1,5 +1,6 @@
 const Provider = require('../Provider')
 const urlencode = require('urlencode')
+const { tableLikeExtractor } = require('../../../utils/detailsExtractors')
 
 class LimeTorrentsProvider extends Provider {
     constructor(categories, subtype) {
@@ -25,19 +26,7 @@ class LimeTorrentsProvider extends Provider {
             detailsSelectors: {
                 description: {
                     selector: '.torrentinfo > table',
-                    transform: ($el) => {
-                        return $el.text().split('\n')
-                            .map((line) => {
-                                const parts = line.split(':')
-                                let name = parts[0] && parts[0].trim()
-                                const value = parts[1] && parts[1].trim()
-
-                                name = name.substring(0, name.length - 1)
-
-                                return { name, value }
-                            })
-                            .filter((item) => item && item.name && item.value)
-                    }
+                    transform: tableLikeExtractor
                 },
                 torrentUrl: {
                     selector: '.dltorrent a',

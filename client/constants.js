@@ -46,11 +46,11 @@ export const SEARCH_RPVODERS_PRESET = [
         presets: [
             {
                 name: 'Movies',
-                providers: ['rutracker-movies', 'nnm-movies', 'fastTorrent-movies', 'rutor']
+                providers: ['limetorrents-movies', 'rutracker-movies', 'nnm-movies', 'fastTorrent-movies', 'rutor']
             },
             {
                 name: 'TV Shows',
-                providers: ['rutracker-tv-shows', 'nnm-tv-shows', 'fastTorrent-tv-shows', 'rutor']
+                providers: ['limetorrents-tv-shows', 'rutracker-tv-shows', 'nnm-tv-shows', 'fastTorrent-tv-shows', 'rutor']
             },
             {
                 name: 'Cartoons',
@@ -58,7 +58,7 @@ export const SEARCH_RPVODERS_PRESET = [
             },
             {
                 name: 'Anime',
-                providers: ['rutracker-anime', 'nnm-anime', 'fastTorrent-cartoons', 'rutor']
+                providers: ['limetorrents-anime', 'rutracker-anime', 'nnm-anime', 'fastTorrent-cartoons', 'rutor']
             }
         ]
     },

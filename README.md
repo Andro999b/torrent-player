@@ -89,3 +89,15 @@ Electron version use MPV.js plugin see repo https://github.com/Kagami/mpv.js/ fo
 `F5` - reload UI
 
 `F11` - toggle fullscreen
+
+
+# Providers
+- AniDUB
+- AnimeVost
+- FastTorrents
+- Kinogo
+- Kinokrad
+- LimeTorrents
+- NNMClub
+- RuTor
+- Rutracker

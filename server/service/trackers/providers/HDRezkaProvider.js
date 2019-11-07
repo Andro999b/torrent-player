@@ -4,6 +4,7 @@ const { getBestPlayerJSQuality } = require('../../../utils')
 const urlencode = require('urlencode')
 const superagent = require('superagent')
 const $ = require('cheerio')
+const { rowsLikeExtractor } = require('../../../utils/detailsExtractors')
 
 class HDRezkaProvider extends Provider {
     constructor() {
@@ -28,16 +29,7 @@ class HDRezkaProvider extends Provider {
                 },
                 description: {
                     selector: '.b-post__info tr',
-                    transform: ($el) => {
-                        return $el.toArray()
-                            .map((tr) => {
-                                const $td = $(tr).find('td')
-                                const name = $td.eq(0).find('h2').text()
-                                const value = $td.eq(1).text().trim()
-                                return { name, value }
-                            })
-                            .filter((item) => item && item.name && item.value)
-                    }
+                    transform: rowsLikeExtractor
                 },
                 files: {
                     transform: async ($scope, $root) => {
@@ -71,7 +63,7 @@ class HDRezkaProvider extends Provider {
 
                 if (url) {
                     const name = $translation.text()
-                    return this._processCdnUrl(name, url)
+                    return this._processTranslationCdnUrl(name, url)
                 } else {
                     const title = $translation.attr('title')
                     const translatorId = $translation.attr('data-translator_id')

@@ -40,7 +40,7 @@ function setTorrentDownloadStatus(torrent, download) {
     }
 }
 
-function waitCompletion(torrent) {
+function attachCompleteHandler(torrent) {
     torrent.once('done', () => checkFilesStatus(torrent))
 }
 
@@ -74,7 +74,7 @@ module.exports = {
                             debug(`${torrent.name} verified`)
                             const autoDownload = database.isEnabledDownloadInBackground(torrent.infoHash)
                             setTorrentDownloadStatus(torrent, autoDownload)
-                            waitCompletion(torrent)
+                            attachCompleteHandler(torrent)
                         }
                     )
                     debug(`Torrent resumed: ${seedTorrentFile}`)
@@ -117,9 +117,9 @@ module.exports = {
         torrent = await addTorrent(parsedTorrent, { path: TORRENTS_DATA_DIR })
 
         setTorrentDownloadStatus(torrent)
-        waitCompletion(torrent)
-        database.setImageCover(parsedTorrent.infoHash, image)
+        attachCompleteHandler(torrent)
 
+        database.setImageCover(parsedTorrent.infoHash, image)
         await fs.writeFile(torrentFileName(torrent), torrent.torrentFile)
 
         return torrent
