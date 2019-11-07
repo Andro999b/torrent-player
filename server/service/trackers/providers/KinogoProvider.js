@@ -1,6 +1,7 @@
 const DataLifeProvider = require('./DataLIfeProvider')
 const { getBestPlayerJSQuality } = require('../../../utils')
 const urlencode = require('urlencode')
+const { tableLikeExtractor } = require('../../../utils/detailsExtractors')
 
 class KinogoProvider extends DataLifeProvider {
     constructor() {
@@ -26,19 +27,7 @@ class KinogoProvider extends DataLifeProvider {
                 },
                 description: {
                     selector: '.quote',
-                    transform: ($el) => {
-                        return $el.text().split('\n')
-                            .map((line) => {
-                                const parts = line.split(':')
-                                let name = parts[0] && parts[0].trim()
-                                const value = parts[1] && parts[1].trim()
-
-                                name = name.substring(0, name.length - 1)
-
-                                return { name, value }
-                            })
-                            .filter((item) => item && item.name && item.value)
-                    }
+                    transform: tableLikeExtractor
                 },
                 files: {
                     selector: '#1212',

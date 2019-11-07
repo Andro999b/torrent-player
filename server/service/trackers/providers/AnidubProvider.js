@@ -1,12 +1,13 @@
 const DataLifeProvider = require('./DataLIfeProvider')
 const urlencode = require('urlencode')
 const $ = require('cheerio')
+const { rowsLikeExtractor } = require('../../../utils/detailsExtractors')
 
 class AnidubProvider extends DataLifeProvider {
     constructor() {
         super({
-            baseUrl: 'https://anime.anidub.com',
-            searchUrl: 'https://anime.anidub.com/index.php?do=search',
+            baseUrl: 'https://online.anidub.com',
+            searchUrl: 'https://online.anidub.com/index.php?do=search',
             scope: '.newstitle',
             pageSize: 50,
             selectors: {
@@ -21,29 +22,17 @@ class AnidubProvider extends DataLifeProvider {
                 },
                 description: {
                     selector: '.maincont>ul>li',
-                    transform: ($el) => {
-                        return $el.toArray()
-                            .map((node) => $(node).text())
-                            .map((text) => {
-                                const parts = text.split(':')
-
-                                if(parts.lenght < 2) return
-
-                                const name = parts[0]
-                                const value = parts.slice(1).join().trimLeft().replace(/\n+/, '')
-
-                                return { name, value }
-                            })
-                            .filter((item) => item && item.name && item.value)
-                    }
+                    transform: rowsLikeExtractor
                 },
                 files: {
                     selector: '.players',
                     transform: ($players) => {
-                        let $player = $players.find('#our1, .active').first()
-                        if($player.lenght == 0) {
-                            $player = $players.first()
-                        }
+                        // looks like anidub player broken
+                        // let $player = $players.find('#our1, .active').first()
+                        // if($player.lenght == 0) {
+                        //     $player = $players.first()
+                        // }
+                        const $player = $players.first() // use first one
                         return this.extractPlayerFiles($player.find('select>option'))
                     }  
                 }

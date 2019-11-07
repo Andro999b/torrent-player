@@ -2,6 +2,7 @@ const DataLifeProvider = require('./DataLIfeProvider')
 const superagent = require('superagent')
 const urlencode = require('urlencode')
 const $ = require('cheerio')
+const { rowsLikeExtractor } = require('../../../utils/detailsExtractors')
 
 const idExractor = /https:\/\/kinokrad\.co\/([0-9]+)/
 
@@ -25,21 +26,7 @@ class KinokradProvider extends DataLifeProvider {
                 },
                 description: { 
                     selector: '.janrfall>li',
-                    transform: ($el) => {
-                        return $el.toArray()
-                            .map((node) => $(node).text())
-                            .map((text) => {
-                                const parts = text.split(':')
-                                
-                                if(parts.lenght < 2) return
-
-                                const name = parts[0]
-                                const value = parts.slice(1).join().trimLeft().replace(/\n+/, '')
-
-                                return { name, value }
-                            })
-                            .filter((item) => item && item.name && item.value)
-                    } 
+                    transform: rowsLikeExtractor
                 },
                 files: {
                     selector: '.boxfilm script',

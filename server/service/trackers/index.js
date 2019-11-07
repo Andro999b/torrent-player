@@ -4,7 +4,6 @@ const providers = [
     new (require('./providers/AnidubProvider'))(),
     new (require('./providers/KinokradProvider'))(),
     new (require('./providers/HDRezkaProvider'))(),
-    new (require('./providers/BaskinoProvider'))(),
     new (require('./providers/KinogoProvider'))(),
     ...require('./providers/RutrackerProvider').providers,
     ...require('./providers/NNMClubProvider').providers,
