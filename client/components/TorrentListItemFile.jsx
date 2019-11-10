@@ -34,7 +34,9 @@ class TorrentListItemFile extends Component {
                     name: file.name
                 })} 
             >
-                <ListItemText primary={text} />
+                {<span style={{ wordBreak: 'break-all' }}>
+                    {text}
+                </span>}
             </CastOrPlayListItem>
         )
     }

@@ -92,7 +92,8 @@ class SearchResultsItemDetails extends Component {
                 <Grid item xs={12} md={posterImage ? 5 : 6}>
                     {description && description.map((item, index) => (
                         <Typography variant="body2" key={index}>
-                            {item.name && <b>{item.name}: </b>}{item.value}
+                            {item.name && <b>{item.name}: </b>}
+                            <span style={{ wordBreak: 'break-all' }}>{item.value}</span>
                         </Typography>
                     ))}
                 </Grid>
