@@ -46,7 +46,7 @@
     "upnp-mediarenderer-client": "https://github.com/Andro999b/node-upnp-mediarenderer-client.git",
     "urlencode": "^1.1.0",
     "uuid": "^3.3.2",
-    "webtorrent": " 0.107.6",
+    "webtorrent": "^0.107.16",
     "xml2js": "^0.4.19"
   }
 }
