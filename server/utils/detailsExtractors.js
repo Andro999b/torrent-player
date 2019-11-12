@@ -32,3 +32,21 @@ module.exports.rowsLikeExtractor = function($el) {
         })
         .filter((item) => item && item.name && item.value)
 }
+
+module.exports.twoElemetsRowExtractor = function($el) {
+    return $el.toArray()
+        .map((row) => {
+            const $row = $(row)
+            const $children = $row.children()
+
+            if($children.length > 1) {
+                return {
+                    name: $children.eq(0).text().trim(),
+                    value: $children.eq(1).text().trim()
+                }
+            } else {
+                return null
+            }
+        })
+        .filter((item) => item && item.name && item.value)
+}

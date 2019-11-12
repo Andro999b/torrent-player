@@ -39,7 +39,7 @@ class CastOrPlayListItem extends Component {
         const secondaryIcon = mobileApp ? <PlayableIcon/> : <CastIcon/>
 
         return (
-            <ListItem button={playable} onClick={primaryAction} ContainerComponent="div">
+            <ListItem button={playable} onClick={playable ? primaryAction : null} ContainerComponent="div">
                 <ListItemIcon className="hide-on-mobile">
                     {primartyIcon}
                 </ListItemIcon>

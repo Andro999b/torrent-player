@@ -9,6 +9,13 @@ Can be runned as web server or desktop application(electron version)
 
 Checkout [Release](https://github.com/Andro999b/torrent-player/releases) for prebuilded binaries
 
+## Linux dependencies
+
+You probably will need to instal mpvlib on machine
+```
+sudo apt install libmpv1
+```
+
 # Build and run
 
 install dependencies

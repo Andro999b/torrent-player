@@ -1,4 +1,4 @@
-export const NO_TORRENTS_SEARCH_RPOVIDERS ={
+export const NO_TORRENTS_SEARCH_RPOVIDERS = {
     'animeVost': 'AnimeVost',
     'anidub': 'AniDub',
     'kinokrad': 'Kinokrad',
@@ -8,10 +8,13 @@ export const NO_TORRENTS_SEARCH_RPOVIDERS ={
 
 export const SEARCH_RPOVIDERS = {
     'rutor': 'RuTor',
-    'rutracker-movies': 'RuTracker Movies',
-    'rutracker-tv-shows': 'RuTracker TV Shows',
-    'rutracker-cartoons': 'RuTracker Cartoons',
-    'rutracker-anime': 'RuTracker Anime',
+    // 'rutracker-movies': 'RuTracker Movies',
+    // 'rutracker-tv-shows': 'RuTracker TV Shows',
+    // 'rutracker-cartoons': 'RuTracker Cartoons',
+    // 'rutracker-anime': 'RuTracker Anime',
+    'x1337x-movies': 'x1337x Movies',
+    'x1337x-tv-shows': 'x1337x TV Shows',
+    'x1337x-anime': 'x1337x Anime',
     'fastTorrent-movies': 'FastTorrent Movies',
     'fastTorrent-tv-shows': 'FastTorrent TV Shows',
     'fastTorrent-cartoons': 'FastTorrent Cartoons',
@@ -46,19 +49,45 @@ export const SEARCH_RPVODERS_PRESET = [
         presets: [
             {
                 name: 'Movies',
-                providers: ['limetorrents-movies', 'rutracker-movies', 'nnm-movies', 'fastTorrent-movies', 'rutor']
+                providers: [
+                    'x1337x-movies',
+                    'limetorrents-movies',
+                    'rutracker-movies',
+                    'nnm-movies',
+                    'fastTorrent-movies',
+                    'rutor'
+                ]
             },
             {
                 name: 'TV Shows',
-                providers: ['limetorrents-tv-shows', 'rutracker-tv-shows', 'nnm-tv-shows', 'fastTorrent-tv-shows', 'rutor']
+                providers: [
+                    'x1337x-tv-shows',
+                    'limetorrents-tv-shows',
+                    'rutracker-tv-shows',
+                    'nnm-tv-shows',
+                    'fastTorrent-tv-shows',
+                    'rutor'
+                ]
             },
             {
                 name: 'Cartoons',
-                providers: ['rutracker-cartoons', 'fastTorrent-cartoons', 'nnm-cartoons', 'rutor']
+                providers: [
+                    'rutracker-cartoons',
+                    'fastTorrent-cartoons',
+                    'nnm-cartoons',
+                    'rutor'
+                ]
             },
             {
                 name: 'Anime',
-                providers: ['limetorrents-anime', 'rutracker-anime', 'nnm-anime', 'fastTorrent-cartoons', 'rutor']
+                providers: [
+                    'x1337x-anime',
+                    'limetorrents-anime',
+                    'rutracker-anime',
+                    'nnm-anime',
+                    'fastTorrent-cartoons',
+                    'rutor'
+                ]
             }
         ]
     },

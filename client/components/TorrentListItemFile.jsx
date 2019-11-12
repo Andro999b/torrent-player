@@ -25,18 +25,20 @@ class TorrentListItemFile extends Component {
         </div>
 
         return (
-            <CastOrPlayListItem  key={fileIndex} 
-                playable={playable} 
+            <CastOrPlayListItem key={fileIndex}
+                playable={playable}
                 onPlay={() => onPlayFile(torrent, file)}
                 onCast={() => onCastFile(torrent, file)}
-                secondaryActions={createDownloadSecondaryActions({ 
+                secondaryActions={createDownloadSecondaryActions({
                     url: getTorrentFileContentLink(torrent.infoHash, file.id),
                     name: file.name
-                })} 
+                })}
             >
-                {<span style={{ wordBreak: 'break-all' }}>
-                    {text}
-                </span>}
+                <ListItemText primary=
+                    {<span style={{ wordBreak: 'break-all' }}>
+                        {text}
+                    </span>}
+                />
             </CastOrPlayListItem>
         )
     }

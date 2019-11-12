@@ -79,23 +79,21 @@ class SearchResultsItem extends Component {
                         <ExpansionPanelDetails>
                             <SearchResultsItemDetails item={item} />
                         </ExpansionPanelDetails>
-                        <ShowIf must={[item.hasFiles()]}>
-                            <ShowIf must={[item.isDownlodableTorrent()]}>
-                                <ExpansionPanelActions>
-                                    <Button onClick={() => onDownload(item.details)} variant="contained">
-                                        <AddToLibraryIcon className="button-icon__left" />
-                                        Add to Library
-                                    </Button>
-                                </ExpansionPanelActions>
-                            </ShowIf>
-                            <ShowIf mustNot={[item.isTorrent()]}>
-                                <ExpansionPanelActions>
-                                    <Button onClick={() => watchLater(item.details)} variant="contained">
-                                        <WatchLaterIcon className="button-icon__left"/>
-                                        Watch Later
-                                    </Button>
-                                </ExpansionPanelActions>
-                            </ShowIf>
+                        <ShowIf must={[item.isDownlodableTorrent()]}>
+                            <ExpansionPanelActions>
+                                <Button onClick={() => onDownload(item.details)} variant="contained">
+                                    <AddToLibraryIcon className="button-icon__left" />
+                                    Add to Library
+                                </Button>
+                            </ExpansionPanelActions>
+                        </ShowIf>
+                        <ShowIf must={[item.hasFiles()]} mustNot={[item.isTorrent()]}>
+                            <ExpansionPanelActions>
+                                <Button onClick={() => watchLater(item.details)} variant="contained">
+                                    <WatchLaterIcon className="button-icon__left"/>
+                                    Watch Later
+                                </Button>
+                            </ExpansionPanelActions>
                         </ShowIf>
                     </div>
             )

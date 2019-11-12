@@ -125,12 +125,19 @@ class Provider {
     _crawlerSearchRequestGenerator(query, page) {} // eslint-disable-line
 
     async  _loadTorrentFileInfo(details) {
-        if(!details.torrentUrl) {
+        if(details.torrentUrl) {
+            const parsedTorrent = await this.loadTorentFile(details.torrentUrl)
+            return { 
+                ...details, 
+                files:  this._extractFilesFromParsedTorrent(parsedTorrent)
+            }
+        } else {
             return details
         }
+    }
 
-        const parsedTorrent = await this.loadTorentFile(details.torrentUrl)
-        const files = parsedTorrent.files
+    _extractFilesFromParsedTorrent(parsedTorrent) {
+        return parsedTorrent.files
             .map((file, fileIndex) => {
                 const lastSeparator = file.path.lastIndexOf('/')
                 const path = lastSeparator > -1 ? file.path.substring(0, lastSeparator) : ''
@@ -143,8 +150,6 @@ class Provider {
                 }
             })
             .sort((f1, f2) => f1.name.localeCompare(f2.name))
-
-        return { ...details, files }
     }
 
     loadTorentFile(torrentUrl) {
