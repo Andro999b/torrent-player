@@ -66,7 +66,7 @@ class Provider {
         results = await this._postProcessResult(results)
 
         return results
-            .filter((item) => item.id != null)
+            .filter((item) => item.id)
             .map((item) => {
                 item.provider = name
                 return item

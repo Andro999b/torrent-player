@@ -1,4 +1,4 @@
-import { observable, action } from 'mobx'
+import { observable, action, runInAction } from 'mobx'
 import { request, fetchOnce, getConfig } from '../utils/api'
 import notificationStore from './notifications-store'
 import { 
@@ -147,27 +147,30 @@ class SearchStore {
         this.searchResults = []
         this.loading = true
 
-        const fetches = this.searchProviders.map((provider) => {
+        this.searchProviders.forEach((provider) => {
             const fetch = searchProvidersFetch[provider]
-            return fetch(`/api/trackers/${provider}/search`)
+            fetch(`/api/trackers/${provider}/search`)
                 .query({ q: searchQuery })
-                .then((res) => res.body)
+                .then(({ body }) => {
+
+                    if (body) {
+                        if(body.length) {
+                            const searchResults = body
+                                .map((item) => new SearchReusltItem(item))
+                                .sort((a, b) => b.seeds - a.seeds)
+
+                            this.searchResults.replace(this.searchResults.concat(searchResults))
+                        }
+                        this.loading = false
+                    }
+                })
                 .catch((err) => {
-                    console.error(err)
-                    notificationStore.showMessage('Fail to fetch results')
+                    if(err.code == 'ABORTED') return
+                    console.error(`Failed to search in ${provider}`, err)
+                    notificationStore.showMessage(`Failed to search in ${provider}`)
                 })
         })
 
-        Promise.all(fetches).then((fetchesResults) => {
-            let searchResults = []
-            fetchesResults.forEach((results) => {
-                if (results) {
-                    results.forEach((item) => searchResults.push(new SearchReusltItem(item)))
-                }
-            })
-            this.searchResults = searchResults.sort((a, b) => b.seeds - a.seeds)
-            this.loading = false
-        })
     }
 
     @action removeFromHistory(suggestion) {

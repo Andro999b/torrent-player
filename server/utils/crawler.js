@@ -70,7 +70,11 @@ class Crawler {
 
         $el = selector ? $el.find(selector) : $el
 
-        return transform($el, $root)
+        if($el.length) {
+            return transform($el, $root)
+        } else {
+            return null
+        }
     }
 
     async gather() {

@@ -6,40 +6,51 @@ import Typography from '@material-ui/core/Typography'
 import PropTypes from 'prop-types'
 import InfiniteScroll from 'react-infinite-scroller'
 
+import memoize from 'memoize-one'
+
+import { observer } from 'mobx-react'
+
 const PAGE_SIZE = 10
 
+@observer
 class SearchResults extends Component {
 
     constructor(props, context) {
         super(props, context)
 
-        const results = this.props.results
         this.state = {
-            items: results.slice(0, PAGE_SIZE),
-            hasMore: PAGE_SIZE < results.length
+            page: 0,
         }
     }
 
-    loadMoreItems = (page) => {
-        const results = this.props.results
+    nextPage = () => this.setState((state) => 
+        ({ page:  state.page + 1 })
+    )
+
+    getPage = memoize((results, page) => {
         const end = (page + 1) * PAGE_SIZE
         const hasMore = end < results.length
 
-        this.setState({
+        console.log(results.length, end, page)
+
+        return {
             items: results.slice(0, end),
             hasMore
-        })
-    }
+        }
+    })
 
     render() {
-        const { items, hasMore } = this.state
+        const { page } = this.state
+        const { results } = this.props
+
+        const { items, hasMore } = this.getPage(results.slice(), page)
 
         return (
             <div className="search-results">
                 {items.length == 0 && <Typography align="center" variant="h4">Nothing to display</Typography>}
                 <InfiniteScroll
                     pageStart={0}
-                    loadMore={this.loadMoreItems}
+                    loadMore={this.nextPage}
                     hasMore={hasMore}
                     useWindow={false}
                 >

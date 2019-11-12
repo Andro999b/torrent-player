@@ -103,7 +103,12 @@ class HDRezkaProvider extends Provider {
 
 class HDRezkaCDNProvider extends HDRezkaProvider {
     _processTranslationCdnUrl(name, url) {
-        return [{ name, url: getBestPlayerJSQuality(url) }]
+        const urls = getBestPlayerJSQuality(url)
+        return [{ 
+            name,                     
+            url: urls.pop(),
+            alternativeUrls: urls 
+        }]
     }
 
     _processTranslationResponse(title, { body: { seasons, episodes } }) {
