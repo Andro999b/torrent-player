@@ -163,6 +163,7 @@ binary-search@^1.3.4:
 bitfield@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/bitfield/-/bitfield-2.0.0.tgz#fbe6767592fe5b4c87ecf1d04126294cc1bfa837"
+  integrity sha512-4xM4DYejOHQ/qWBfeqBXNA4mJ12PwcOibFYnH1kYh5U9BHciCqEJBqGNVnMJXUhm8mflujNRLSv7IiVQxovgjw==
 
 bitfield@^3.0.0:
   version "3.0.0"
@@ -1079,6 +1080,7 @@ from2@^2.1.0:
 fs-chunk-store@^1.6.2:
   version "1.7.0"
   resolved "https://registry.yarnpkg.com/fs-chunk-store/-/fs-chunk-store-1.7.0.tgz#1c4bcbe93c99af10aa04b65348f2bb27377a4010"
+  integrity sha512-KhjJmZAs2eqfhCb6PdPx4RcZtheGTz86tpTC5JTvqBn/xda+Nb+0C7dCyjOSN7T76H6a56LvH0SVXQMchLXDRw==
   dependencies:
     mkdirp "^0.5.1"
     random-access-file "^2.0.1"
@@ -1839,6 +1841,7 @@ ms@^2.0.0, ms@^2.1.1:
 multistream@^3.0.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/multistream/-/multistream-3.1.0.tgz#49c382bc0bb355e34d15ba3a9fc1cf0f66b9fded"
+  integrity sha512-zBgD3kn8izQAN/TaL1PCMv15vYpf+Vcrsfub06njuYVYlzUldzpopTlrEZ53pZVEbfn3Shtv7vRFoOv6LOV87Q==
   dependencies:
     inherits "^2.0.1"
     readable-stream "^3.4.0"
@@ -2645,6 +2648,7 @@ simple-peer@^9.0.0:
 simple-sha1@^2.0.8:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/simple-sha1/-/simple-sha1-2.1.2.tgz#de40cbd5aae278fde8e3bb3250a35d74c67326b1"
+  integrity sha512-TQl9rm4rdKAVmhO++sXAb8TNN0D6JAD5iyI1mqEPNpxUzTRrtm4aOG1pDf/5W/qCFihiaoK6uuL9rvQz1x1VKw==
   dependencies:
     rusha "^0.8.1"
 
@@ -2814,6 +2818,7 @@ stream-shift@^1.0.0:
 stream-to-blob-url@^2.1.0:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/stream-to-blob-url/-/stream-to-blob-url-2.1.2.tgz#5f9ca7a4a893d1eba4524c5ab66543c1e1bfe01c"
+  integrity sha512-dpfeYUYNodazv7rU+B9DOBj8u+dueXKOWqCy1lzPBxqeVIqq93jVTn68DZoBPLiYXSdsY9AW8D1l1BuxvghqEA==
   dependencies:
     stream-to-blob "^1.0.0"
 
@@ -2826,6 +2831,7 @@ stream-to-blob-url@^3.0.0:
 stream-to-blob@^1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/stream-to-blob/-/stream-to-blob-1.0.2.tgz#3eeb699ad79ee2088db1a58dfe83c736578d708d"
+  integrity sha512-ryeEu3DGMt/095uTShIYGzLbbhZ+tHQtgp5HWEhXALSoc4U1iLSvpReZUdysahnJ3tki80wBBgryqqBzFZ0KaA==
   dependencies:
     once "^1.3.3"
 
@@ -3151,6 +3157,7 @@ ut_metadata@^3.3.0:
 ut_pex@^1.1.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/ut_pex/-/ut_pex-1.2.1.tgz#472ed0ea5e9bbc9148b833339d56d7b17cf3dad0"
+  integrity sha512-ZrxMCbffYtxQDqvREN9kBXK2CB9tPnd5PylHoqQX9ai+3HV9/S39FnA5JnhLOC82dxIQQg0nTN2wmhtAdGNtOA==
   dependencies:
     bencode "^2.0.0"
     compact2string "^1.2.0"
@@ -3213,6 +3220,7 @@ videostream@^3.2.0:
 webtorrent@0.105.2:
   version "0.105.2"
   resolved "https://registry.yarnpkg.com/webtorrent/-/webtorrent-0.105.2.tgz#44078c6248ca404f8788764e353a6a4317bd8563"
+  integrity sha512-oIvzICPz4CPz2/wHvD46tjG0TV0V4KvrcegKzPRj3tmvoML7WVO1FcCxQ6i/VQOFEkoN7qI4McvglmydM8XB/g==
   dependencies:
     addr-to-ip-port "^1.4.2"
     bitfield "^2.0.0"

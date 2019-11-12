@@ -308,14 +308,16 @@ html {
 
 .full-screan-dialog__toolbar {
     justify-content: space-between;
-    padding-left: 10px;
     padding-right: 10px;
+    padding-left: 10px;
 }
 
 .full-screan-dialog__title {
     word-break: break-all;
+    // padding-left: 10px;
 }
 
 .full-screan-dialog__content {
     padding-bottom: 10px;
+    // padding-left: 10px;
 }

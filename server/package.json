@@ -24,7 +24,6 @@
     "express-async-handler": "^1.1.4",
     "fluent-ffmpeg": "^2.1.2",
     "fs-extra": "^8.1.0",
-    "ip": "^1.1.5",
     "jstoxml": "^1.5.0",
     "lodash": "^4.17.15",
     "lowdb": "^1.0.0",
@@ -46,7 +45,7 @@
     "upnp-mediarenderer-client": "https://github.com/Andro999b/node-upnp-mediarenderer-client.git",
     "urlencode": "^1.1.0",
     "uuid": "^3.3.2",
-    "webtorrent": "^0.107.16",
+    "webtorrent": "0.105.2",
     "xml2js": "^0.4.19"
   }
 }
