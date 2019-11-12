@@ -31,8 +31,6 @@ class SearchResults extends Component {
         const end = (page + 1) * PAGE_SIZE
         const hasMore = end < results.length
 
-        console.log(results.length, end, page)
-
         return {
             items: results.slice(0, end),
             hasMore

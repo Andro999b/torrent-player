@@ -122,6 +122,10 @@ html {
     text-align: center;
 }
 
+.vmiddle {
+    vertical-align: middle;
+}
+
 .inset {
     padding-left: 32px !important
 }
@@ -314,10 +318,8 @@ html {
 
 .full-screan-dialog__title {
     word-break: break-all;
-    // padding-left: 10px;
 }
 
 .full-screan-dialog__content {
     padding-bottom: 10px;
-    // padding-left: 10px;
 }

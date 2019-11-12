@@ -10,26 +10,26 @@ import {
     Typography,
     TextField,
     Tabs,
-    Tab
+    Tab,
+    Chip
 } from '@material-ui/core'
 
 import { observer, inject } from 'mobx-react'
 import memoize from 'memoize-one'
 
-const DeleteTorrentDialog = (props) => 
-    <DeleteDialog 
+const DeleteTorrentDialog = (props) =>
+    <DeleteDialog
         {...props}
         renderTitle={() => 'Delete torrent?'}
         renderText={(item) => `Do you want to delete torrent ${item.name} and all data?`}
     />
 
-@inject('libraryStore', 'transitionStore') 
+@inject('libraryStore', 'transitionStore')
 @observer
 class LibraryView extends Component {
 
     constructor(props, context) {
         super(props, context)
-
         this.state = {
             torrentToDelete: null,
             filter: '',
@@ -37,11 +37,11 @@ class LibraryView extends Component {
         }
     }
 
-    componentDidMount() { 
-        this.props.libraryStore.startUpdate() 
+    componentDidMount() {
+        this.props.libraryStore.startUpdate()
     }
-    componentWillUnmount() { 
-        this.props.libraryStore.stopUpdate() 
+    componentWillUnmount() {
+        this.props.libraryStore.stopUpdate()
     }
     handleFilterChange = (e) => this.setState({ filter: e.target.value })
     handleRemoveBookmark = (item) => this.props.libraryStore.removeBookmark(item)
@@ -52,44 +52,44 @@ class LibraryView extends Component {
         this.setState({ torrentToDelete: null })
         libraryStore.deleteTorrent(torrent)
     }
-    handleSelectTab = (_, tab) => this.setState({tab})
+    handleSelectTab = (_, tab) => this.setState({ tab })
 
     filterBookmarks = memoize((bookmarks, filter) => {
-        if(filter == '') return bookmarks
+        if (filter == '') return bookmarks
 
         filter = filter.toLowerCase()
         return bookmarks.filter((bookmark) =>
             bookmark.playlist.name
                 .toLowerCase()
                 .search(filter) != -1
-        )    
+        )
     })
 
     filterTorrents = memoize((torrents, filter) => {
-        if(filter == '') return torrents
+        if (filter == '') return torrents
 
         filter = filter.toLowerCase()
         return torrents.filter((torrent) =>
             torrent.name
                 .toLowerCase()
                 .search(filter) != -1
-        )    
+        )
     })
 
     renderBookmarks(bookmarks) {
-        const { transitionStore: { playMedia, openCastDialog }} = this.props
+        const { transitionStore: { playMedia, openCastDialog } } = this.props
 
         return (
             <Fragment>
-                {bookmarks.length == 0 && 
+                {bookmarks.length == 0 &&
                     <Typography variant="h5" className="center" align="center" >
                         No bookmarks
                     </Typography>
                 }
                 {bookmarks.length != 0 && bookmarks.map((item) =>
                     <div key={item.playlist.name} className="library__item">
-                        <BookmarkItem item={item} 
-                            onPlay={playMedia} 
+                        <BookmarkItem item={item}
+                            onPlay={playMedia}
                             onCast={openCastDialog}
                             onRemove={this.handleRemoveBookmark}
                         />
@@ -102,7 +102,7 @@ class LibraryView extends Component {
     renderTorrents(torrents) {
         return (
             <Fragment>
-                {torrents.length == 0 && 
+                {torrents.length == 0 &&
                     <Typography variant="h5" className="center" align="center" >
                         No torrents
                     </Typography>
@@ -117,15 +117,15 @@ class LibraryView extends Component {
     }
 
     renderContent() {
-        const { libraryStore: { library: { torrents, bookmarks } }} = this.props
-        const { filter, tab } = this.state
+        const { libraryStore: { library: { torrents, bookmarks } } } = this.props
+        let { filter, tab } = this.state
 
         const filteredBookmarks = this.filterBookmarks(bookmarks, filter)
         const filteredTorrets = this.filterTorrents(torrents, filter)
 
-        const emptyLibrary = torrents.length == 0 && bookmarks.length == 0
+        let emptyLibrary = torrents.length == 0 && bookmarks.length == 0
 
-        if(emptyLibrary) {
+        if (emptyLibrary) {
             return (
                 <Typography className="center" align="center" variant="h4">
                     Library is empty
@@ -135,20 +135,24 @@ class LibraryView extends Component {
             let content
             let fixedFilter = false
 
-            if(torrents.length == 0) {
+            if (torrents.length == 0) {
                 fixedFilter = true
                 content = this.renderBookmarks(filteredBookmarks)
             } else {
                 content = (
                     <Fragment>
-                        <Tabs 
+                        <Tabs
                             className="library__tabs"
-                            indicatorColor="primary" 
-                            value={tab} 
+                            indicatorColor="primary"
+                            value={tab}
                             onChange={this.handleSelectTab}
                         >
-                            <Tab label="Continue Watching"/>
-                            <Tab label="Torrents"/>
+                            <Tab color="primary" label={<span>
+                                <span className="vmiddle">Continue Watching </span><Chip size="small" label={bookmarks.length} />
+                            </span>} />
+                            <Tab color="primary" label={<span>
+                                <span className="vmiddle">Torrents </span><Chip size="small" label={torrents.length} />
+                            </span>} />
                         </Tabs>
                         {tab == 0 && this.renderBookmarks(filteredBookmarks)}
                         {tab == 1 && this.renderTorrents(filteredTorrets)}
@@ -158,7 +162,7 @@ class LibraryView extends Component {
 
             return (
                 <Fragment>
-                    <div className={`library__filter${fixedFilter?'-fixed':''}`}>
+                    <div className={`library__filter${fixedFilter ? '-fixed' : ''}`}>
                         <TextField
                             placeholder="Filter"
                             value={filter}
@@ -173,12 +177,12 @@ class LibraryView extends Component {
     }
 
     render() {
-        const { libraryStore: { loading }} = this.props
+        const { libraryStore: { loading } } = this.props
         const { torrentToDelete } = this.state
-        
+
         return (
             <div className="library">
-                {loading && <div className="center"><CircularProgress/></div>}
+                {loading && <div className="center"><CircularProgress /></div>}
                 {!loading && this.renderContent()}
                 <DeleteTorrentDialog
                     item={torrentToDelete}

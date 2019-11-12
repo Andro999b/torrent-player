@@ -31,13 +31,6 @@ class TransitionStore {
         }
     }
 
-    @action.bound download(results) {
-        this.goToScreen('library')
-        libraryStore
-            .addTorrent(results)
-            .catch(console.error)
-    }
-
     @action.bound downloadAndPlay(results, selectedItem) {
         this.goToScreen('player')
         this._downloadPlaylist(results, selectedItem)

@@ -76,6 +76,12 @@ const theme = createMuiTheme({
                     minWidth: '40%',
                 }
             }
+        },
+        MuiBadge: {
+            badge: {
+                backgroundColor: blue.A200,
+                color: '#fff'
+            }
         }
     }
 })

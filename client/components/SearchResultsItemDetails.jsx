@@ -14,12 +14,12 @@ import { isPlayable } from '../utils'
 import GroupFiles from './GroupFiles'
 import { inject } from 'mobx-react'
 import CastOrPlayListItem from './CastOrPlayListItem'
-import watchLater from '../store/watchLater'
 import { createDownloadSecondaryActions } from '../utils/contextSecondaryActions'
 
-@inject(({ transitionStore }) => ({
-    onPlayFile: transitionStore.downloadAndPlay,
-    onCastFile: transitionStore.openCastDialog
+@inject(({ transitionStore: { downloadAndPlay, openCastDialog }, libraryStore: { watchLater }}) => ({
+    onPlayFile: downloadAndPlay,
+    onCastFile: openCastDialog,
+    onWatchLater: watchLater
 }))
 class SearchResultsItemDetails extends Component {
 
@@ -67,7 +67,7 @@ class SearchResultsItemDetails extends Component {
     }
 
     render() {
-        const { item, onPlayFile, onCastFile } = this.props
+        const { item, onPlayFile, onCastFile, onWatchLater } = this.props
         const { details } = item
 
         if (!details) return null
@@ -81,7 +81,7 @@ class SearchResultsItemDetails extends Component {
         ]
 
         if(!item.isTorrent()) {
-            directoryActions.push({ title: 'Watch Later', action: creatDirectoryAction(details, watchLater) })
+            directoryActions.push({ title: 'Watch Later', action: creatDirectoryAction(details, onWatchLater) })
         }
 
         return (
@@ -111,7 +111,8 @@ class SearchResultsItemDetails extends Component {
 SearchResultsItemDetails.propTypes = {
     item: PropTypes.object,
     onPlayFile: PropTypes.func,
-    onCastFile: PropTypes.func
+    onCastFile: PropTypes.func,
+    onWatchLater: PropTypes.func
 }
 
 export default SearchResultsItemDetails

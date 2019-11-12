@@ -28,6 +28,8 @@ export const SEARCH_RPOVIDERS = {
     ...NO_TORRENTS_SEARCH_RPOVIDERS
 }
 
+const getProvidersByType = (type) => Object.keys(SEARCH_RPOVIDERS).filter((p) => p.endsWith(type))
+
 export const DEFUALT_SEARCH_PROVIDERS = [
     'hdrezka', 'kinogo', 'animeVost'
 ]
@@ -49,45 +51,19 @@ export const SEARCH_RPVODERS_PRESET = [
         presets: [
             {
                 name: 'Movies',
-                providers: [
-                    'x1337x-movies',
-                    'limetorrents-movies',
-                    'rutracker-movies',
-                    'nnm-movies',
-                    'fastTorrent-movies',
-                    'rutor'
-                ]
+                providers: getProvidersByType('movies').concat(['rutor'])
             },
             {
                 name: 'TV Shows',
-                providers: [
-                    'x1337x-tv-shows',
-                    'limetorrents-tv-shows',
-                    'rutracker-tv-shows',
-                    'nnm-tv-shows',
-                    'fastTorrent-tv-shows',
-                    'rutor'
-                ]
+                providers: getProvidersByType('tv-shows').concat(['rutor'])
             },
             {
                 name: 'Cartoons',
-                providers: [
-                    'rutracker-cartoons',
-                    'fastTorrent-cartoons',
-                    'nnm-cartoons',
-                    'rutor'
-                ]
+                providers: getProvidersByType('cartoons').concat(['rutor'])
             },
             {
                 name: 'Anime',
-                providers: [
-                    'x1337x-anime',
-                    'limetorrents-anime',
-                    'rutracker-anime',
-                    'nnm-anime',
-                    'fastTorrent-cartoons',
-                    'rutor'
-                ]
+                providers: getProvidersByType('anime').concat(['rutor'])
             }
         ]
     },

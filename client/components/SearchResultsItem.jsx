@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import watchLater from '../store/watchLater'
 import { SEARCH_RPOVIDERS } from '../constants'
 
 import {
@@ -28,8 +27,8 @@ import red from '@material-ui/core/colors/red'
 import green from '@material-ui/core/colors/green'
 
 
-@inject(({ transitionStore: { download } }) => ({
-    onDownload: download
+@inject(({ libraryStore: { addTorrent, watchLater } }) => ({
+    addTorrent, watchLater
 }))
 @observer
 class SearchResultsItem extends Component {
@@ -53,7 +52,7 @@ class SearchResultsItem extends Component {
     }
 
     render() {
-        const { item, onDownload } = this.props
+        const { item, watchLater, addTorrent } = this.props
         const { showDetails } = this.state
 
         const title =
@@ -81,7 +80,7 @@ class SearchResultsItem extends Component {
                         </ExpansionPanelDetails>
                         <ShowIf must={[item.isDownlodableTorrent()]}>
                             <ExpansionPanelActions>
-                                <Button onClick={() => onDownload(item.details)} variant="contained">
+                                <Button onClick={() => addTorrent(item.details)} variant="contained">
                                     <AddToLibraryIcon className="button-icon__left" />
                                     Add to Library
                                 </Button>
@@ -114,7 +113,8 @@ class SearchResultsItem extends Component {
 
 SearchResultsItem.propTypes = {
     item: PropTypes.object.isRequired,
-    onDownload: PropTypes.func
+    addTorrent: PropTypes.func,
+    watchLater: PropTypes.func
 }
 
 export default SearchResultsItem

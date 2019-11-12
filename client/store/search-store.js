@@ -37,10 +37,8 @@ class SearchReusltItem {
     }
 
     isDownlodableTorrent() {
-        console.log(this.details != null && 
-            (this.details.magnetUrl != '' || this.details.torrentUrl != ''))
         return this.details != null && 
-            (this.details.magnetUrl != '' || this.details.torrentUrl != '')
+            (this.details.magnetUrl != null || this.details.torrentUrl != null)
     }
 
     hasFiles() {

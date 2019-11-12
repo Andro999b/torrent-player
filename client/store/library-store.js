@@ -68,6 +68,19 @@ class LibraryStore {
             })
     }
 
+    watchLater(playlist) {
+        return request
+            .post('/api/library/bookmarks')
+            .send(playlist)
+            .then(() => {
+                notificationStore.showMessage(`Playlist ${playlist.name} added`)
+            })
+            .catch((e) => {
+                console.error(e)
+                notificationStore.showMessage(`Fail to add playlist ${playlist.name}`)
+            })
+    }
+
     @action setBackgroudDownload(torrent) {
         const enabled = !torrent.downloadInBackground
         request
@@ -82,19 +95,15 @@ class LibraryStore {
             })
     }
 
-    @action addTorrent(result) {
-        this.loading = true
+    addTorrent(result) {
         return request
             .post('/api/torrents', result)
             .then((res) => {
-                this.updateLibrary()
                 notificationStore.showMessage(`Torrent ${result.name} added`)
                 return res.body
             })
             .catch(() => {
-                this.loading = false
                 notificationStore.showMessage(`Failed to add torrent ${result.name}`)
-                transitionStore.goBack()
             })
     }
 }
