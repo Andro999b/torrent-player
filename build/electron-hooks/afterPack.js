@@ -7,7 +7,7 @@ const exists = promisify(fs.exists)
 
 exports.default = async function(context) {
     const { appOutDir, outDir, electronPlatformName: platform } = context
-    const arch = ['x64', 'arm'][context.arch - 1]  
+    const arch = ['x64', 'arm'][context.arch - 1]
 
     const pluginsDir = path.join(outDir, '../../../plugins')
     const toolsDir = path.join(outDir, '../../../tools')
@@ -21,7 +21,7 @@ exports.default = async function(context) {
     if(await exists(mpvPluginPath)) {
         if(!await exists(appOutPluginDir))
             await mkdir(appOutPluginDir)
-        
+
         await cp(mpvPluginPath, path.join(appOutPluginDir, mpvPluginName))
 
         //copy lib mpv
@@ -33,15 +33,15 @@ exports.default = async function(context) {
             }
         }
 
-        if(platform == 'linux') { //TODO: change linkage
-            const libMpvName = 'libmpv.so.1'
-            for (const arch of ['x64', 'arm']) {
-                const libMpvPath = path.join(pluginsDir, 'libs', `linux-${arch}`, libMpvName)
-                if(await exists(libMpvPath)) {
-                    await cp(libMpvPath, path.join(appOutDir, libMpvName))
-                }
-            }
-        }
+        // if(platform == 'linux') { //TODO: change linkage
+        //     const libMpvName = 'libmpv.so.1'
+        //     for (const arch of ['x64', 'arm']) {
+        //         const libMpvPath = path.join(pluginsDir, 'libs', `linux-${arch}`, libMpvName)
+        //         if(await exists(libMpvPath)) {
+        //             await cp(libMpvPath, path.join(appOutDir, libMpvName))
+        //         }
+        //     }
+        // }
     }
 
     //copy ffmpeg and ffprobe
