@@ -5,7 +5,6 @@ const { PROVIDERS_CONFIG } = require('../../config')
 
 class Provider {
     constructor(name, config) {
-        console.log(name, config);
         this.name = name
         this.config = Object.assign(
             {
