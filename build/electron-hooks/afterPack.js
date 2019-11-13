@@ -33,15 +33,15 @@ exports.default = async function(context) {
             }
         }
 
-        // if(platform == 'linux') { //TODO: change linkage
-        //     const libMpvName = 'libmpv.so.1'
-        //     for (const arch of ['x64', 'arm']) {
-        //         const libMpvPath = path.join(pluginsDir, 'libs', `linux-${arch}`, libMpvName)
-        //         if(await exists(libMpvPath)) {
-        //             await cp(libMpvPath, path.join(appOutDir, libMpvName))
-        //         }
-        //     }
-        // }
+        if(platform == 'linux') { //TODO: change linkage
+            const libMpvName = 'libffmpeg.so'
+            for (const arch of ['x64', 'arm']) {
+                const libMpvPath = path.join(pluginsDir, 'libs', `linux-${arch}`, libMpvName)
+                if(await exists(libMpvPath)) {
+                    await cp(libMpvPath, path.join(appOutDir, libMpvName))
+                }
+            }
+        }
     }
 
     //copy ffmpeg and ffprobe

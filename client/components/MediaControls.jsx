@@ -40,7 +40,7 @@ class MediaControls extends Component {
         } = device
 
         const mobile = isMobile()
-        const hasAudioTracks = device.audioTracks.length != 0
+        const hasAudioTracks = device.audioTracks.length > 1
 
         return (
             <Slide direction="up" in mountOnEnter unmountOnExit>
