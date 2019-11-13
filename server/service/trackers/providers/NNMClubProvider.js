@@ -3,11 +3,9 @@ const $ = require('cheerio')
 
 class NNMClubProvider extends Provider {
     constructor(categories, subtype) {
-        super({
+        super('nnm', {
             subtype,
             categories,
-            baseUrl: 'http://nnmclub.to',
-            searchUrl: 'http://nnmclub.to/forum/tracker.php',
             scope: '.tablesorter>tbody>tr:matches(.prow1,.prow2)',
             pageSize: 50,
             selectors: {
@@ -77,11 +75,6 @@ class NNMClubProvider extends Provider {
                 }
             }
         })
-    }
-
-    getName() {
-        const { subtype } = this.config
-        return `nnm${subtype ? '-' + subtype : ''}`
     }
 
     getSearchUrl(query) {

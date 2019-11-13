@@ -4,11 +4,9 @@ const { twoElemetsRowExtractor } = require('../../../utils/detailsExtractors')
 
 class x1337xProvider extends Provider {
     constructor(categories, subtype) {
-        super({
+        super('x1337x', {
             subtype,
             categories,
-            baseUrl: 'https://www.1377x.to',
-            searchUrl: 'https://www.1377x.to/category-search',
             scope: '.table-list.table tr',
             pagenatorSelector: '#next',
             pageSize: 50,
@@ -39,11 +37,6 @@ class x1337xProvider extends Provider {
     getInfoUrl(resultsId) {
         const { baseUrl } = this.config
         return baseUrl + urlencode.decode(resultsId)
-    }
-
-    getName() {
-        const { subtype } = this.config
-        return `x1337x${subtype ? '-' + subtype : ''}`
     }
 
     getSearchUrl(query) {

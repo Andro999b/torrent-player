@@ -15,11 +15,9 @@ try{
 
 class RuTrackerProvider extends Provider {
     constructor(categories, subtype) {
-        super({
+        super('rutracker', {
             subtype,
             categories,
-            baseUrl: 'https://rutracker.org',
-            searchUrl: 'https://rutracker.org/forum/tracker.php',
             headers: {
                 'User-Agent': 'Mozilla/5.0 Gecko/20100101 Firefox/59.0',
                 'Cookie': bb_cookie
@@ -76,11 +74,6 @@ class RuTrackerProvider extends Provider {
         }
 
         return super.search(query, page, pageCount)
-    }
-
-    getName() {
-        const { subtype } = this.config
-        return `rutracker${subtype ? '-' + subtype : ''}`
     }
 
     getSearchUrl(query) {

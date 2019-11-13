@@ -7,11 +7,9 @@ require('superagent-charset')(superagent)
 
 class FastTorrentsProvider extends Provider {
     constructor(categories, subtype) {
-        super({
+        super('fastTorrent', {
             subtype,
             categories,
-            baseUrl: 'http://fast-torrent.ru',
-            searchUrl: 'http://fast-torrent.ru/search/',
             scope: '.film-item',
             pageSize: 50,
             selectors: {
@@ -78,11 +76,6 @@ class FastTorrentsProvider extends Provider {
     }
 
     getSearchUrl() {}
-
-    getName() {
-        const { subtype } = this.config
-        return `fastTorrent${subtype ? '-' + subtype : ''}`
-    }
 
     _crawlerSearchRequestGenerator(query) {
         const { searchUrl, headers, categories } = this.config

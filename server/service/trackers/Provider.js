@@ -1,11 +1,16 @@
 const crawler = require('../../utils/crawler')
 const parseTorrent = require('parse-torrent')
 const superagent = require('superagent')
+const { PROVIDERS_CONFIG } = require('../../config')
 
 class Provider {
-    constructor(config) {
+    constructor(name, config) {
+        console.log(name, config);
+        this.name = name
         this.config = Object.assign(
             {
+                baseUrl: PROVIDERS_CONFIG[name].baseUrl,
+                searchUrl: PROVIDERS_CONFIG[name].searchUrl,
                 pageSize: 50,
                 scope: '',
                 slectors: {},
@@ -28,10 +33,6 @@ class Provider {
             },
             this.config.detailsSelectors
         )
-    }
-
-    getName() {
-        throw new Error('Provider not implement getName()')
     }
 
     async search(query, page, pageCount) {
@@ -105,6 +106,11 @@ class Provider {
         throw new Error('Provider not implement getInfoUrl()')
     }
 
+    getName() {
+        const { subtype } = this.config
+        return `${this.name}${subtype ? '-' + subtype : ''}`
+    }
+
     getType() {
         return 'torrent'
     }
@@ -112,8 +118,8 @@ class Provider {
     async _postProcessResult(results) {
         results.forEach((result) => {
             result.infoUrl = this.getInfoUrl(result.id)
-            if(result.seeds) result.seeds = parseInt(result.seeds)
-            if(result.leechs) result.leechs = parseInt(result.leechs)
+            if (result.seeds) result.seeds = parseInt(result.seeds)
+            if (result.leechs) result.leechs = parseInt(result.leechs)
         })
         return results
     }
@@ -122,14 +128,14 @@ class Provider {
         return details
     }
 
-    _crawlerSearchRequestGenerator(query, page) {} // eslint-disable-line
+    _crawlerSearchRequestGenerator(query, page) { } // eslint-disable-line
 
     async  _loadTorrentFileInfo(details) {
-        if(details.torrentUrl) {
+        if (details.torrentUrl) {
             const parsedTorrent = await this.loadTorentFile(details.torrentUrl)
-            return { 
-                ...details, 
-                files:  this._extractFilesFromParsedTorrent(parsedTorrent)
+            return {
+                ...details,
+                files: this._extractFilesFromParsedTorrent(parsedTorrent)
             }
         } else {
             return details

@@ -9,6 +9,7 @@ const uuid = require('uuid')
 const ip = require('ip')
 const os = require('os')
 const path = require('path')
+const fs = require('fs-extra')
 const argv = require('minimist')(process.argv.slice(2), { default: defaultArgc })
 const firstExistPath = require('./utils/firstExistPath')
 
@@ -37,6 +38,18 @@ console.log('Resources directory: ', RESOURCES_DIR)
 console.log('UI directory: ', CLIENT_DIR)
 console.log('Tools root directory: ', TOOLS_DIR)
 /* eslint-enable */
+
+const prpvodersSettings = argv['providres']
+let providresConfig = fs.readJsonSync(path.join(RESOURCES_DIR,  'providers.json'))
+
+try{
+    if(prpvodersSettings) {
+        providresConfig = Object.assign(prpvodersSettings, fs.readJSONSync(path.join(RESOURCES_DIR,  prpvodersSettings + '.json')))
+    }
+} catch(e) {
+    console.error(`Fail to load custom provider settings ${prpvodersSettings}`, providresConfig)
+}
+
 
 module.exports = {
     CLIENT_DIR,
@@ -68,5 +81,6 @@ module.exports = {
         'torrentsProviders': argv['torrents-providers'],
         'transcoding': argv['transcoding']
     },
-    HTTP_PROXY: argv['http-proxy']
+    HTTP_PROXY: argv['http-proxy'],
+    PROVIDERS_CONFIG: providresConfig
 }

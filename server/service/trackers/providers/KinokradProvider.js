@@ -1,16 +1,13 @@
 const DataLifeProvider = require('./DataLIfeProvider')
 const superagent = require('superagent')
 const urlencode = require('urlencode')
-const $ = require('cheerio')
 const { rowsLikeExtractor } = require('../../../utils/detailsExtractors')
 
 const idExractor = /https:\/\/kinokrad\.co\/([0-9]+)/
 
 class KinokradProvider extends DataLifeProvider {
     constructor() {
-        super({
-            baseUrl: 'https://kinokrad.co/',
-            searchUrl: 'https://kinokrad.co//index.php?do=search',
+        super('kinokrad', {
             scope: '.searchitem',
             pageSize: 50,
             selectors: {
@@ -73,10 +70,6 @@ class KinokradProvider extends DataLifeProvider {
         }
 
         return details
-    }
-
-    getName() {
-        return 'kinokrad'
     }
 }
 

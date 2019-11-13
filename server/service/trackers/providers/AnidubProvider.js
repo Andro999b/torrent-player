@@ -5,9 +5,7 @@ const { rowsLikeExtractor } = require('../../../utils/detailsExtractors')
 
 class AnidubProvider extends DataLifeProvider {
     constructor() {
-        super({
-            baseUrl: 'https://online.anidub.com',
-            searchUrl: 'https://online.anidub.com/index.php?do=search',
+        super('anidub', {
             scope: '.newstitle',
             pageSize: 50,
             selectors: {
@@ -78,10 +76,6 @@ class AnidubProvider extends DataLifeProvider {
                 id: index,
                 ...file
             }))
-    }
-
-    getName() {
-        return 'anidub'
     }
 }
 

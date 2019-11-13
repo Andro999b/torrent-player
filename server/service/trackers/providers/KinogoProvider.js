@@ -5,9 +5,7 @@ const { tableLikeExtractor } = require('../../../utils/detailsExtractors')
 
 class KinogoProvider extends DataLifeProvider {
     constructor() {
-        super({
-            baseUrl: 'https://kinogo.by',
-            searchUrl: 'https://kinogo.by/index.php?do=search',
+        super('kinogo', {
             pageSize: 100,
             scope: 'div.shortstory',
             selectors: {
@@ -116,10 +114,6 @@ class KinogoProvider extends DataLifeProvider {
         } 
 
         return details
-    }
-
-    getName() {
-        return 'kinogo'
     }
 
     _getSiteEncoding() {

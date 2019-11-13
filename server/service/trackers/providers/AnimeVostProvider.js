@@ -4,9 +4,7 @@ const { rowsLikeExtractor } = require('../../../utils/detailsExtractors')
 
 class AnimeVostProvider extends DataLifeProvider {
     constructor() {
-        super({
-            baseUrl: 'https://animevost.org',
-            searchUrl: 'https://animevost.org/index.php?do=search',
+        super('animeVost', {
             scope: '.shortstory',
             pageSize: 50,
             selectors: {
@@ -51,10 +49,6 @@ class AnimeVostProvider extends DataLifeProvider {
                 }
             }
         })
-    }
-
-    getName() {
-        return 'animeVost'
     }
 }
 

@@ -4,9 +4,7 @@ const extratId = ($el) => $el.attr('href').split('/')[2]
 
 class RutorProvider extends Provider {
     constructor() {
-        super({
-            baseUrl: 'http://rutor.is',
-            searchUrl: 'http://rutor.is/search/0/0/000/2',
+        super('rutor', {
             scope: '#index>table>tbody>tr:matches(.tum,.gai)',
             pageSize: 50,
             selectors: {
@@ -42,11 +40,7 @@ class RutorProvider extends Provider {
             ]  
         })
     }
-
-    getName() {
-        return 'rutor'
-    }
-
+    
     getSearchUrl(query) {
         const { searchUrl } = this.config
         return `${searchUrl}/${encodeURIComponent(query)}`

@@ -7,10 +7,6 @@ require('superagent-charset')(superagent)
 require('superagent-proxy')(superagent)
 
 class DataLifeProvider extends Provider {
-    constructor(config) {
-        super(config)
-    }
-
     getType() {
         return 'directMedia'
     }

@@ -4,7 +4,7 @@ const { tableLikeExtractor } = require('../../../utils/detailsExtractors')
 
 class LimeTorrentsProvider extends Provider {
     constructor(categories, subtype) {
-        super({
+        super('limetorrents', {
             subtype,
             categories,
             baseUrl: 'https://www.limetorrents.info',
@@ -39,11 +39,6 @@ class LimeTorrentsProvider extends Provider {
     getInfoUrl(resultsId) {
         const { baseUrl } = this.config
         return baseUrl + urlencode.decode(resultsId)
-    }
-
-    getName() {
-        const { subtype } = this.config
-        return `limetorrents${subtype ? '-' + subtype : ''}`
     }
 
     getSearchUrl(query) {

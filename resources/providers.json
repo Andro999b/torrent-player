@@ -1,0 +1,46 @@
+{
+    "x1337x": {
+        "baseUrl": "https://www.1377x.to",
+        "searchUrl": "https://www.1377x.to/category-search"
+    },
+    "anidub": {
+        "baseUrl": "https://online.anidub.com",
+        "searchUrl": "https://online.anidub.com/index.php?do=search"
+    },
+    "animeVost": {
+        "baseUrl": "https://animevost.org",
+        "searchUrl": "https://animevost.org/index.php?do=search"
+    },
+    "fastTorrent": {
+        "baseUrl": "http://fast-torrent.ru",
+        "searchUrl": "http://fast-torrent.ru/search/"
+    },
+    "hdrezka": {
+        "baseUrl": "https://rezka.ag",
+        "searchUrl": "https://rezka.ag/index.php?do=search&subaction=search"
+    },
+    "kinogo": {
+        "baseUrl": "https://kinogo.by",
+        "searchUrl": "https://kinogo.by/index.php?do=search"
+    },
+    "kinokrad": {
+        "baseUrl": "https://kinokrad.co/",
+        "searchUrl": "https://kinokrad.co//index.php?do=search"
+    },
+    "limetorrents": {
+        "baseUrl": "https://www.limetorrents.info",
+        "searchUrl": "https://www.limetorrents.info/search"
+    },
+    "nnm": {
+        "baseUrl": "http://nnmclub.to",
+        "searchUrl": "http://nnmclub.to/forum/tracker.php"
+    },
+    "rutor": {
+        "baseUrl": "http://rutor.is",
+        "searchUrl": "http://rutor.is/search/0/0/000/2"
+    },
+    "rutracker": {
+        "baseUrl": "https://rutracker.org",
+        "searchUrl": "https://rutracker.org/forum/tracker.php"
+    }
+}

@@ -8,9 +8,7 @@ const { rowsLikeExtractor } = require('../../../utils/detailsExtractors')
 
 class HDRezkaProvider extends Provider {
     constructor() {
-        super({
-            baseUrl: 'https://rezka.ag',
-            searchUrl: 'https://rezka.ag/index.php?do=search&subaction=search',
+        super('hdrezka', {
             useProxy: true,
             scope: '.b-content__inline_item',
             pageSize: 50,
@@ -81,10 +79,6 @@ class HDRezkaProvider extends Provider {
             })
 
         return (await Promise.all(t)).flatMap((it) => it)
-    }
-
-    getName() {
-        return 'hdrezka'
     }
 
     getType() {

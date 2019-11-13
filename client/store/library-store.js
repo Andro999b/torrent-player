@@ -1,7 +1,6 @@
 import { observable, action } from 'mobx'
 import { request } from '../utils/api'
 import notificationStore from './notifications-store'
-import transitionStore from './transition-store'
 
 class LibraryStore {
     @observable library = {
