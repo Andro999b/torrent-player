@@ -42,5 +42,9 @@
     "rutracker": {
         "baseUrl": "https://rutracker.org",
         "searchUrl": "https://rutracker.org/forum/tracker.php"
+    },
+    "baskino": {
+        "baseUrl": "http://baskino.me",
+        "searchUrl": "http://baskino.me"
     }
 }

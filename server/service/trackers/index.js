@@ -5,6 +5,7 @@ const providers = [
     new (require('./providers/KinokradProvider'))(),
     new (require('./providers/HDRezkaProvider'))(),
     new (require('./providers/KinogoProvider'))(),
+    new (require('./providers/BaskinoProvider'))(),
     // ...require('./providers/RutrackerProvider').providers,
     ...require('./providers/NNMClubProvider').providers,
     ...require('./providers/FastTorrentsProvider').providers,

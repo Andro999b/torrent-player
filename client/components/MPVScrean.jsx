@@ -31,7 +31,7 @@ class MPVScrean extends BaseScrean {
     }
 
     onAudioTrack(id) {
-        if(!isNaN(id)) {
+        if(!isNaN(id) && this.mpv) {
             this.mpv.property('aid', id)
         }
     }

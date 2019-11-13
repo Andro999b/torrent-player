@@ -32,10 +32,12 @@ class AudioTrackSelector extends Component {
         const { anchorEl } = this.state
         const { audioTrack, audioTracks } = this.props.device
 
+        const selectedTrack = audioTrack != null && audioTracks.find(({ id }) => id == audioTrack)
+
         return (
             <span>
                 <Button onClick={this.handleClick}>
-                    {audioTrack ? `Track ${audioTrack}` : 'Auto Track'}
+                    {selectedTrack ? `Track ${selectedTrack.name}` : 'Auto Track'}
                 </Button>
                 <Menu
                     id="simple-menu"
@@ -44,9 +46,9 @@ class AudioTrackSelector extends Component {
                     open={Boolean(anchorEl)}
                     onClose={this.handleClose}
                 >
-                    {audioTracks.map((id) => (
+                    {audioTracks.map(({id, name}) => (
                         <MenuItem key={id} onClick={() => this.selectTrack(id)}>
-                            Track {id}
+                            {name}
                         </MenuItem>
                     ))}
                 </Menu>

@@ -34,6 +34,9 @@ export class Device {
     selectFile(fileIndex) { }
     setPlaylist(playlist, fileIndex, marks) { }
     setAudioTrack(id) { }
+    @action setAudioTracks(audioTracks) { 
+        this.audioTracks = audioTracks 
+    }
     /* eslint-enable */
 
     skip(sec) {
@@ -72,7 +75,10 @@ export class LocalDevice extends Device {
                     const audioTracks = []
                     streams.forEach(({ index, codec_type }) => {
                         if(codec_type === 'audio') {
-                            audioTracks.push(index)
+                            audioTracks.push({
+                                id: index,
+                                name: `Track ${index}`
+                            })
                         }
                     })
                     this.audioTracks = audioTracks

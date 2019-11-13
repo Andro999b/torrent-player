@@ -15,7 +15,6 @@ class KinogoProvider extends DataLifeProvider {
                 },
                 name: '.zagolovki>a:nth-last-child(1)'
             },
-            pagenatorSelector: '',
             detailsScope: '#dle-content',
             detailsSelectors: {
                 title: '.shortstorytitle>h1',

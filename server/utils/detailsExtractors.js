@@ -41,7 +41,7 @@ module.exports.twoElemetsRowExtractor = function($el) {
 
             if($children.length > 1) {
                 return {
-                    name: $children.eq(0).text().trim(),
+                    name: $children.eq(0).text().trim().replace(':',  ''),
                     value: $children.eq(1).text().trim()
                 }
             } else {

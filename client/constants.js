@@ -3,7 +3,8 @@ export const NO_TORRENTS_SEARCH_RPOVIDERS = {
     'anidub': 'AniDub',
     'kinokrad': 'Kinokrad',
     'kinogo': 'Kinogo',
-    'hdrezka': 'HDRezka'
+    'hdrezka': 'HDRezka',
+    'baskino': 'Baskino'
 }
 
 export const SEARCH_RPOVIDERS = {
@@ -41,7 +42,7 @@ export const NO_TORRENTS_SEARCH_RPVODERS_PRESET = [
     },
     {
         name: 'Video Hostings',
-        providers: ['hdrezka', 'kinogo']
+        providers: ['hdrezka', 'kinogo', 'baskino']
     }
 ]
 

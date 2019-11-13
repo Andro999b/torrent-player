@@ -84,6 +84,12 @@ class VideoScrean extends BaseScrean {
         this.initVideo()
     }
 
+    onAudioTrack(trackId) {
+        if(this.hls) {
+            this.hls.audioTrack = trackId
+        }
+    }
+
     disposeHls() {
         if (this.hls) {
             this.hls.stopLoad()
@@ -173,7 +179,15 @@ class VideoScrean extends BaseScrean {
         })
 
         hls.attachMedia(this.video)
-        hls.on(Hls.Events.MANIFEST_PARSED, () => this.restoreVideoState())
+        hls.on(Hls.Events.MANIFEST_PARSED, () => {
+            this.restoreVideoState()
+
+            if(hls.audioTracks && hls.audioTracks.length > 1) {
+                device.setAudioTracks(
+                    hls.audioTracks.map(({id, name}) => ({id, name}))
+                )
+            }
+        })
         hls.on(Hls.Events.ERROR, (_, data) => {
             if (data.fatal) {
                 switch (data.type) {
