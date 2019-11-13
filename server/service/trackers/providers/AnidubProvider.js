@@ -32,7 +32,7 @@ class AnidubProvider extends DataLifeProvider {
                         // }
                         const $player = $players.first() // use first one
                         return this.extractPlayerFiles($player.find('select>option'))
-                    }  
+                    }
                 }
             }
         })
@@ -53,6 +53,8 @@ class AnidubProvider extends DataLifeProvider {
                 } else if (playerUrl.indexOf('storm') != -1) {
                     file.extractor = { type: 'stormTv' }
                     file.url = playerUrl
+                } else if(playerUrl.indexOf('rutube') != -1) {
+                    return null
                 } else {
                     const extractor = {
                         type: 'anidub',
@@ -68,6 +70,8 @@ class AnidubProvider extends DataLifeProvider {
                     // })
                     file.extractor = extractor
                 }
+
+                console.log(file);
 
                 return file
             })
