@@ -1,5 +1,5 @@
 const defaultArgc = {
-    'dlna': true,
+    'dlna': false,
     'dlna-renderers': true,
     'transcoding': true,
     'torrents-providers': true

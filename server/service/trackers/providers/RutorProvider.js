@@ -6,7 +6,6 @@ class RutorProvider extends Provider {
     constructor() {
         super('rutor', {
             scope: '#index>table>tbody>tr:matches(.tum,.gai)',
-            pageSize: 50,
             selectors: {
                 id: { selector: 'td:nth-child(2)>a.downgif', transform: extratId },
                 name: 'td:nth-child(2)',

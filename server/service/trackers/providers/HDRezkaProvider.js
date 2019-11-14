@@ -1,17 +1,17 @@
 const { URL } = require('url')
 const Provider = require('../Provider')
 const { getBestPlayerJSQuality } = require('../../../utils')
+const { rowsLikeExtractor } = require('../../../utils/detailsExtractors')
+const requestFactory = require('../../../utils/requestFactory')
 const urlencode = require('urlencode')
 const superagent = require('superagent')
 const $ = require('cheerio')
-const { rowsLikeExtractor } = require('../../../utils/detailsExtractors')
+
 
 class HDRezkaProvider extends Provider {
     constructor() {
         super('hdrezka', {
-            useProxy: true,
             scope: '.b-content__inline_item',
-            pageSize: 50,
             selectors: {
                 id: {
                     selector: '.b-content__inline_item-link>a',
@@ -50,6 +50,7 @@ class HDRezkaProvider extends Provider {
     }
 
     async _extractTranslationFiles($scope, $translations) {
+        const { useProxy } = this.config
         const posterId = $scope.find('.b-simple_episode__item').first().attr('data-id')
         // files with translations
         const t = $translations
@@ -66,7 +67,7 @@ class HDRezkaProvider extends Provider {
                     const title = $translation.attr('title')
                     const translatorId = $translation.attr('data-translator_id')
 
-                    const res = await superagent
+                    const res = await requestFactory({ proxy: useProxy, charset: false})
                         .post(`${this.config.baseUrl}/ajax/get_cdn_series/`)
                         .set(this.config.headers)
                         .type('form')

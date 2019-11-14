@@ -1,8 +1,8 @@
-const superagent = require('superagent')
+const requestFactory = require('../../utils/requestFactory')
 const { PROXY_HEADERS } = require('../../config')
 
-module.exports = async ({ url }, res) => {
-    superagent
+module.exports = async ({ url, proxy }, res) => {
+    requestFactory({ proxy })
         .get(url)
         .on('error', () => {
             res.end()

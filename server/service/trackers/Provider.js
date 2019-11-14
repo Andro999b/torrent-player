@@ -1,6 +1,7 @@
 const crawler = require('../../utils/crawler')
-const parseTorrent = require('parse-torrent')
+const requestFactory = require('../../utils/requestFactory')
 const superagent = require('superagent')
+const parseTorrent = require('parse-torrent')
 const { PROVIDERS_CONFIG } = require('../../config')
 
 class Provider {
@@ -10,19 +11,19 @@ class Provider {
             {
                 baseUrl: PROVIDERS_CONFIG[name].baseUrl,
                 searchUrl: PROVIDERS_CONFIG[name].searchUrl,
-                pageSize: 50,
+                pageSize: PROVIDERS_CONFIG[name].pageSize || 50,
+                useProxy: PROVIDERS_CONFIG[name].useProxy || PROVIDERS_CONFIG.proxyAll,
                 scope: '',
                 slectors: {},
                 pagenatorSelector: '',
                 headers: {
                     'User-Agent': 'Mozilla/5.0 Gecko/20100101 Firefox/59.0'
                 },
-                detailsScope: 'body',
-                useProxy: false
+                detailsScope: 'body'
             },
             config
         )
-
+        
         this.config.detailsSelectors = Object.assign(
             {
                 magnetUrl: {
@@ -53,9 +54,9 @@ class Provider {
         let results = await crawler
             .get(
                 this.getSearchUrl(query, page),
-                this._crawlerSearchRequestGenerator(query, page),
-                useProxy
+                this._crawlerSearchRequestGenerator(query, page)
             )
+            .proxy(useProxy)
             .headers(headers)
             .scope(scope)
             .set(selectors)
@@ -77,7 +78,8 @@ class Provider {
         const { detailsScope, detailsSelectors, headers, useProxy } = this.config
 
         let details = await crawler
-            .get(this.getInfoUrl(resultsId), null, useProxy)
+            .get(this.getInfoUrl(resultsId), null)
+            .proxy(useProxy)
             .limit(1)
             .headers(headers)
             .scope(detailsScope)
@@ -158,7 +160,8 @@ class Provider {
     }
 
     loadTorentFile(torrentUrl) {
-        return superagent
+        const { useProxy } = this.config
+        return requestFactory({ proxy: useProxy })
             .get(torrentUrl)
             .set(this.config.headers)
             .parse(superagent.parse.image)

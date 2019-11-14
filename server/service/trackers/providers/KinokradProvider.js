@@ -1,7 +1,7 @@
 const DataLifeProvider = require('./DataLIfeProvider')
-const superagent = require('superagent')
-const urlencode = require('urlencode')
 const { rowsLikeExtractor } = require('../../../utils/detailsExtractors')
+const requestFactory = require('../../../utils/requestFactory')
+const urlencode = require('urlencode')
 
 const idExractor = /https:\/\/kinokrad\.co\/([0-9]+)/
 
@@ -9,7 +9,6 @@ class KinokradProvider extends DataLifeProvider {
     constructor() {
         super('kinokrad', {
             scope: '.searchitem',
-            pageSize: 50,
             selectors: {
                 id: { selector: '.searchitem>h3>a', transform: ($el) => urlencode($el.attr('href')) },
                 name: '.searchitem>h3>a'
@@ -54,7 +53,9 @@ class KinokradProvider extends DataLifeProvider {
     async _postProcessResultDetails(details, resultsId) {
         if(details.files.length == 0) {
             const id = resultsId.match(idExractor)[1]
-            const res = await superagent.get(`${this.config.baseUrl}playlist/${id}.txt`)
+            const { useProxy } = this.config
+            const res = await requestFactory({ charset: false, proxy: useProxy })
+                .get(`${this.config.baseUrl}playlist/${id}.txt`)
 
             const { playlist } = JSON.parse(res.text)
 

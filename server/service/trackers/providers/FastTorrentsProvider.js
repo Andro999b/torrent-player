@@ -1,9 +1,7 @@
 const Provider = require('../Provider')
 const urlencode = require('urlencode')
-const superagent = require('superagent')
+const requestFactory = require('../../../utils/requestFactory')
 const $ = require('cheerio')
-
-require('superagent-charset')(superagent)
 
 class FastTorrentsProvider extends Provider {
     constructor(categories, subtype) {
@@ -11,7 +9,6 @@ class FastTorrentsProvider extends Provider {
             subtype,
             categories,
             scope: '.film-item',
-            pageSize: 50,
             selectors: {
                 id: {
                     selector: '.film-download',
@@ -78,10 +75,10 @@ class FastTorrentsProvider extends Provider {
     getSearchUrl() {}
 
     _crawlerSearchRequestGenerator(query) {
-        const { searchUrl, headers, categories } = this.config
+        const { searchUrl, headers, categories, useProxy } = this.config
 
         return () => {
-            return superagent
+            return requestFactory({ proxy: useProxy })
                 .post(`${searchUrl}${encodeURIComponent(query)}/1.html`)
                 .type('form')
                 .field({ 

@@ -4,7 +4,7 @@ const { fork } = require('child_process')
 const path = require('path')
 const argv = require('minimist')(process.argv)
 
-const fullscreen = !argv['windowed']
+const fullscreen = argv['fullscreen']
 const noMpv = argv['no-mpv']
 const debug = argv['debug']
 const devTools = argv['dev-tools'] || debug
@@ -76,7 +76,7 @@ function createMainWindow() {
     !devTools && win.setMenu(null)
 
     win.on('ready-to-show', () => {
-        !fullscreen && win.maximize()
+        // !fullscreen && win.maximize()
         win.show()
     })
 
@@ -100,4 +100,8 @@ app.on('window-all-closed', () => {
     console.log('All windows closed. Shutdown server') // eslint-disable-line 
     serverProcess && serverProcess.kill()
     app.quit()
+})
+
+process.on('uncaughtException', function (err) {
+    console.log(err);
 })

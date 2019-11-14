@@ -1,5 +1,5 @@
-const superagent = require('superagent')
-const { PROXY_HEADERS } = require('../../config')
+const requestFactory = require('../../utils/requestFactory')
+const { PROXY_HEADERS, PROVIDERS_CONFIG } = require('../../config')
 
 module.exports = async ({ url, referer }, res) => {
     let targetUrl
@@ -12,7 +12,9 @@ module.exports = async ({ url, referer }, res) => {
         targetUrl = url
     }
 
-    superagent
+    const useProxy = PROVIDERS_CONFIG['anidub'].useProxy || PROVIDERS_CONFIG.proxyAll
+
+    requestFactory({ proxy: useProxy })
         .get(targetUrl)
         .set({
             'Referer': referer

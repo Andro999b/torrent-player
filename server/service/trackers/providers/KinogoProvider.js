@@ -6,7 +6,6 @@ const { tableLikeExtractor } = require('../../../utils/detailsExtractors')
 class KinogoProvider extends DataLifeProvider {
     constructor() {
         super('kinogo', {
-            pageSize: 100,
             scope: 'div.shortstory',
             selectors: {
                 id: {

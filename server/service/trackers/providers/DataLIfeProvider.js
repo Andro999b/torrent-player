@@ -1,10 +1,6 @@
 const Provider = require('../Provider')
-const superagent = require('superagent')
+const requestFactory = require('../../../utils/requestFactory')
 const urlencode = require('urlencode')
-const setRequestProxy = require('../../../utils/setRequestProxy')
-
-require('superagent-charset')(superagent)
-require('superagent-proxy')(superagent)
 
 class DataLifeProvider extends Provider {
     getType() {
@@ -26,7 +22,7 @@ class DataLifeProvider extends Provider {
         const encoding = this._getSiteEncoding()
 
         return () => {
-            const request = superagent
+            const request = requestFactory({ proxy: useProxy })
                 .post(searchUrl)
                 .type('form')
                 .field({ 
@@ -40,10 +36,6 @@ class DataLifeProvider extends Provider {
                 .buffer(true)
                 .charset()
                 .set(headers)
-
-            if(useProxy) {
-                return setRequestProxy(request)
-            }
 
             return request
         }

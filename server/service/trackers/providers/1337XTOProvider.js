@@ -9,7 +9,6 @@ class x1337xProvider extends Provider {
             categories,
             scope: '.table-list.table tr',
             pagenatorSelector: '#next',
-            pageSize: 50,
             selectors: {
                 id: { 
                     selector: 'td:nth-child(1) a:nth-child(2)', 

@@ -7,7 +7,6 @@ class NNMClubProvider extends Provider {
             subtype,
             categories,
             scope: '.tablesorter>tbody>tr:matches(.prow1,.prow2)',
-            pageSize: 50,
             selectors: {
                 id: { 
                     selector: '.topictitle', 

@@ -1,4 +1,5 @@
 {
+    "proxyAll": true,
     "x1337x": {
         "baseUrl": "https://www.1377x.to",
         "searchUrl": "https://www.1377x.to/category-search"

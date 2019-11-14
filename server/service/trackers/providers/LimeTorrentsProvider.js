@@ -11,7 +11,6 @@ class LimeTorrentsProvider extends Provider {
             searchUrl: 'https://www.limetorrents.info/search',
             scope: 'table.table2 tr:not(:first-child)',
             pagenatorSelector: '#next',
-            pageSize: 50,
             selectors: {
                 id: { 
                     selector: 'td:nth-child(1) a:nth-child(2)', 

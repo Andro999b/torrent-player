@@ -6,7 +6,6 @@ class AnimeVostProvider extends DataLifeProvider {
     constructor() {
         super('animeVost', {
             scope: '.shortstory',
-            pageSize: 50,
             selectors: {
                 id: { selector: '.shortstoryHead a', transform: ($el) => urlencode($el.attr('href')) },
                 name: '.shortstoryHead a'

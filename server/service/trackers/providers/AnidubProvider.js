@@ -7,7 +7,6 @@ class AnidubProvider extends DataLifeProvider {
     constructor() {
         super('anidub', {
             scope: '.newstitle',
-            pageSize: 50,
             selectors: {
                 id: { selector: '.title>a', transform: ($el) => urlencode($el.attr('href')) },
                 name: '.title>a'
