@@ -11,10 +11,7 @@ Checkout [Release](https://github.com/Andro999b/torrent-player/releases) for pre
 
 ## Linux dependencies
 
-You probably will need to instal mpvlib on machine
-```
-sudo apt install libmpv1
-```
+You probably will need to instal non free encodes libs: libx264, libmp3lame, libfdkaac
 
 # Build and run
 
@@ -81,12 +78,16 @@ Electron version use MPV.js plugin see repo https://github.com/Kagami/mpv.js/ fo
 
 --no-transcoding - disable transcoding
 
+--proxy - use proxy server for search
+
+--proxy-region - enable automaticle selecting proxy by free proxies list for selected region
+
 
 ## Electron only
 
 --cast-screen - start with ui that can be controlet only remote
 
---windowed - start in windowed mode
+--fullscrean - start in fullscrean mode (press F11 for toggle mode)
 
 --no-mpv - disable mpv plugin
 
