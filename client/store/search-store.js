@@ -113,13 +113,13 @@ class SearchStore {
                 .then(({ body }) => {
                     if(!body.enabled || !body.searching) {
                         clearInterval(proxyCheckInterval)
+
+                        if(body.url) {
+                            notificationStore.showMessage(`Using proxy server ${body.url} for search`)
+                        }
                     }
                     
                     this.searchProxyStatus = body
-
-                    if(body.url) {
-                        notificationStore.showMessage(`Using proxy server ${body.url} for serch`)
-                    }
                 })
         }, 1000)
     }
