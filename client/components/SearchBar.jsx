@@ -83,15 +83,15 @@ class SearchBar extends Component {
         return (
             <ListItem selected={isHighlighted} component="div" ContainerComponent="div">
                 {suggestion.history && <ListItemIcon>
-                    <HistoryIcon/>
+                    <HistoryIcon />
                 </ListItemIcon>}
-                <ListItemText primary={suggestion.text}/>
+                <ListItemText primary={suggestion.text} />
                 {suggestion.history && <ListItemSecondaryAction>
                     <IconButton onClick={(e) => {
                         onRemoveHistory(suggestion)
                         e.stopPropagation()
-                    }}> 
-                        <DeleteIcon/>
+                    }}>
+                        <DeleteIcon />
                     </IconButton>
                 </ListItemSecondaryAction>}
             </ListItem>
@@ -100,13 +100,14 @@ class SearchBar extends Component {
 
     render() {
         const { searchQuery } = this.state
-        const { 
-            suggestions, 
+        const {
+            suggestions,
             searchProviders,
             onSelectProviders,
             avalaibleSearchProviders,
             avalaibleSearchPresets,
-            searchProxyStatus
+            searchProxyStatus,
+            onUpdateProxy
         } = this.props
 
         return (
@@ -138,7 +139,12 @@ class SearchBar extends Component {
                         ),
                         endAdornment: (
                             <InputAdornment>
-                                { searchProxyStatus.enabled && <SearchProxyStatus proxyStatus={searchProxyStatus}/>}
+                                {searchProxyStatus.enabled &&
+                                    <SearchProxyStatus
+                                        proxyStatus={searchProxyStatus}
+                                        onUpdateProxy={onUpdateProxy}
+                                    />
+                                }
                                 <IconButton onClick={this.handleClean}>
                                     <ClearIcon />
                                 </IconButton>
@@ -165,6 +171,7 @@ SearchBar.propTypes = {
     onSubmit: PropTypes.func.isRequired,
     onSelectProviders: PropTypes.func.isRequired,
     onRemoveHistory: PropTypes.func.isRequired,
+    onUpdateProxy: PropTypes.func.isRequired,
     suggestions: PropTypes.array.isRequired,
     searchProxyStatus: PropTypes.object.isRequired
 }

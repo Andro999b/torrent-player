@@ -10,20 +10,35 @@ let searching = false
 
 if (USE_PROXY) {
     proxyUrl = USE_PROXY
-} else if (USE_PROXY_REGION) {
-    searching = true
-    proxiesList.findProxy(USE_PROXY_REGION, PROXY_CHECK_URL, PROXY_CHECK_TIMEOUT)
-        .then((selectedProxy) => {
-            searching = false
-            proxyUrl = selectedProxy
-            if (proxyUrl) {
-                console.log(`Selected proxy server ${proxyUrl} for region ${USE_PROXY_REGION}`) // eslint-disable-line no-console
-            } else {
-                console.log(`Have not found any proxy server for region ${USE_PROXY_REGION}`) // eslint-disable-line no-console
-            }
-        }).catch((e) => {
-            console.error('Fail to get proxy', e)
-        })
+} else {
+    updateProxy()
+}
+
+function updateProxy() {
+    if (USE_PROXY_REGION && !searching) {
+        searching = true
+        proxiesList.findProxy(USE_PROXY_REGION, PROXY_CHECK_URL, PROXY_CHECK_TIMEOUT)
+            .then((selectedProxy) => {
+                searching = false
+                proxyUrl = selectedProxy
+                if (proxyUrl) {
+                    console.log(`Selected proxy server ${proxyUrl} for region ${USE_PROXY_REGION}`) // eslint-disable-line no-console
+                } else {
+                    console.log(`Have not found any proxy server for region ${USE_PROXY_REGION}`) // eslint-disable-line no-console
+                }
+            }).catch((e) => {
+                console.error('Fail to get proxy', e)
+            })
+    }
+}
+
+function getProxyStatus() {
+    return {
+        enabled: USE_PROXY || USE_PROXY_REGION != '',
+        url: proxyUrl,
+        region: USE_PROXY_REGION,
+        searching
+    }
 }
 
 const defaultOptions = {
@@ -50,9 +65,8 @@ module.exports = (options) => {
     return superagent
 }
 
-module.exports.getProxyStatus = () => ({
-    enabled: USE_PROXY || USE_PROXY_REGION != '',
-    url: proxyUrl,
-    region: USE_PROXY_REGION,
-    searching
-})
+module.exports.updateProxy = () => {
+    updateProxy()
+    return getProxyStatus()
+}
+module.exports.getProxyStatus = getProxyStatus

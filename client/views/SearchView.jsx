@@ -17,7 +17,8 @@ class SearchView extends Component {
             avalaibleSearchProviders,
             avalaibleSearchPresets,
             searchProxyStatus,
-            loading 
+            loading,
+            updateProxy
         } = searchStore
         
         return (
@@ -26,6 +27,7 @@ class SearchView extends Component {
                     onInput={(q) => searchStore.suggest(q)}
                     onSubmit={(q) => searchStore.search(q)}
                     onSelectProviders={(providers) => searchStore.selectProviders(providers)}
+                    onUpdateProxy={updateProxy}
                     onRemoveHistory={(s) => searchStore.removeFromHistory(s)}
                     suggestions={suggestions}
                     searchProviders={searchProviders}

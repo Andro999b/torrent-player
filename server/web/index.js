@@ -10,7 +10,7 @@ const extractVideo = require('./extractVideo')
 const videoStreamConcat = require('./videoStreamConcat')
 const remote = require('./remote')
 const remoteQrCode = require('./remoteQrCode')
-const { getProxyStatus } = require('../utils/requestFactory')
+const { getProxyStatus, updateProxy } = require('../utils/requestFactory')
 
 const { INTERNAL_WEB_PORT, CLIENT_DIR, CLIENT_CONFIG } = require('../config')
 
@@ -33,6 +33,7 @@ module.exports = function () {
     expressServer.get('/api/ping', (_, res) => res.status(200).send('pong'))
     expressServer.get('/api/config', (_, res) => res.json(CLIENT_CONFIG))
     expressServer.get('/api/proxyStatus', (_, res) => res.json(getProxyStatus()))
+    expressServer.post('/api/updateProxy', (_, res) => res.json(updateProxy()))
 
     // eslint-disable-next-line no-unused-vars
     expressServer.use((err, req, res, next) => {

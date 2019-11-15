@@ -7,7 +7,7 @@ import { observer } from 'mobx-react'
 @observer
 class SearchProxyStatus extends Component {
     render() {
-        const { proxyStatus: { searching, url, region } } = this.props
+        const { proxyStatus: { searching, url, region }, onUpdateProxy } = this.props
 
         const text = searching ?
             `Searching proxy server for region "${region.toUpperCase()}"` :
@@ -15,7 +15,7 @@ class SearchProxyStatus extends Component {
 
         return (
             <Tooltip title={text}>
-                <IconButton disableRipple>
+                <IconButton onClick={onUpdateProxy}>
                     <WarningIcon/>
                 </IconButton>
             </Tooltip>
@@ -25,6 +25,7 @@ class SearchProxyStatus extends Component {
 
 SearchProxyStatus.propTypes = {
     proxyStatus: PropTypes.object,
+    onUpdateProxy: PropTypes.func.isRequired,
 }
 
 export default SearchProxyStatus

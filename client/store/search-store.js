@@ -101,7 +101,12 @@ class SearchStore {
     
             this.searchProviders = storedSearchProviders.filter((p) => avalaibleSearchProviders.includes(p))
         })
-    
+
+        this.checkProxy()
+    }
+
+    @action.bound
+    checkProxy() {
         const proxyCheckInterval = setInterval(() => {
             request
                 .get('/api/proxyStatus')
@@ -111,8 +116,23 @@ class SearchStore {
                     }
                     
                     this.searchProxyStatus = body
+
+                    if(body.url) {
+                        notificationStore.showMessage(`Using proxy server ${body.url} for serch`)
+                    }
                 })
         }, 1000)
+    }
+
+    @action.bound
+    updateProxy() {
+        notificationStore.showMessage('Start seraching proxy')
+        request
+            .post('/api/updateProxy')
+            .then(() => {
+                this.searchProxyStatus.searching = true
+                this.checkProxy()
+            })
     }
 
     @action selectProviders(providers) {
