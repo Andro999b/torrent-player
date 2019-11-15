@@ -34,7 +34,7 @@ function updateProxy() {
 
 function getProxyStatus() {
     return {
-        enabled: USE_PROXY || USE_PROXY_REGION != '',
+        enabled: USE_PROXY || USE_PROXY_REGION != null,
         url: proxyUrl,
         region: USE_PROXY_REGION,
         searching

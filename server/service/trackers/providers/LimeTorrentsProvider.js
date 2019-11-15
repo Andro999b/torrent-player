@@ -3,7 +3,7 @@ const urlencode = require('urlencode')
 const { tableLikeExtractor } = require('../../../utils/detailsExtractors')
 
 class LimeTorrentsProvider extends Provider {
-    constructor(categories, subtype) {
+    constructor(subtype = 'eng', categories) {
         super('limetorrents', {
             subtype,
             categories,
@@ -43,7 +43,11 @@ class LimeTorrentsProvider extends Provider {
     getSearchUrl(query) {
         const { searchUrl, categories } = this.config
 
-        return `${searchUrl}/${categories}/${encodeURIComponent(query)}`
+        if(categories) {
+            return `${searchUrl}/${categories}/${encodeURIComponent(query)}`
+        } else {
+            return `${searchUrl}/all/${encodeURIComponent(query)}`
+        }
     }
 }
 

@@ -6,11 +6,11 @@ const providers = [
     new (require('./providers/HDRezkaProvider'))(),
     new (require('./providers/KinogoProvider'))(),
     new (require('./providers/BaskinoProvider'))(),
+    new (require('./providers/1337XTOProvider'))(),
+    new (require('./providers/LimeTorrentsProvider'))(),
     // ...require('./providers/RutrackerProvider').providers,
     ...require('./providers/NNMClubProvider').providers,
-    ...require('./providers/FastTorrentsProvider').providers,
-    ...require('./providers/LimeTorrentsProvider').providers,
-    ...require('./providers/1337XTOProvider').providers,
+    ...require('./providers/FastTorrentsProvider').providers
 ]
 
 module.exports = {
@@ -24,16 +24,16 @@ module.exports = {
         }
         return Promise.reject(`No provider found for ${name}`)
     },
-    search(tracker, query, page = 0, pageCount = 1) {
-        return this.getTracker(tracker)
-            .then((provider) => provider.search(query, page, pageCount))
+    async search(tracker, query, page = 0, pageCount = 1) {
+        const provider = await this.getTracker(tracker)
+        return await provider.search(query, page, pageCount)
     },
-    getInfo(tracker, resultsId) {
-        return this.getTracker(tracker)
-            .then((provider) => provider.getInfo(resultsId))
+    async getInfo(tracker, resultsId) {
+        const provider = await this.getTracker(tracker)
+        return await provider.getInfo(resultsId)
     },
-    loadTorentFile(tracker, torrentUrl) {
-        return this.getTracker(tracker)
-            .then((provider) => provider.loadTorentFile(torrentUrl))
+    async loadTorentFile(tracker, torrentUrl) {
+        const provider = await this.getTracker(tracker)
+        return provider.loadTorentFile(torrentUrl)
     }
 }

@@ -118,7 +118,7 @@ class SearchStore {
                             notificationStore.showMessage(`Using proxy server ${body.url} for search`)
                         }
                     }
-                    
+      
                     this.searchProxyStatus = body
                 })
         }, 1000)
@@ -179,6 +179,10 @@ class SearchStore {
         this.suggestions = []
         this.searchResults = []
         this.loading = true
+
+        Object.keys(searchProvidersFetch).forEach((key) => {
+            searchProvidersFetch[key].abort()
+        })
 
         this.searchProviders.forEach((provider) => {
             const fetch = searchProvidersFetch[provider]

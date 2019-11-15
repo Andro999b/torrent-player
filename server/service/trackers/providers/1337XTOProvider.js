@@ -3,7 +3,7 @@ const urlencode = require('urlencode')
 const { twoElemetsRowExtractor } = require('../../../utils/detailsExtractors')
 
 class x1337xProvider extends Provider {
-    constructor(categories, subtype) {
+    constructor(subtype = 'eng', categories) {
         super('x1337x', {
             subtype,
             categories,
@@ -41,7 +41,11 @@ class x1337xProvider extends Provider {
     getSearchUrl(query) {
         const { searchUrl, categories } = this.config
 
-        return `${searchUrl}/${encodeURIComponent(query)}/${categories}/1/`
+        if(categories) {
+            return `${searchUrl}/category-search/${encodeURIComponent(query)}/${categories}/1/`
+        } else {
+            return `${searchUrl}/search/${encodeURIComponent(query)}/1/`
+        }
     }
 }
 

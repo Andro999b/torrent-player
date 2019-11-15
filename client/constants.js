@@ -13,9 +13,7 @@ export const SEARCH_RPOVIDERS = {
     // 'rutracker-tv-shows': 'RuTracker TV Shows',
     // 'rutracker-cartoons': 'RuTracker Cartoons',
     // 'rutracker-anime': 'RuTracker Anime',
-    'x1337x-movies': 'x1337x Movies',
-    'x1337x-tv-shows': 'x1337x TV Shows',
-    'x1337x-anime': 'x1337x Anime',
+    'x1337x-eng': 'x1337x',
     'fastTorrent-movies': 'FastTorrent Movies',
     'fastTorrent-tv-shows': 'FastTorrent TV Shows',
     'fastTorrent-cartoons': 'FastTorrent Cartoons',
@@ -23,9 +21,7 @@ export const SEARCH_RPOVIDERS = {
     'nnm-cartoons': 'NNMClub Cartoons',
     'nnm-tv-shows': 'NNMClub TV Shows',
     'nnm-anime': 'NNMClub Anime',
-    'limetorrents-movies': 'LimeTorrents Movies',
-    'limetorrents-tv-shows': 'LimeTorrents TV Shows',
-    'limetorrents-anime': 'LimeTorrents Anime',
+    'limetorrents-eng': 'LimeTorrents',
     ...NO_TORRENTS_SEARCH_RPOVIDERS
 }
 
@@ -65,7 +61,11 @@ export const SEARCH_RPVODERS_PRESET = [
             {
                 name: 'Anime',
                 providers: getProvidersByType('anime').concat(['rutor'])
-            }
+            },
+            {
+                name: 'English',
+                providers: getProvidersByType('eng')
+            },
         ]
     },
     ...NO_TORRENTS_SEARCH_RPVODERS_PRESET

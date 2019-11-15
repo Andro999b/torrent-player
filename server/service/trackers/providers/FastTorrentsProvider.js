@@ -4,7 +4,7 @@ const requestFactory = require('../../../utils/requestFactory')
 const $ = require('cheerio')
 
 class FastTorrentsProvider extends Provider {
-    constructor(categories, subtype) {
+    constructor(subtype, categories) {
         super('fastTorrent', {
             subtype,
             categories,
@@ -94,15 +94,15 @@ class FastTorrentsProvider extends Provider {
 module.exports = FastTorrentsProvider
 module.exports.providers = [
     new FastTorrentsProvider(
-        [1],
-        'movies'
+        'movies',
+        [1]
     ),
     new FastTorrentsProvider(
-        [4, 14902], 
-        'tv-shows'
+        'tv-shows',
+        [4, 14902]
     ),
     new FastTorrentsProvider(
-        [14899], 
-        'cartoons'
+        'cartoons',
+        [14899]
     )
 ]

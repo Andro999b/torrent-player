@@ -25,11 +25,17 @@ export const request = superagentAbsolute(superagent)(API_BASE_URL)
 export function fetchOnce() {
     let req
 
-    return function (url) {
+    const fetch = function (url) {
         if (req) req.abort()
         req = request.get(url)
         return req
     }
+
+    fetch.abort = function() {
+        if (req) req.abort()
+    }
+
+    return fetch
 }
 
 let configCache
