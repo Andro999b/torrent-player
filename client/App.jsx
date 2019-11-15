@@ -82,6 +82,12 @@ const theme = createMuiTheme({
                 backgroundColor: blue.A200,
                 color: '#fff'
             }
+        },
+        MuiTooltip: {
+            tooltip: {
+                fontSize: 18,
+                textAlign: 'center'
+            }
         }
     }
 })

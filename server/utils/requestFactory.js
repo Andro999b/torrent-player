@@ -1,38 +1,46 @@
 const superagent = require('superagent')
-const { USE_PROXY, USE_PROXY_REGION } = require('../config')
-const proxyList = require('../service/proxiesList')
+const { USE_PROXY, USE_PROXY_REGION, PROXY_CHECK_URL, PROXY_CHECK_TIMEOUT } = require('../config')
+const proxiesList = require('../service/proxiesList')
 
-let proxy
+require('superagent-charset')(superagent)
+require('superagent-proxy')(superagent)
+
+let proxyUrl
+let searching = false
 
 if (USE_PROXY) {
-    proxy = USE_PROXY
-} else if(USE_PROXY_REGION) {
-    proxyList(USE_PROXY_REGION).then((proxies) => {
-        proxy = proxies.shift()
-        console.log(`Selected proxy server ${proxy} for region ${USE_PROXY_REGION}`) // eslint-disable-line no-console
-    })
+    proxyUrl = USE_PROXY
+} else if (USE_PROXY_REGION) {
+    searching = true
+    proxiesList.findProxy(USE_PROXY_REGION, PROXY_CHECK_URL, PROXY_CHECK_TIMEOUT)
+        .then((selectedProxy) => {
+            searching = false
+            proxyUrl = selectedProxy
+            if (proxyUrl) {
+                console.log(`Selected proxy server ${proxyUrl} for region ${USE_PROXY_REGION}`) // eslint-disable-line no-console
+            } else {
+                console.log(`Have not found any proxy server for region ${USE_PROXY_REGION}`) // eslint-disable-line no-console
+            }
+        }).catch((e) => {
+            console.error('Fail to get proxy', e)
+        })
 }
 
 const defaultOptions = {
-    charset: true,
     proxy: false
 }
 
 module.exports = (options) => {
     const effectiveOptions = Object.assign(defaultOptions, options)
 
-    if (effectiveOptions.charset)
-        require('superagent-charset')(superagent)
 
     if (effectiveOptions.proxy) {
-        require('superagent-proxy')(superagent)
-
-        if (proxy) {
+        if (proxyUrl) {
             const methods = ['get', 'post']
             return methods.reduce((acc, method) => {
                 acc[method] = (url) => {
                     // console.log(`Using proxy ${proxy} for request [${method}]: ${url}`)
-                    return superagent[method](url).proxy(proxy)
+                    return superagent[method](url).proxy(proxyUrl)
                 }
                 return acc
             }, {})
@@ -41,3 +49,10 @@ module.exports = (options) => {
 
     return superagent
 }
+
+module.exports.getProxyStatus = () => ({
+    enabled: USE_PROXY || USE_PROXY_REGION != '',
+    url: proxyUrl,
+    region: USE_PROXY_REGION,
+    searching
+})

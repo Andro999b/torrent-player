@@ -83,5 +83,7 @@ module.exports = {
     },
     USE_PROXY: argv['proxy'],
     USE_PROXY_REGION: argv['proxy-region'],
+    PROXY_CHECK_URL: argv['proxy-check-url'] || 'https://google.com',
+    PROXY_CHECK_TIMEOUT: argv['proxy-timeout'] || 5000,
     PROVIDERS_CONFIG: providresConfig
 }

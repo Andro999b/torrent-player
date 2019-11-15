@@ -16,6 +16,7 @@ class SearchView extends Component {
             searchProviders, 
             avalaibleSearchProviders,
             avalaibleSearchPresets,
+            searchProxyStatus,
             loading 
         } = searchStore
         
@@ -30,6 +31,7 @@ class SearchView extends Component {
                     searchProviders={searchProviders}
                     avalaibleSearchProviders={avalaibleSearchProviders}
                     avalaibleSearchPresets={avalaibleSearchPresets}
+                    searchProxyStatus={searchProxyStatus}
                 />
                 { loading && <div className="center"><CircularProgress/></div> }
                 { !loading && <SearchResults results={searchResults} /> }

@@ -77,6 +77,7 @@ class SearchStore {
     @observable searchProviders = []
     @observable avalaibleSearchProviders = []
     @observable avalaibleSearchPresets = []
+    @observable searchProxyStatus = { enabled: false }
     
     searchHistory = localStore.get('searchHistory') || []
     waitingSuggestions = true
@@ -100,6 +101,18 @@ class SearchStore {
     
             this.searchProviders = storedSearchProviders.filter((p) => avalaibleSearchProviders.includes(p))
         })
+    
+        const proxyCheckInterval = setInterval(() => {
+            request
+                .get('/api/proxyStatus')
+                .then(({ body }) => {
+                    if(!body.enabled || !body.searching) {
+                        clearInterval(proxyCheckInterval)
+                    }
+                    
+                    this.searchProxyStatus = body
+                })
+        }, 1000)
     }
 
     @action selectProviders(providers) {

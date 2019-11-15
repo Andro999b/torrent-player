@@ -25,6 +25,7 @@ import {
 import PropTypes from 'prop-types'
 import debounce from 'lodash.debounce'
 import { toJS } from 'mobx'
+import SearchProxyStatus from './SearchProxyStatus'
 
 function renderInput(inputProps) {
     return <Input fullWidth {...inputProps} />
@@ -105,6 +106,7 @@ class SearchBar extends Component {
             onSelectProviders,
             avalaibleSearchProviders,
             avalaibleSearchPresets,
+            searchProxyStatus
         } = this.props
 
         return (
@@ -136,6 +138,7 @@ class SearchBar extends Component {
                         ),
                         endAdornment: (
                             <InputAdornment>
+                                { searchProxyStatus.enabled && <SearchProxyStatus proxyStatus={searchProxyStatus}/>}
                                 <IconButton onClick={this.handleClean}>
                                     <ClearIcon />
                                 </IconButton>
@@ -162,7 +165,8 @@ SearchBar.propTypes = {
     onSubmit: PropTypes.func.isRequired,
     onSelectProviders: PropTypes.func.isRequired,
     onRemoveHistory: PropTypes.func.isRequired,
-    suggestions: PropTypes.array.isRequired
+    suggestions: PropTypes.array.isRequired,
+    searchProxyStatus: PropTypes.object.isRequired
 }
 
 export default SearchBar
