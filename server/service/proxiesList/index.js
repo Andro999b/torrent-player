@@ -1,5 +1,6 @@
 const superagent = require('superagent')
 const superagentProxy = require('superagent-proxy')
+const { chunk } = require('lodash')
 
 async function getProxies(region) {
     const iso = region.toUpperCase()
@@ -29,10 +30,20 @@ module.exports = {
     checkProxy,
     findProxy: async (region, checkUrl, checkTimeout) => {
         const proxies = await getProxies(region)
+        const chunks = chunk(proxies, 10)
 
-        for (const proxy of proxies) {
-            if(await checkProxy(proxy, checkUrl, checkTimeout))
-                return proxy
+        for (const proxiesChunk of chunks) {
+            const checkProxies = await Promise.all(
+                proxiesChunk.map(async (proxy) => {
+                    if(await checkProxy(proxy, checkUrl, checkTimeout))
+                        return proxy
+                    return null
+                })
+            )
+
+            for (const proxy of checkProxies) {
+                if(proxy) return proxy
+            }
         }
 
         return null
