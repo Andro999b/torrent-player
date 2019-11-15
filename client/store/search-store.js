@@ -126,7 +126,7 @@ class SearchStore {
 
     @action.bound
     updateProxy() {
-        notificationStore.showMessage('Start seraching proxy')
+        notificationStore.showMessage('Looking for proxy')
         request
             .post('/api/updateProxy')
             .then(() => {
