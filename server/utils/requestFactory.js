@@ -8,7 +8,7 @@ if (USE_PROXY) {
     proxy = USE_PROXY
 } else if(USE_PROXY_REGION) {
     proxyList(USE_PROXY_REGION).then((proxies) => {
-        proxy = proxies.pop()
+        proxy = proxies.shift()
         console.log(`Selected proxy server ${proxy} for region ${USE_PROXY_REGION}`) // eslint-disable-line no-console
     })
 }

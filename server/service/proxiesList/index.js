@@ -3,11 +3,10 @@ const superagent = require('superagent')
 module.exports = async (region) => {
     const iso = region.toUpperCase()
     const res = await superagent
-        .get('https://www.proxy-list.download/api/v0/get?l=en&t=http')
-        .buffer(true)
-        .parse(superagent.parse['application/json'])
+        .get(`https://www.proxy-list.download/api/v1/get?country=${iso}&type=http`)
 
-    return res.body[0].LISTA
-        .filter((item) => item.ISO == iso)
-        .map(({IP, PORT}) => `http://${IP}:${PORT}`)
+    return res.text
+        .split('\r\n')
+        .filter((it) => it)
+        .map((address) => `http://${address}`)
 }
