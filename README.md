@@ -80,7 +80,7 @@ Electron version use MPV.js plugin see repo https://github.com/Kagami/mpv.js/ fo
 
 --proxy - use proxy server for search
 
---proxy-region - enable automaticle selecting proxy by free proxies list for selected region
+--proxy-region - enable auto selecting proxy from free proxies list for specific region
 
 
 ## Electron only
@@ -108,4 +108,5 @@ Electron version use MPV.js plugin see repo https://github.com/Kagami/mpv.js/ fo
 - LimeTorrents
 - NNMClub
 - RuTor
-- Rutracker
+- Baskino
+- Rutracker (disabled)
