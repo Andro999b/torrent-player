@@ -33,8 +33,8 @@ exports.default = async function(context) {
             }
         }
 
-        if(platform == 'linux') { //TODO: change linkage
-            const libMpvName = 'libffmpeg.so'
+        if(platform == 'linux') {
+            const libMpvName = 'libmpv.so.1'
             for (const arch of ['x64', 'arm']) {
                 const libMpvPath = path.join(pluginsDir, 'libs', `linux-${arch}`, libMpvName)
                 if(await exists(libMpvPath)) {

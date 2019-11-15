@@ -10,7 +10,7 @@
   },
   "scripts": {
     "start": "nodemon --inspect ./index.js --dlna-uid=d15c6662-40b9-41da-80d8-9d3d1d24a0a2",
-    "start:proxy": "nodemon --inspect ./index.js --http-proxy http://94.158.91.71:8080"
+    "start:proxy": "nodemon --inspect ./index.js --proxy-region=ua"
   },
   "dependencies": {
     "bidirectional-map": "^1.0.4",

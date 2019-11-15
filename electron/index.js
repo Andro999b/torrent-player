@@ -103,5 +103,5 @@ app.on('window-all-closed', () => {
 })
 
 process.on('uncaughtException', function (err) {
-    console.log(err);
+    console.log(err) // eslint-disable-line no-console
 })

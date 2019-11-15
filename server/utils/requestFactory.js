@@ -1,5 +1,17 @@
 const superagent = require('superagent')
-const { HTTP_PROXY } = require('../config')
+const { USE_PROXY, USE_PROXY_REGION } = require('../config')
+const proxyList = require('../service/proxiesList')
+
+let proxy
+
+if (USE_PROXY) {
+    proxy = USE_PROXY
+} else if(USE_PROXY_REGION) {
+    proxyList(USE_PROXY_REGION).then((proxies) => {
+        proxy = proxies.pop()
+        console.log(`Selected proxy server ${proxy} for region ${USE_PROXY_REGION}`) // eslint-disable-line no-console
+    })
+}
 
 const defaultOptions = {
     charset: true,
@@ -15,18 +27,14 @@ module.exports = (options) => {
     if (effectiveOptions.proxy) {
         require('superagent-proxy')(superagent)
 
-        let proxy
-        if (HTTP_PROXY) {
-            proxy = HTTP_PROXY
-        }
-
         if (proxy) {
             const methods = ['get', 'post']
             return methods.reduce((acc, method) => {
                 acc[method] = (url) => {
+                    // console.log(`Using proxy ${proxy} for request [${method}]: ${url}`)
                     return superagent[method](url).proxy(proxy)
                 }
-                return acc;
+                return acc
             }, {})
         }
     }
