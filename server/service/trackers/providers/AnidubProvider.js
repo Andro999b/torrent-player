@@ -29,7 +29,7 @@ class AnidubProvider extends DataLifeProvider {
                         // if($player.lenght == 0) {
                         //     $player = $players.first()
                         // }
-                        const $player = $players.first() // use first one
+                        const $player = $players.children().eq(0) // use first one
                         return this.extractPlayerFiles($player.find('select>option'))
                     }
                 }
@@ -69,8 +69,6 @@ class AnidubProvider extends DataLifeProvider {
                     // })
                     file.extractor = extractor
                 }
-
-                console.log(file);
 
                 return file
             })

@@ -23,8 +23,14 @@ class AnimeVostProvider extends DataLifeProvider {
                 files: {
                     selector: 'script',
                     transform: ($el) => {
-                        const script = $el.toArray()[1].children[0].data
-                        const matches = script.match(/var data = ([^;]+);/)
+                        let matches
+
+                        for(const item of $el.toArray()) {
+                            const script = item.children[0].data
+                            matches = script.match(/var data = ([^;]+);/)
+
+                            if(matches) break
+                        }
 
                         if(!matches) return []
 
@@ -36,7 +42,7 @@ class AnimeVostProvider extends DataLifeProvider {
 
                         return Object.keys(episodesData)
                             .map((key, index) => {
-                                const playerUrl = `http://play.aniland.org/${episodesData[key]}`
+                                const playerUrl = `https://play.roomfish.ru/${episodesData[key]}`
                                 return {
                                     id: index,
                                     name: key,
