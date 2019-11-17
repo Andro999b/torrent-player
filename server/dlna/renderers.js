@@ -165,6 +165,7 @@ class DLNADevice extends RemoteDevice {
 
     setPlaylist(playlist, fileIndex, currentTime) {
         this.playlistName = playlist.name
+        this.playlistId = playlist.id
         this.transcodingMode = false
         this.lastUrl = null
         this.updateState({
@@ -255,6 +256,7 @@ class DLNADevice extends RemoteDevice {
         super.clearState(emitEvents)
 
         this.playlistName = null
+        this.playlistId = null
         this.transcodingMode = false
         this.lastUrl = null
     }

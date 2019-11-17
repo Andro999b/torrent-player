@@ -3,6 +3,7 @@ const { isAudio, isVideo, fileDirectory } = require('../../utils')
 const { TRANSCODING_ENABLED, TORRENTS_DATA_DIR } = require('../../config')
 const checkIfTorrentFileReady = require('./checkIfTorrentFileReady')
 const database = require('./database')
+const uuid = require('uuid')
 
 function getTorrentFileContentLink(infoHash, fileIndex) {
     return `/api/torrents/${infoHash}/files/${fileIndex}`
@@ -60,6 +61,7 @@ module.exports = function(torrent) {
         .sort((f1, f2) => f1.name.localeCompare(f2.name))
 
     return {
+        id: uuid.v4(),
         name: torrent.name,
         torrentInfoHash: torrent.infoHash,
         files,

@@ -15,8 +15,8 @@ module.exports = {
             db.get('bookmarks').value()
         )
     },
-    async getBookmark(playlistName) {
-        return db.get(['bookmarks', playlistName]).value()
+    async getBookmark(playlistId) {
+        return db.get(['bookmarks', playlistId]).value()
     },
     async addPlaylist(playlist) {
         const state = {
@@ -28,14 +28,15 @@ module.exports = {
         if(!playlist.files || playlist.files.length == 0)
             throw new ResponseError('No files', 400)
 
-        await this.update(playlist.name, state)
+        await this.update(playlist.id, state)
 
         return state
     },
-    async update(playlistName, rawState) {
-        if(!playlistName) return
+    async update(playlistId, rawState) {
+        if(!playlistId) return
 
         const state = pick(rawState, [
+            'id',
             'playlist',
             'marks',
             'currentFileIndex',
@@ -45,32 +46,32 @@ module.exports = {
 
         state.ts = Date.now()
 
-        if(db.has(['bookmarks', playlistName]).value()){
-            await db.get(['bookmarks', playlistName])
+        if(db.has(['bookmarks', playlistId]).value()){
+            await db.get(['bookmarks', playlistId])
                 .merge(state)
                 .write()
         } else {
-            await db.set(['bookmarks', playlistName], {
+            await db.set(['bookmarks', playlistId], {
                 currentFileIndex: 0,
                 playlist: {
-                    name: playlistName,
+                    id: playlistId,
                     files: []
                 },
                 ...state
             }).write()
         }
     },
-    async remove(playlistName) {
-        if(!playlistName) return
+    async remove(playlistId) {
+        if(!playlistId) return
 
-        await db.unset(['bookmarks', playlistName]).write()
+        await db.unset(['bookmarks', playlistId]).write()
     },
     async removeByTorrentInfoHash(torrentInfoHash) {
         const bookmarks = await this.getAllBookmarks()
         const bookmark = bookmarks.find((ps) => ps.playlist.torrentInfoHash == torrentInfoHash)
 
         if(bookmark) {
-            await this.remove(bookmark.playlist.name)
+            await this.remove(bookmark.playlist.id)
         }
     }
 }

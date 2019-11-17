@@ -55,7 +55,7 @@ class LibraryStore {
     @action removeBookmark(item) {
         this.loading = true
         request
-            .delete(`/api/library/bookmarks/${encodeURIComponent(item.playlist.name)}`)
+            .delete(`/api/library/bookmarks/${encodeURIComponent(item.playlist.id)}`)
             .then(() => {
                 this.updateLibrary()
                 notificationStore.showMessage(`Playlist ${item.playlist.name} removed from history`)

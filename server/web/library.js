@@ -17,13 +17,13 @@ router.get('/', asyncHandler(async (_, res) => {
     })
 }))
 
-router.delete('/bookmarks/:playlistName', asyncHandler(async (req, res) => {
-    await continueWatchingService.remove(req.params.playlistName)
+router.delete('/bookmarks/:playlistId', asyncHandler(async (req, res) => {
+    await continueWatchingService.remove(req.params.playlistId)
     res.json({ status: 'OK' })
 }))
 
-router.post('/bookmarks/:playlistName', asyncHandler(async (req, res) => {
-    await continueWatchingService.update(req.params.playlistName, req.body)
+router.post('/bookmarks/:playlistId', asyncHandler(async (req, res) => {
+    await continueWatchingService.update(req.params.playlistId, req.body)
     res.json({ status: 'OK' })
 }))
 

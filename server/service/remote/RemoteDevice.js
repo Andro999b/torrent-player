@@ -10,6 +10,7 @@ class RemoteDevice extends EventEmitter {
         this.id = this.id || uuid()
         this.avaliable = true
         this.name = `Video Screan ${RemoteDevice.counter++}`
+        this.playlistId = null
         this.playlistName = null
     }
 
@@ -21,9 +22,10 @@ class RemoteDevice extends EventEmitter {
     updateState(state) {
         let newPlaylist = false
         if(state.playlist) {
-            const playlistName = state.playlist.name
-            if(playlistName != this.playlistName) {
-                this.playlistName = playlistName
+            const playlistId = state.playlist.id
+            if(playlistId != this.playlistId) {
+                this.playlistId = playlistId
+                this.playlistName = state.playlist.name
                 newPlaylist = true
             }
         }
@@ -39,6 +41,7 @@ class RemoteDevice extends EventEmitter {
 
     clearState(emitEvents = true) {
         this.state = {}
+        this.playlistId = null
         this.playlistName = null
         if(emitEvents) {
             this.emit(RemoteDevice.Events.Sync, this.state)

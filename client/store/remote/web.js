@@ -3,7 +3,7 @@ import playerStore, { LocalDevice } from '../player-store'
 import transitionStore from '../transition-store'
 import urljoin from 'url-join'
 import { diff, isMobile } from '../../utils'
-import { API_BASE_URL, request } from '../../utils/api'
+import { API_BASE_URL } from '../../utils/api'
 import io from 'socket.io-client'
 import pick from 'lodash.pick'
 import { ALLOWED_REMOTE_STATE_FIELDS } from '../../constants'
@@ -113,28 +113,6 @@ export default () => {
         })
     }
 
-    function trackMobileState() {
-        let prevState = {}
-        autorun(() => {
-            const { device } = playerStore
-            if (device && device.isLocal()) {
-                const playlistName = device.playlist.name
-                const newState = pick(device, ['playlist', 'marks', 'currentFileIndex'])
-                
-                const stateDiff = diff(prevState, newState)
-                
-                prevState = newState
-
-                if(Object.keys(stateDiff).length > 0) {
-                    request
-                        .post(`/api/library/bookmarks/${encodeURIComponent(playlistName)}`)
-                        .send(stateDiff)
-                        .then()
-                }
-            }
-        }, { delay: 10000 })
-    }
-
     function listenIncomeControls(socket) {
         socket.on('action', ({ action, payload }) => {
             const { device } = playerStore
@@ -177,8 +155,6 @@ export default () => {
             lastAvaliable = avaliable
             deviceSocket.emit('setAvailability', avaliable)
         }
-    } else {
-        trackMobileState()
     }
 
     function listenDeviceList(socket) {

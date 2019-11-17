@@ -3,6 +3,7 @@ const requestFactory = require('../../utils/requestFactory')
 const superagent = require('superagent')
 const parseTorrent = require('parse-torrent')
 const { PROVIDERS_CONFIG } = require('../../config')
+const uuid = require('uuid')
 
 class Provider {
     constructor(name, config) {
@@ -101,7 +102,8 @@ class Provider {
         details = {
             ...details,
             provider: this.getName(),
-            type: this.getType()
+            type: this.getType(),
+            id: this.getType() != 'torrents' ? uuid.v4() : null
         }
 
         return this._loadTorrentFileInfo(details)
