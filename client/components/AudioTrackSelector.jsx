@@ -37,7 +37,7 @@ class AudioTrackSelector extends Component {
         return (
             <span>
                 <Button onClick={this.handleClick}>
-                    {selectedTrack ? `Track ${selectedTrack.name}` : 'Auto Track'}
+                    {selectedTrack ? selectedTrack.name : 'Auto Track'}
                 </Button>
                 <Menu
                     id="simple-menu"

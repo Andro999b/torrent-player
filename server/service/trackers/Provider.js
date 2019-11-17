@@ -11,8 +11,9 @@ class Provider {
             {
                 baseUrl: PROVIDERS_CONFIG[name].baseUrl,
                 searchUrl: PROVIDERS_CONFIG[name].searchUrl,
-                pageSize: PROVIDERS_CONFIG[name].pageSize || 50,
+                pageSize: PROVIDERS_CONFIG[name].pageSize || PROVIDERS_CONFIG.pageSize || 50,
                 useProxy: PROVIDERS_CONFIG[name].useProxy || PROVIDERS_CONFIG.proxyAll,
+                timeout: (PROVIDERS_CONFIG[name].timeout || PROVIDERS_CONFIG.timeout || 30) * 1000,
                 scope: '',
                 slectors: {},
                 pagenatorSelector: '',
@@ -46,7 +47,8 @@ class Provider {
             pagenatorSelector,
             headers,
             pageSize,
-            useProxy
+            useProxy,
+            timeout
         } = this.config
 
         const limit = pageCount * pageSize
@@ -59,6 +61,7 @@ class Provider {
             .proxy(useProxy)
             .headers(headers)
             .scope(scope)
+            .timeout(timeout)
             .set(selectors)
             .paginate(pagenatorSelector)
             .limit(limit)
@@ -75,11 +78,18 @@ class Provider {
     }
 
     async getInfo(resultsId) {
-        const { detailsScope, detailsSelectors, headers, useProxy } = this.config
+        const { 
+            detailsScope, 
+            detailsSelectors, 
+            headers, 
+            useProxy, 
+            timeout 
+        } = this.config
 
         let details = await crawler
             .get(this.getInfoUrl(resultsId), null)
             .proxy(useProxy)
+            .timeout(timeout)
             .limit(1)
             .headers(headers)
             .scope(detailsScope)
@@ -99,7 +109,7 @@ class Provider {
 
     // eslint-disable-next-line no-unused-vars
     getSearchUrl(query, page) {
-        throw new Error('Provider not implement _getSearchUrl()')
+        throw new Error('Provider not implement getSearchUrl()')
     }
 
     // eslint-disable-next-line no-unused-vars

@@ -28,7 +28,7 @@ module.exports = {
         if(!playlist.files || playlist.files.length == 0)
             throw new ResponseError('No files', 400)
 
-        this.update(playlist.name, state)
+        await this.update(playlist.name, state)
 
         return state
     },
@@ -46,11 +46,11 @@ module.exports = {
         state.ts = Date.now()
 
         if(db.has(['bookmarks', playlistName]).value()){
-            db.get(['bookmarks', playlistName])
+            await db.get(['bookmarks', playlistName])
                 .merge(state)
                 .write()
         } else {
-            db.set(['bookmarks', playlistName], {
+            await db.set(['bookmarks', playlistName], {
                 currentFileIndex: 0,
                 playlist: {
                     name: playlistName,
@@ -63,8 +63,7 @@ module.exports = {
     async remove(playlistName) {
         if(!playlistName) return
 
-        db.unset(['bookmarks', playlistName])
-            .write()
+        await db.unset(['bookmarks', playlistName]).write()
     },
     async removeByTorrentInfoHash(torrentInfoHash) {
         const bookmarks = await this.getAllBookmarks()

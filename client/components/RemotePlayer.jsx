@@ -83,13 +83,13 @@ class RemotePlayer extends Component {
                 <ShowIf must={[error]}>
                     <Typography className="center" align="center" variant="h4" style={{ width: '100%' }}>
                         <div className="shadow-border">{error}</div>
-                        <Button variant="contained" onClick={this.handleCloseDevice}>Close device</Button>
+                        <Button variant="contained" onClick={this.handleCloseDevice}>Disconnect</Button>
                     </Typography>
                 </ShowIf>
                 <ShowIf mustNot={[error]}>
                     <Typography className="center" align="center" variant="h4" style={{ width: '100%' }}>
                         <RemotePlaybackInfo device={device} seekTime={seekTime}/>
-                        <Button variant="contained" onClick={this.handleCloseDevice}>Close device</Button>
+                        <Button variant="contained" onClick={this.handleCloseDevice}>Disconnect</Button>
                     </Typography>
                 </ShowIf>
                 <ShowIf mustNot={[error]} must={[isConnected]}>

@@ -18,7 +18,7 @@ class DataLifeProvider extends Provider {
     }
 
     _crawlerSearchRequestGenerator(query) {
-        const { searchUrl, headers, useProxy } = this.config
+        const { searchUrl, headers, useProxy, timeout } = this.config
         const encoding = this._getSiteEncoding()
 
         return () => {
@@ -35,6 +35,7 @@ class DataLifeProvider extends Provider {
                 })
                 .buffer(true)
                 .charset()
+                .timeout(timeout)
                 .set(headers)
 
             return request

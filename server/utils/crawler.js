@@ -8,20 +8,25 @@ class Crawler extends BaseCrawler {
                 new URL(nextUrl, this._url).toString() :
                 nextUrl
 
-            const request = requestFactory({ proxy: this.useProxy })
+            const request = requestFactory({ proxy: this._useProxy })
                 .get(targetUrl)
                 .buffer(true)
                 .charset()
+                .timeout(this._timeoutMs)
                 .set(this._headers)
 
             return request
         }))
-        this.useProxy = false
+        this._useProxy = false
     }
 
     proxy(useProxy) {
-        this.useProxy = useProxy
+        this._useProxy = useProxy
         return this
+    }
+
+    timeout(ms) {
+        this._timeoutMs = ms
     }
 }
 
