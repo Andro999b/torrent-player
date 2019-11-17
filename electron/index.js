@@ -16,7 +16,7 @@ let win
 function appReady() {
     createMainWindow()
 
-    if (debug) { 
+    if (debug) {
         loadUI()
         return // server started outside
     }
@@ -27,11 +27,11 @@ function appReady() {
 function startServer() {
     const isPackaged = process.mainModule.filename.indexOf('app.asar') !== -1
     let rootPath = process.cwd()
-    
+
     if(isPackaged) {
         rootPath = path.resolve(__dirname, '..', '..', '..')
     }
-    
+
     serverProcess = fork(path.join(rootPath, 'server', 'index.js'), process.argv)
         .on('exit', (code, signal) => {
             console.error(`Server process exited. code: ${code}, signal: ${signal}`)
@@ -47,7 +47,7 @@ function startServer() {
 function getMPVPluginEntry() {
     const platform = process.platform
     const arch = process.arch
-    
+
     const pluginPath = path.join(process.cwd(), 'plugins', `mpv-${platform}-${arch}.node`)
 
     console.log('MPV Plugin path:', pluginPath) // eslint-disable-line
@@ -60,7 +60,7 @@ function createMainWindow() {
         allowRunningInsecureContent: true,
         fullscreen,
         webPreferences: {
-            additionalArguments: process.argv.slice(2),
+            additionalArguments: process.argv,
             webSecurity: false,
             plugins: true,
             nodeIntegration: true,
@@ -112,7 +112,7 @@ if(!noMpv) {
 
 app.on('ready', appReady)
 app.on('window-all-closed', () => {
-    console.log('All windows closed. Shutdown server') // eslint-disable-line 
+    console.log('All windows closed. Shutdown server') // eslint-disable-line
     serverProcess && serverProcess.kill()
     app.quit()
 })

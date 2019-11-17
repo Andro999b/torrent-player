@@ -19,7 +19,7 @@
     "start:tv-mode": "electron ./electron --castscreen",
     "start:web": "concurrently -n \"SERVER,WEBPACK\" -c \"black.bold,blue.bold\" \"cd server && yarn start\" \"cd client && yarn start\"",
     "start:server": "cd client && yarn build && cd ../server && yarn start",
-    "debug": "concurrently -n \"SERVER,ELECTRON,WEBPACK\" -c \"black.bold,white,blue.bold\" \"cd server && yarn start\" \"electron ./electron --debug\" \"cd client && yarn start\"",
+    "debug": "concurrently -n \"SERVER,ELECTRON,WEBPACK\" -c \"black.bold,white,blue.bold\" \"cd server && yarn start\" \"electron ./electron --debug --castscreen\" \"cd client && yarn start\"",
     "debug:proxy": "concurrently -n \"SERVER,ELECTRON,WEBPACK\" -c \"black.bold,white,blue.bold\" \"cd server && yarn start:proxy\" \"electron ./electron --debug\" \"cd client && yarn start\"",
     "debug:mpv": "MPVJS_TERMINAL=1 MPVJS_VERBOSE=1 yarn debug",
     "build": "electron-builder --win --linux",
