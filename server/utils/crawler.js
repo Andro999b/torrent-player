@@ -27,6 +27,7 @@ class Crawler extends BaseCrawler {
 
     timeout(ms) {
         this._timeoutMs = ms
+        return this
     }
 }
 
