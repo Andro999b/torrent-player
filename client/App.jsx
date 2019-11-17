@@ -94,7 +94,7 @@ const theme = createMuiTheme({
 
 class App extends Component {
     render() {
-        const root = hasArgv('cast-screen') ?
+        const root = hasArgv('castscreen') ?
             <CastScreanRoot /> :
             <Root />
 

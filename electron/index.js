@@ -1,10 +1,10 @@
-const { app, BrowserWindow, globalShortcut } = require('electron')
+const { app, BrowserWindow } = require('electron')
 const { fork } = require('child_process')
 
 const path = require('path')
 const argv = require('minimist')(process.argv)
 
-const fullscreen = argv['fullscreen']
+const fullscreen = argv['fullscreen'] || argv['castscreen']
 const noMpv = argv['no-mpv']
 const debug = argv['debug']
 const devTools = argv['dev-tools'] || debug
@@ -78,10 +78,25 @@ function createMainWindow() {
     win.on('ready-to-show', () => {
         // !fullscreen && win.maximize()
         win.show()
-    })
 
-    globalShortcut.register('F11', () => win.setFullScreen(!win.isFullScreen()))
-    globalShortcut.register('F5', () => win.reload())
+        //add shortcuts
+        win.webContents.on('before-input-event',  (e, { code, shift, control, alt}) => {
+            if(!(shift && control && alt)) {
+                switch(code) {
+                    case 'F5': {
+                        win.reload()
+                        e.preventDefault()
+                        break
+                    }
+                    case 'F11': {
+                        win.setFullScreen(!win.isFullScreen())
+                        e.preventDefault()
+                        break
+                    }
+                }
+            }
+        })
+    })
 }
 
 function loadUI() {
