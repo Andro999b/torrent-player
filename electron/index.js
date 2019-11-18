@@ -2,6 +2,7 @@ const { app, BrowserWindow } = require('electron')
 const { fork } = require('child_process')
 
 const path = require('path')
+const os = require('os')
 const argv = require('minimist')(process.argv)
 
 const fullscreen = argv['fullscreen'] || argv['castscreen']
@@ -102,6 +103,10 @@ function createMainWindow() {
 function loadUI() {
     win.loadURL(`http://localhost:${debug ? 3000 : webPort}`)
 }
+
+// set user data path for electon
+const ROOT_DIR = argv['root-dir'] || path.join(os.homedir(), 'webtorrents')
+app.setPath('userData', path.join(ROOT_DIR, 'electron'))
 
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required')
 
