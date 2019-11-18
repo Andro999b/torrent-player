@@ -17,7 +17,7 @@ module.exports = {
     getTrackers() {
         return providers.map((provider) => provider.getName())
     },
-    getTracker(name) {
+    async getTracker(name) {
         const provider = providers.find((provider) => provider.getName() == name)
         if (provider) {
             return Promise.resolve(provider)

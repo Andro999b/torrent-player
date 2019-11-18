@@ -71,7 +71,7 @@ class KinogoProvider extends DataLifeProvider {
         if(parts && parts.length > 1) {
             const urls = getBestPlayerJSQuality(parts[1])
             return [{ 
-                url: urls.unshift(), 
+                url: urls.pop(), 
                 alternativeUrls: urls 
             }]
         }
