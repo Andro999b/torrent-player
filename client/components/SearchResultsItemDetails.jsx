@@ -66,6 +66,19 @@ class SearchResultsItemDetails extends Component {
         )
     }
 
+    renderDesctption(description) {
+        if(Array.isArray(description)) {
+            return description.map((item, index) => (
+                <Typography variant="body2" key={index}>
+                    {item.name && <b>{item.name}: </b>}
+                    <span style={{ wordBreak: 'break-all' }}>{item.value}</span>
+                </Typography>
+            ))
+        } else {
+            return description
+        }
+    }
+
     render() {
         const { item, onPlayFile, onCastFile, onWatchLater } = this.props
         const { details } = item
@@ -90,12 +103,7 @@ class SearchResultsItemDetails extends Component {
                     <img className="poster" src={posterImage} alt='no image' />
                 </Grid>}
                 <Grid item xs={12} md={posterImage ? 5 : 6}>
-                    {description && description.map((item, index) => (
-                        <Typography variant="body2" key={index}>
-                            {item.name && <b>{item.name}: </b>}
-                            <span style={{ wordBreak: 'break-all' }}>{item.value}</span>
-                        </Typography>
-                    ))}
+                    {this.renderDesctption(description)}
                 </Grid>
                 <Grid item xs={12} md={posterImage ? 4 : 6}>
                     <List className="files-list">

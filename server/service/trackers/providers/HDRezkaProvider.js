@@ -1,5 +1,5 @@
 const { URL } = require('url')
-const Provider = require('../Provider')
+const DirectMediaProvider = require('./DirectMediaProvider')
 const { getBestPlayerJSQuality } = require('../../../utils')
 const { rowsLikeExtractor } = require('../../../utils/detailsExtractors')
 const requestFactory = require('../../../utils/requestFactory')
@@ -8,7 +8,7 @@ const superagent = require('superagent')
 const $ = require('cheerio')
 
 
-class HDRezkaProvider extends Provider {
+class HDRezkaProvider extends DirectMediaProvider {
     constructor() {
         super('hdrezka', {
             scope: '.b-content__inline_item',
@@ -82,17 +82,9 @@ class HDRezkaProvider extends Provider {
         return (await Promise.all(t)).flatMap((it) => it)
     }
 
-    getType() {
-        return 'directMedia'
-    }
-
     getSearchUrl(query) {
         // return `${this.config.searchUrl}&story=${urlencode(query, 'windows-1251')}`
         return `${this.config.searchUrl}&q=${encodeURIComponent(query)}`
-    }
-
-    getInfoUrl(resultsId) {
-        return urlencode.decode(resultsId)
     }
 }
 

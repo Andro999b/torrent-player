@@ -48,5 +48,9 @@
     "baskino": {
         "baseUrl": "http://baskino.me",
         "searchUrl": "http://baskino.me"
+    },
+    "seasonvar": {
+        "baseUrl": "http://seasonvar.ru",
+        "searchUrl": "http://seasonvar.ru/search"
     }
 }

@@ -1,17 +1,9 @@
-const Provider = require('../Provider')
+const DirectMediaProvider = require('./DirectMediaProvider')
 const requestFactory = require('../../../utils/requestFactory')
 const urlencode = require('urlencode')
 
-class DataLifeProvider extends Provider {
-    getType() {
-        return 'directMedia'
-    }
-
+class DataLifeProvider extends DirectMediaProvider {
     getSearchUrl() {}
-
-    getInfoUrl(resultsId) {
-        return urlencode.decode(resultsId)
-    }
 
     _getSiteEncoding() {
         return null
