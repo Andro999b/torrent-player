@@ -1,10 +1,11 @@
 export const NO_TORRENTS_SEARCH_RPOVIDERS = {
     'animeVost': 'AnimeVost',
     'anidub': 'AniDub',
-    // 'kinokrad': 'Kinokrad',
+    'kinokrad': 'Kinokrad',
     'kinogo': 'Kinogo',
     'hdrezka': 'HDRezka',
-    'baskino': 'Baskino'
+    'baskino': 'Baskino',
+    'seasonvar': 'Seasonvar'
 }
 
 export const SEARCH_RPOVIDERS = {
