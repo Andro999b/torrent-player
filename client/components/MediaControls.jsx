@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import VideoSeekSlider from './VideoSeekSlider'
 import '../video-slider.scss'
 import PropTypes from 'prop-types'
@@ -10,7 +10,10 @@ import {
     SkipNext as NextIcon,
     List as ListIcon,
     Fullscreen as FullscreenIcon,
-    FullscreenExit as FullscreenExitIcon
+    FullscreenExit as FullscreenExitIcon,
+    PlaylistPlay as PlaylistPlayIcon,
+    Shuffle as ShuffleIcon,
+    PlaylistPlay
 } from '@material-ui/icons'
 import MobileSoundControl from './MobileSoundControl'
 import SoundControl from './SoundControl'
@@ -36,7 +39,8 @@ class MediaControls extends Component {
 
         const {
             currentFileIndex,
-            playlist: { files }
+            playlist: { files },
+            shuffle
         } = device
 
         const mobile = isMobile()
@@ -45,7 +49,7 @@ class MediaControls extends Component {
         return (
             <Slide direction="up" in mountOnEnter unmountOnExit>
                 <Paper elevation={0} square className="player-controls">
-                    <VideoSeekSlider 
+                    <VideoSeekSlider
                         buffered={device.buffered}
                         currentTime={device.currentTime}
                         duration={device.duration}
@@ -54,7 +58,7 @@ class MediaControls extends Component {
                     />
                     <div className="player-controls__panel">
                         <div className="player-controls__panel-section">
-                            { currentFileIndex != 0 && 
+                            {currentFileIndex != 0 &&
                                 <IconButton onClick={onPrev}>
                                     <PreviousIcon />
                                 </IconButton>
@@ -69,14 +73,26 @@ class MediaControls extends Component {
                                     <PauseIcon />
                                 </IconButton>
                             }
-                            { currentFileIndex < files.length - 1 &&
+                            {currentFileIndex < files.length - 1 &&
                                 <IconButton onClick={onNext}>
                                     <NextIcon />
                                 </IconButton>
                             }
-                            {mobile && <MobileSoundControl device={device}/>}
-                            {!mobile && <SoundControl device={device}/>}
-                            {hasAudioTracks && <AudioTrackSelector device={device}/>}
+                            {files.length > 1 && <Fragment>
+                                {shuffle &&
+                                    <IconButton onClick={() => device.setShuffle(false)}>
+                                        <PlaylistPlay />
+                                    </IconButton>
+                                }
+                                {!shuffle &&
+                                    <IconButton onClick={() => device.setShuffle(true)}>
+                                        <ShuffleIcon />
+                                    </IconButton>
+                                }
+                            </Fragment>}
+                            {mobile && <MobileSoundControl device={device} />}
+                            {!mobile && <SoundControl device={device} />}
+                            {hasAudioTracks && <AudioTrackSelector device={device} />}
                         </div>
                         <div className="player-controls__panel-section">
                             {showFullscrean &&

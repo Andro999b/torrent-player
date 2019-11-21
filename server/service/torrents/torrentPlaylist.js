@@ -61,7 +61,7 @@ module.exports = function(torrent) {
         .sort((f1, f2) => f1.name.localeCompare(f2.name))
 
     return {
-        id: uuid.v4(),
+        id: `torrent:${torrent.infoHash}`,
         name: torrent.name,
         torrentInfoHash: torrent.infoHash,
         files,

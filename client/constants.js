@@ -88,6 +88,7 @@ export const ALLOWED_REMOTE_STATE_FIELDS = [
     'isMuted',
     'audioTracks',
     'audioTrack',
+    'shuffle'
 ]
 
 export const END_FILE_TIME_OFFSET = 60

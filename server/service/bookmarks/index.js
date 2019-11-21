@@ -39,7 +39,7 @@ module.exports = {
             'id',
             'playlist',
             'marks',
-            'currentFileIndex',
+            'currentFileIndex'
         ])
 
         if(Object.keys(state).length == 0) return

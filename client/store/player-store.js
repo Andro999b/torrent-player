@@ -18,6 +18,7 @@ export class Device {
     @observable isMuted = false
     @observable audioTracks = []
     @observable audioTrack = null
+    @observable shuffle = false
     
     isLocal() {
         return true
@@ -33,10 +34,9 @@ export class Device {
     setVolume(volume) { }
     selectFile(fileIndex) { }
     setPlaylist(playlist, fileIndex, marks) { }
+    setShuffle(shuffle) { }
     setAudioTrack(id) { }
-    @action setAudioTracks(audioTracks) { 
-        this.audioTracks = audioTracks 
-    }
+    setAudioTracks(audioTracks) { }
     /* eslint-enable */
 
     skip(sec) {
@@ -57,6 +57,7 @@ export class LocalDevice extends Device {
     constructor() {
         super()
         this.volume = localStore.get('volume') || 1
+        this.shuffle = localStore.get('shuffle') || false
     }
 
     @action setSource(source) {
@@ -170,6 +171,15 @@ export class LocalDevice extends Device {
         this.audioTrack = id
     }
 
+    @action setAudioTracks(audioTracks) { 
+        this.audioTracks = audioTracks 
+    }
+
+    @action setShuffle(shuffle) { 
+        this.shuffle = shuffle 
+        localStore.set('shuffle', shuffle)
+    }
+
     @action toggleMute() {
         this.isMuted = !this.isMuted
     }
@@ -226,7 +236,20 @@ class PlayerStore {
     }
 
     @action.bound endFile() {
-        const  {currentFileIndex, playlist: { files }} = this.device
+        const  {currentFileIndex, shuffle, playlist: { files }} = this.device
+
+        if(files.length > 1 && shuffle) {
+            let next
+            
+            do{
+                next = Math.round(Math.random() * (files.length - 1))
+            } while(next == currentFileIndex)
+            
+            this.switchFile(next)
+            
+            return
+        }
+
         if(currentFileIndex == files.length - 1) {
             this.device.pause()
         } else {

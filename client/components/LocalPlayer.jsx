@@ -12,6 +12,7 @@ import PlayBackSeekZones from './PlayBackSkipZones'
 import ShowIf from './ShowIf'
 
 import { Typography, CircularProgress } from '@material-ui/core'
+import { PlayCircleFilled as PlayIcon } from '@material-ui/icons'
 import { observer, inject } from 'mobx-react'
 
 import { isMobile, isElectron, hasArgv, toHHMMSS } from '../utils'
@@ -79,25 +80,25 @@ class LocalPlayer extends Component {
     }
 
     handleKeyUp = (e) => {
-        const { props: { playerStore: { device } }} = this
+        const { props: { playerStore: { device } } } = this
 
         const step = e.ctrlKey ? 10 : (e.shiftKey ? 60 : 30)
 
-        if(e.which == 32) { //spacebar
+        if (e.which == 32) { //spacebar
             if (device.isPlaying) {
                 device.pause()
             } else {
                 device.play()
             }
-        } else if(e.which == 37) {
+        } else if (e.which == 37) {
             device.skip(-step)
-        } else if(e.which == 39) {
+        } else if (e.which == 39) {
             device.skip(step)
         }
     }
 
     handleSeekTime = (seekTime) => {
-        this.setState({seekTime})
+        this.setState({ seekTime })
     }
 
     // --- idle checking ---
@@ -142,11 +143,11 @@ class LocalPlayer extends Component {
     renderVideoSrean(device, onEnded) {
         const { source } = device
 
-        const useMpv = isElectron() && 
-            !hasArgv('no-mpv') && 
+        const useMpv = isElectron() &&
+            !hasArgv('no-mpv') &&
             source.preferMpv
 
-        return useMpv ? 
+        return useMpv ?
             <MPVScrean device={device} onEnded={onEnded} /> :
             <VideoScrean device={device} onEnded={onEnded} />
     }
@@ -155,29 +156,40 @@ class LocalPlayer extends Component {
         const { playerStore } = this.props
         const { playlistOpen, idle, fullScreen, seekTime } = this.state
         const { device } = playerStore
-        const { isLoading, error, duration } = device
+        const { 
+            isLoading, 
+            error, 
+            duration, 
+            isPlaying
+        } = device
 
         return (
             <Fullscreen
                 enabled={fullScreen}
                 onChange={this.handleSetFullScreen}
             >
-                <div className={idle ? 'idle': ''}>
+                <div className={idle ? 'idle' : ''}>
                     <ShowIf mustNot={[idle]}>
                         <PlayerTitle title={playerStore.getPlayerTitle()} onClose={this.handleCloseVideo} />
                     </ShowIf>
-                    { this.renderVideoSrean(device, playerStore.endFile) }
+                    {this.renderVideoSrean(device, playerStore.endFile)}
                     <ShowIf must={[error]}>
-                        <Typography className="center shadow-border" variant="h4">{error}</Typography> 
+                        <Typography className="center shadow-border" variant="h4">{error}</Typography>
                     </ShowIf>
-                    <ShowIf mustNot={[error]}> 
+                    <ShowIf mustNot={[error]}>
+                        {(!isPlaying || isLoading) && <div className="player__pause-cover"/>}    
                         <ShowIf must={[seekTime == null, isLoading]}>
                             <div className="center">
-                                <CircularProgress color="secondary"/>
+                                <CircularProgress color="secondary" />
                                 <Typography variant="h5" className="shadow-border">
                                     {playerStore.formatProgress()}
                                 </Typography>
-                            </div> 
+                            </div>
+                        </ShowIf>
+                        <ShowIf mustNot={[isPlaying, isLoading]} must={[seekTime == null]}>
+                            <span className="center player_pause-icon">
+                                <PlayIcon fontSize="inherit"/>
+                            </span>
                         </ShowIf>
                         <ShowIf mustNot={[seekTime == null]}>
                             <Typography className="center shadow-border" align="center" variant="h4">
@@ -185,7 +197,7 @@ class LocalPlayer extends Component {
                             </Typography>
                         </ShowIf>
                         <div className="player__pause-zone" onMouseDown={this.handleClick}></div>
-                        <PlayBackSeekZones device={device} onSeekTime={this.handleSeekTime}/>
+                        <PlayBackSeekZones device={device} onSeekTime={this.handleSeekTime} />
                         <ShowIf mustNot={[idle]}>
                             <PlayerFilesList
                                 open={playlistOpen}

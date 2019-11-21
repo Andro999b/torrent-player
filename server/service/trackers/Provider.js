@@ -25,7 +25,7 @@ class Provider {
             },
             config
         )
-        
+
         this.config.detailsSelectors = Object.assign(
             {
                 magnetUrl: {
@@ -79,12 +79,12 @@ class Provider {
     }
 
     async getInfo(resultsId) {
-        const { 
-            detailsScope, 
-            detailsSelectors, 
-            headers, 
-            useProxy, 
-            timeout 
+        const {
+            detailsScope,
+            detailsSelectors,
+            headers,
+            useProxy,
+            timeout
         } = this.config
 
         let details = await crawler
@@ -103,7 +103,9 @@ class Provider {
             ...details,
             provider: this.getName(),
             type: this.getType(),
-            id: this.getType() != 'torrents' ? uuid.v4() : null
+            id: this.getType() != 'torrents' ?
+                `${this.getName()}:${resultsId}` :
+                null
         }
 
         return this._loadTorrentFileInfo(details)

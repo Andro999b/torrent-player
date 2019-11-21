@@ -275,6 +275,19 @@ html {
     right: 0;
 }
 
+.player__pause-cover{
+    background-color: rgba(0, 0, 0, 0.7);
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.player_pause-icon {
+    font-size: 72px;
+}
+
 @media (min-width: 576px) {
     .hide-on-mobile {
         display: inline-block;

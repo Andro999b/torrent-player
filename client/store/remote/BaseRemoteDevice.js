@@ -37,6 +37,10 @@ export default class BaseRemoteDevice extends Device {
         this.sendAction('setAudioTrack', id)
     }
 
+    setShuffle(shuffle) { 
+        this.sendAction('setShuffle', shuffle)
+    }
+
     selectFile(fileIndex) {
         this.sendAction('selectFile', fileIndex)
     }

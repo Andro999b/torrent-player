@@ -24,7 +24,7 @@ class AudioTrackSelector extends Component {
     }
 
     selectTrack = (id) => {
-        this.props.device.setAudioTrack(id)
+        this.props.device.audioTrack = id
         this.setState({ anchorEl: null })
     }
 
