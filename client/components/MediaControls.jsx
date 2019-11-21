@@ -12,8 +12,7 @@ import {
     Fullscreen as FullscreenIcon,
     FullscreenExit as FullscreenExitIcon,
     PlaylistPlay as PlaylistPlayIcon,
-    Shuffle as ShuffleIcon,
-    PlaylistPlay
+    Shuffle as ShuffleIcon
 } from '@material-ui/icons'
 import MobileSoundControl from './MobileSoundControl'
 import SoundControl from './SoundControl'
@@ -81,7 +80,7 @@ class MediaControls extends Component {
                             {files.length > 1 && <Fragment>
                                 {shuffle &&
                                     <IconButton onClick={() => device.setShuffle(false)}>
-                                        <PlaylistPlay />
+                                        <PlaylistPlayIcon />
                                     </IconButton>
                                 }
                                 {!shuffle &&
