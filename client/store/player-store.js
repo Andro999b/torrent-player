@@ -42,12 +42,13 @@ export class Device {
 
     @action.bound seeking(seekTime) {
         this.seekTime = seekTime
+        console.trace('seeking', seekTime)
     }
 
     skip(sec) {
         if (this.duration) {
-            const seekTime = this.currentTime + sec
-            this.seek(Math.min(Math.max(seekTime, 0), this.duration))
+            const seekTo = this.currentTime + sec
+            this.seek(Math.min(Math.max(seekTo, 0), this.duration))
         }
     }
 }
@@ -105,8 +106,6 @@ export class LocalDevice extends Device {
         this.seekTo = seekTo
         this.seekTime = null
     }
-
-
 
     @action resume() {
         this.isPlaying = true
