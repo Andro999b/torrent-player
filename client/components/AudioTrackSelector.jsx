@@ -2,10 +2,11 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { observer } from 'mobx-react'
 import {
-    Button,
+    IconButton,
     Menu,
     MenuItem
 } from '@material-ui/core'
+import { AudiotrackRounded as AudioTrackIcon } from '@material-ui/icons'
 
 @observer
 class AudioTrackSelector extends Component {
@@ -32,13 +33,11 @@ class AudioTrackSelector extends Component {
         const { anchorEl } = this.state
         const { audioTrack, audioTracks } = this.props.device
 
-        const selectedTrack = audioTrack != null && audioTracks.find(({ id }) => id == audioTrack)
-
         return (
             <span>
-                <Button onClick={this.handleClick}>
-                    {selectedTrack ? selectedTrack.name : 'Auto Track'}
-                </Button>
+                <IconButton onClick={this.handleClick}>
+                    <AudioTrackIcon/>
+                </IconButton>
                 <Menu
                     id="simple-menu"
                     anchorEl={anchorEl}
@@ -47,7 +46,7 @@ class AudioTrackSelector extends Component {
                     onClose={this.handleClose}
                 >
                     {audioTracks.map(({id, name}) => (
-                        <MenuItem key={id} onClick={() => this.selectTrack(id)}>
+                        <MenuItem key={id} selected={id == audioTrack} onClick={() => this.selectTrack(id)}>
                             {name}
                         </MenuItem>
                     ))}
