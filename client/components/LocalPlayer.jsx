@@ -150,15 +150,17 @@ class LocalPlayer extends Component {
         const { playerStore } = this.props
         const { playlistOpen, idle, fullScreen } = this.state
         const { device } = playerStore
-        const { isLoading, error } = device
+        const { isLoading, error, seekTime } = device
+
+        const hideUi = idle && seekTime == null
 
         return (
             <Fullscreen
                 enabled={fullScreen}
                 onChange={this.handleSetFullScreen}
             >
-                <div className={idle ? 'idle' : ''}>
-                    <ShowIf mustNot={[idle]}>
+                <div className={hideUi ? 'idle' : ''}>
+                    <ShowIf mustNot={[hideUi]}>
                         <PlayerTitle title={playerStore.getPlayerTitle()} onClose={this.handleCloseVideo} />
                     </ShowIf>
                     {this.renderVideoSrean(device, playerStore.endFile)}
@@ -175,7 +177,7 @@ class LocalPlayer extends Component {
                             </div>
                         </ShowIf>
                         <PlayBackZones device={device} onClick={this.handleClick}/>
-                        <ShowIf mustNot={[idle]}>
+                        <ShowIf mustNot={[hideUi]}>
                             <PlayerFilesList
                                 open={playlistOpen}
                                 device={device}

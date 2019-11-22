@@ -21,6 +21,7 @@ class HLSTranscoder {
 
         this.torrentHash = torrent.infoHash
         this.fileIndex = fileIndex
+        this.filePath = this.file.path
         this.hlsBaseUrl = `/api/torrents/${torrent.infoHash}/files/${fileIndex}/hls/`
 
         this.outputDirectory = path.join(HLS_DIRECTORY, torrent.infoHash, this.fileIndex)

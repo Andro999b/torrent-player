@@ -17,52 +17,13 @@ class VideoSeekSlider extends Component {
         window.addEventListener('resize', this.setTrackWidthState)
     }
 
-    componentWillUnmount() {
-        this.cleanUp()
-    }
-
     setTrackWidthState = () => {
         if(this.track) {
             this.setState({ trackWidth: this.track.offsetWidth })
         }
     };
 
-    handleStartSeek = () => {
-        window.addEventListener('pointerleave', this.handleSeekEnd)
-        window.addEventListener('touchcancel', this.handleSeekEnd)
-        window.addEventListener('pointerup', this.handleSeekEnd)
-        window.addEventListener('mousemove', this.handleSeeking)
-        window.addEventListener('touchmove', this.handleTouchSeeking, { passive: false})
-    }
-
-    cleanUp() {
-        window.removeEventListener('pointerleave', this.handleSeekEnd)
-        window.removeEventListener('pointercancel', this.handleSeekEnd)
-        window.removeEventListener('pointerup', this.handleSeekEnd)
-        window.removeEventListener('mousemove', this.handleSeeking)
-        window.removeEventListener('touchmove', this.handleTouchSeeking)
-    }
-
-    handleSeeking = (e) => {
-        const seekTo = this.calcTime(e)
-
-        this.props.onSeekTime(seekTo)
-    }
-
-    handleTouchSeeking = (e) => {
-        if(e.cancelable) {
-            e.preventDefault()
-            e.stopImmediatePropagation()
-        }
-
-        const seekTo = this.calcTime(e)
-
-        this.props.onSeekEnd(seekTo)
-    }
-
     handleSeekEnd = (e) => {
-        this.cleanUp()
-
         const { onSeekTime, onSeekEnd } = this.props
         const seekTo = this.calcTime(e)
 
@@ -111,7 +72,7 @@ class VideoSeekSlider extends Component {
                 <div
                     className={seekTime != null ? 'track active' : 'track'}
                     ref={(ref) => this.track = ref}
-                    onPointerDown={this.handleStartSeek}
+                    onPointerDown={this.handleSeekEnd}
                     onMouseMove={isMobile() ? null : this.handleStartHover}
                     onMouseLeave={isMobile() ? null : this.handleEndHover}
                 >
