@@ -82,7 +82,6 @@ class RemotePlayer extends Component {
                 <ShowIf must={[error]}>
                     <Typography className="center" align="center" variant="h4" style={{ width: '100%' }}>
                         <div className="shadow-border">{error}</div>
-                        <Button variant="contained" onClick={this.handleCloseDevice}>Disconnect</Button>
                     </Typography>
                 </ShowIf>
                 <ShowIf must={[isLoading]}>
@@ -106,6 +105,9 @@ class RemotePlayer extends Component {
                         onFullScreenToggle={this.handleToggleFullscreen}
                     />
                 </ShowIf>
+                <div className="player__disconnect">
+                    <Button variant="contained" onClick={this.handleCloseDevice}>Disconnect</Button>
+                </div>
             </div>
         )
     }

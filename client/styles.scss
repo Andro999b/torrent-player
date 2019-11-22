@@ -122,6 +122,15 @@ html {
     text-align: center;
 }
 
+.player__disconnect {
+    margin: 0;
+    position: absolute;
+    top: 75%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
 .vmiddle {
     vertical-align: middle;
 }
