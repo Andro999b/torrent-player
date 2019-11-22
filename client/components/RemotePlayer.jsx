@@ -4,11 +4,10 @@ import PropTypes from 'prop-types'
 import MediaControls from './MediaControls'
 import PlayerTitle from './PlayerTitle'
 import PlayerFilesList from './PlayerPlayList'
-import PlayBackSkipZones from './PlayBackSkipZones'
-import RemotePlaybackInfo from './RemotePlaybackInfo'
+import PlayBackZones from './PlayBackZones'
 import ShowIf from './ShowIf'
 
-import { Typography, Button } from '@material-ui/core'
+import { Typography, Button, CircularProgress } from '@material-ui/core'
 import { observer, inject } from 'mobx-react'
 
 @inject('playerStore', 'transitionStore')
@@ -19,8 +18,7 @@ class RemotePlayer extends Component {
         super(props, context)
 
         this.state = {
-            playlistOpen: true,
-            seekTime: null
+            playlistOpen: true
         }
     }
 
@@ -47,14 +45,14 @@ class RemotePlayer extends Component {
         }))
     }
 
-    handleKeyUp = (e) => {
-        if(e.which == 32) { //spacebar
-            this.handleClick()
-        }
-    }
+    handleClick = () => {
+        const { props: { playerStore: { device } } } = this
 
-    handleSeekTime = (seekTime) => {
-        this.setState({seekTime})
+        if (device.isPlaying) {
+            device.pause()
+        } else {
+            device.play()
+        }
     }
 
     componentDidMount() {
@@ -66,11 +64,12 @@ class RemotePlayer extends Component {
     }
 
     render() {
-        const { playlistOpen, seekTime } = this.state
+        const { playlistOpen } = this.state
         const { playerStore } = this.props
         const { device } = playerStore
         const {
             isConnected,
+            isLoading,
             error,
             playlist: { image }
         } = device
@@ -86,15 +85,14 @@ class RemotePlayer extends Component {
                         <Button variant="contained" onClick={this.handleCloseDevice}>Disconnect</Button>
                     </Typography>
                 </ShowIf>
-                <ShowIf mustNot={[error]}>
-                    <Typography className="center" align="center" variant="h4" style={{ width: '100%' }}>
-                        <RemotePlaybackInfo device={device} seekTime={seekTime}/>
-                        <Button variant="contained" onClick={this.handleCloseDevice}>Disconnect</Button>
-                    </Typography>
+                <ShowIf must={[isLoading]}>
+                    <div className="center">
+                        <CircularProgress color="secondary" />
+                    </div>
                 </ShowIf>
                 <ShowIf mustNot={[error]} must={[isConnected]}>
                     <PlayerTitle title={playerStore.getPlayerTitle()} onClose={this.handleCloseVideo} />
-                    <PlayBackSkipZones device={device} onSeekTime={this.handleSeekTime}/>
+                    <PlayBackZones device={device} onClick={this.handleClick}/>
                     <PlayerFilesList
                         open={playlistOpen}
                         device={device}
@@ -104,7 +102,6 @@ class RemotePlayer extends Component {
                         device={device}
                         onNext={() => playerStore.nextFile()}
                         onPrev={() => playerStore.prevFile()}
-                        onSeekTime={this.handleSeekTime}
                         onPlaylistToggle={this.handleTogglePlayList}
                         onFullScreenToggle={this.handleToggleFullscreen}
                     />

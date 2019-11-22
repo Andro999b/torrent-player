@@ -16,11 +16,13 @@ export default class BaseRemoteDevice extends Device {
         this.sendAction('play', currentTime)
         if(currentTime != null) {
             this.currentTime = currentTime
+            this.seekTime = null
         }
     }
 
     @action seek(currentTime) {
         this.currentTime = currentTime
+        this.seekTime = null
         this.sendAction('seek', currentTime)
     }
 

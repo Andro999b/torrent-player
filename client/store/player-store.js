@@ -19,6 +19,7 @@ export class Device {
     @observable audioTracks = []
     @observable audioTrack = null
     @observable shuffle = false
+    @observable seekTime = null
     
     isLocal() {
         return true
@@ -39,6 +40,10 @@ export class Device {
     setAudioTracks(audioTracks) { }
     /* eslint-enable */
 
+    @action.bound seeking(seekTime) {
+        this.seekTime = seekTime
+    }
+
     skip(sec) {
         if (this.duration) {
             const seekTime = this.currentTime + sec
@@ -49,7 +54,7 @@ export class Device {
 
 export class LocalDevice extends Device {
     @observable url = null
-    @observable seekTime = null
+    @observable seekTo = null
     @observable source = null
     @observable progress = null
     @observable marks = {}
@@ -91,13 +96,17 @@ export class LocalDevice extends Device {
         this.isPlaying = true
         if (currentTime != undefined) {
             this.currentTime = currentTime
-            this.seekTime = currentTime
+            this.seekTo = currentTime
+            this.seekTime = null
         }
     }
 
-    @action seek(seekTime) {
-        this.seekTime = seekTime
+    @action seek(seekTo) {
+        this.seekTo = seekTo
+        this.seekTime = null
     }
+
+
 
     @action resume() {
         this.isPlaying = true

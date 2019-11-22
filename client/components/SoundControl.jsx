@@ -36,9 +36,7 @@ class SoundControl extends Component {
                 <IconButton onClick={this.handleVolumDown}>
                     <VolumeDownIcon/>
                 </IconButton>
-                <div className="sound-control__slider">
-                    <Slider value={volume * 100} onChange={this.handleVolume} />
-                </div>
+                <Slider className="sound-control__slider " value={volume * 100} onChange={this.handleVolume} />
                 <IconButton onClick={this.handleVolumUp}>
                     <VolumeUpIcon/>
                 </IconButton>

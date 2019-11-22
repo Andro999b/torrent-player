@@ -8,14 +8,13 @@ import PlayerFilesList from './PlayerPlayList'
 import PlayerTitle from './PlayerTitle'
 import VideoScrean from './VideoScrean'
 import MPVScrean from './MPVScrean'
-import PlayBackSeekZones from './PlayBackSkipZones'
+import PlayBackZones from './PlayBackZones'
 import ShowIf from './ShowIf'
 
 import { Typography, CircularProgress } from '@material-ui/core'
-import { PlayCircleFilled as PlayIcon } from '@material-ui/icons'
 import { observer, inject } from 'mobx-react'
 
-import { isMobile, isElectron, hasArgv, toHHMMSS } from '../utils'
+import { isMobile, isElectron, hasArgv } from '../utils'
 
 const IDLE_TIMEOUT = 3000
 
@@ -29,8 +28,7 @@ class LocalPlayer extends Component {
         this.state = {
             playlistOpen: false,
             idle: false,
-            fullScreen: false,
-            seekTime: null
+            fullScreen: false
         }
 
         this.handleActivity = this.handleActivity.bind(this)
@@ -59,7 +57,7 @@ class LocalPlayer extends Component {
     }
 
     handleIdle = (idle) => {
-        this.setState({ idle, seekTime: null })
+        this.setState({ idle })
     }
 
     handleSelectFile = (fileIndex) => {
@@ -95,10 +93,6 @@ class LocalPlayer extends Component {
         } else if (e.which == 39) {
             device.skip(step)
         }
-    }
-
-    handleSeekTime = (seekTime) => {
-        this.setState({ seekTime })
     }
 
     // --- idle checking ---
@@ -154,14 +148,9 @@ class LocalPlayer extends Component {
 
     render() {
         const { playerStore } = this.props
-        const { playlistOpen, idle, fullScreen, seekTime } = this.state
+        const { playlistOpen, idle, fullScreen } = this.state
         const { device } = playerStore
-        const { 
-            isLoading, 
-            error, 
-            duration, 
-            isPlaying
-        } = device
+        const { isLoading, error } = device
 
         return (
             <Fullscreen
@@ -177,8 +166,7 @@ class LocalPlayer extends Component {
                         <Typography className="center shadow-border" variant="h4">{error}</Typography>
                     </ShowIf>
                     <ShowIf mustNot={[error]}>
-                        {(!isPlaying || isLoading) && <div className="player__pause-cover"/>}    
-                        <ShowIf must={[seekTime == null, isLoading]}>
+                        <ShowIf must={[isLoading]}>
                             <div className="center">
                                 <CircularProgress color="secondary" />
                                 <Typography variant="h5" className="shadow-border">
@@ -186,18 +174,7 @@ class LocalPlayer extends Component {
                                 </Typography>
                             </div>
                         </ShowIf>
-                        <ShowIf mustNot={[isPlaying, isLoading]} must={[seekTime == null]}>
-                            <span className="center player_pause-icon">
-                                <PlayIcon fontSize="inherit"/>
-                            </span>
-                        </ShowIf>
-                        <ShowIf mustNot={[seekTime == null]}>
-                            <Typography className="center shadow-border" align="center" variant="h4">
-                                {toHHMMSS(seekTime)} / {toHHMMSS(duration)}
-                            </Typography>
-                        </ShowIf>
-                        <div className="player__pause-zone" onMouseDown={this.handleClick}></div>
-                        <PlayBackSeekZones device={device} onSeekTime={this.handleSeekTime} />
+                        <PlayBackZones device={device} onClick={this.handleClick}/>
                         <ShowIf mustNot={[idle]}>
                             <PlayerFilesList
                                 open={playlistOpen}
@@ -209,7 +186,6 @@ class LocalPlayer extends Component {
                                 device={device}
                                 onNext={() => playerStore.nextFile()}
                                 onPrev={() => playerStore.prevFile()}
-                                onSeekTime={this.handleSeekTime}
                                 onPlaylistToggle={this.handleTogglePlayList}
                                 onFullScreenToggle={this.handleToggleFullscreen}
                             />

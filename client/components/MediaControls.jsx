@@ -31,7 +31,6 @@ class MediaControls extends Component {
             device,
             onPrev,
             onNext,
-            onSeekTime
         } = this.props
 
         const showFullscrean = device.isLocal() && !isElectron()
@@ -39,7 +38,7 @@ class MediaControls extends Component {
         const {
             currentFileIndex,
             playlist: { files },
-            shuffle
+            shuffle,
         } = device
 
         const mobile = isMobile()
@@ -51,9 +50,10 @@ class MediaControls extends Component {
                     <VideoSeekSlider
                         buffered={device.buffered}
                         currentTime={device.currentTime}
+                        seekTime={device.seekTime}
                         duration={device.duration}
                         onSeekEnd={(time) => device.seek(time)}
-                        onSeekTime={onSeekTime}
+                        onSeekTime={(time) => device.seeking(time)}
                     />
                     <div className="player-controls__panel">
                         <div className="player-controls__panel-section">
@@ -115,7 +115,6 @@ MediaControls.propTypes = {
     device: PropTypes.object.isRequired,
     onPlaylistToggle: PropTypes.func.isRequired,
     onFullScreenToggle: PropTypes.func,
-    onSeekTime: PropTypes.func,
     onPrev: PropTypes.func.isRequired,
     onNext: PropTypes.func.isRequired,
     fullScreen: PropTypes.bool,

@@ -18,8 +18,8 @@ class MPVScrean extends BaseScrean {
         this.mpv.property('pause', !isPlaying)
     }
 
-    onSeek(seekTime) {
-        this.mpv.property('time-pos', seekTime)
+    onSeek(seekTo) {
+        this.mpv.property('time-pos', seekTo)
     } 
 
     onMute(isMuted) {

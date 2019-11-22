@@ -68,8 +68,8 @@ class VideoScrean extends BaseScrean {
         }
     }
 
-    onSeek(seekTime) {
-        this.video.currentTime = seekTime
+    onSeek(seekTo) {
+        this.video.currentTime = seekTo
     }
 
     onMute(isMuted) {

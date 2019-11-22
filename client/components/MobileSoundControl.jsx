@@ -72,7 +72,7 @@ class MobileSoundControl extends Component {
                     onClose={this.handleCloseRequest}
                 >
                     <Paper>
-                        <div className="sound-conrol__slider">
+                        <div className="sound-control__mobile">
                             <IconButton onClick={this.handleVolumeDown}>
                                 <VolumeDownIcon/>
                             </IconButton>

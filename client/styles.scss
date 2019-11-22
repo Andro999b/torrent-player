@@ -242,7 +242,8 @@ html {
     top: 0;
     left: 0;
     right: 0;
-    height: 50%;
+    height: 100%;
+    font-size: 72px;
 }
 
 .player__pause-zone {
@@ -254,10 +255,14 @@ html {
 }
 
 .sound-control__slider {
-    width: 120px;
+    width: 150px !important;
     vertical-align: middle;
-    display: inline-block;
-    padding: 5px 5px 0;
+    margin: 0 5px;
+}
+
+.sound-control__mobile {
+    display: flex;
+    align-items: center;
 }
 
 .idle {
@@ -282,10 +287,6 @@ html {
     bottom: 0;
     left: 0;
     right: 0;
-}
-
-.player_pause-icon {
-    font-size: 72px;
 }
 
 @media (min-width: 576px) {

@@ -12,7 +12,7 @@ class MPVScrean extends Component {
                 this.onPlayPause.bind(this)
             ),
             reaction(
-                () => this.props.device.seekTime,
+                () => this.props.device.seekTo,
                 this.onSeek.bind(this)
             ),
             reaction(

@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import { toHHMMSS, isMobile } from '../utils'
 
 class VideoSeekSlider extends Component {
 
@@ -7,9 +8,7 @@ class VideoSeekSlider extends Component {
         super(props, context)
 
         this.state = {
-            trackWidth: 0,
-            seekTime: null,
-            hoverTime: null
+            trackWidth: 0
         }
     }
 
@@ -45,10 +44,9 @@ class VideoSeekSlider extends Component {
     }
 
     handleSeeking = (e) => {
-        const seekTime = this.calcTime(e)
+        const seekTo = this.calcTime(e)
 
-        this.setState({ seekTime })
-        this.props.onSeekTime(seekTime)
+        this.props.onSeekTime(seekTo)
     }
 
     handleTouchSeeking = (e) => {
@@ -57,32 +55,28 @@ class VideoSeekSlider extends Component {
             e.stopImmediatePropagation()
         }
 
-        const seekTime = this.calcTime(e)
+        const seekTo = this.calcTime(e)
 
-        this.setState({ seekTime })
-        this.props.onSeekTime(seekTime)
+        this.props.onSeekEnd(seekTo)
     }
 
     handleSeekEnd = (e) => {
         this.cleanUp()
 
         const { onSeekTime, onSeekEnd } = this.props
-        const seekTime = this.calcTime(e)
+        const seekTo = this.calcTime(e)
 
-        this.setState({ seekTime: null })
         onSeekTime(null)
-        onSeekEnd(seekTime)
+        onSeekEnd(seekTo)
     }
 
     handleStartHover = (e) => {
         const hoverTime = this.calcTime(e)
 
-        this.setState({ hoverTime })
         this.props.onSeekTime(hoverTime)
     }
 
     handleEndHover = () => {
-        this.setState({ hoverTime: null })
         this.props.onSeekTime(null)
     }
 
@@ -109,16 +103,8 @@ class VideoSeekSlider extends Component {
         }
     }
 
-    getThumbHandlerPosition(trackWidth, time, duration) {
-        let position = trackWidth * (time / duration )
-        return { transform: 'translateX(' + position + 'px)' }
-    }
-
     render() {
-        const { seekTime, hoverTime, trackWidth } = this.state
-        const { buffered, currentTime, duration } = this.props
-
-        const time = seekTime != null ? seekTime : currentTime
+        const { buffered, currentTime, duration, seekTime } = this.props
 
         return (
             <div className="ui-video-seek-slider">
@@ -126,21 +112,15 @@ class VideoSeekSlider extends Component {
                     className={seekTime != null ? 'track active' : 'track'}
                     ref={(ref) => this.track = ref}
                     onPointerDown={this.handleStartSeek}
-                    onMouseMove={this.handleStartHover}
-                    onMouseLeave={this.handleEndHover}
+                    onMouseMove={isMobile() ? null : this.handleStartHover}
+                    onMouseLeave={isMobile() ? null : this.handleEndHover}
                 >
                     <div className="main">
                         <div className="buffered" style={this.getPositionStyle(buffered, duration)} />
-                        { seekTime == null && <div className="seek-hover" style={this.getPositionStyle(hoverTime, duration)} /> }
-                        <div className="connect" style={this.getPositionStyle(time, duration)} />
+                        <div className="connect" style={this.getPositionStyle(currentTime, duration)} />
+                        { seekTime != null && <div className="seek-hover" style={this.getPositionStyle(seekTime, duration)} /> }
+                        <div className="time-indicator shadow-border" >{seekTime?toHHMMSS(seekTime):toHHMMSS(currentTime)} / {toHHMMSS(duration)}</div>
                     </div>
-                </div>
-
-                <div 
-                    className={seekTime != null ? 'thumb active' : 'thumb'} 
-                    style={this.getThumbHandlerPosition(trackWidth, time, duration)}
-                >
-                    <div className="handler" />
                 </div>
             </div>
         )
@@ -157,6 +137,7 @@ VideoSeekSlider.propTypes = {
     buffered: PropTypes.number,
     duration: PropTypes.number,
     currentTime: PropTypes.number,
+    seekTime: PropTypes.number,
     onSeekTime: PropTypes.func.isRequired,
     onSeekEnd: PropTypes.func.isRequired,
 }
