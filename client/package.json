@@ -6,7 +6,7 @@
   },
   "license": "GPL-2.0+",
   "scripts": {
-    "start": "webpack-dev-server --config webpack.dev-sever.config.js",
+    "start": "webpack-dev-server --config webpack.dev-server.config.js",
     "profile": "webpack --mode production --profile --json > stats.json",
     "build": "rm -rf dist/* && webpack --mode production",
     "build:dev": "rm -rf dist/* && webpack --config webpack.dev.config.js"
