@@ -17,7 +17,6 @@ export default class BaseRemoteDevice extends Device {
         if(currentTime != null) {
             this.currentTime = currentTime
             this.seekTime = null
-            console.trace('play', currentTime)
         }
     }
 
@@ -25,7 +24,6 @@ export default class BaseRemoteDevice extends Device {
         this.currentTime = currentTime
         this.seekTime = null
         this.sendAction('seek', currentTime)
-        console.trace('seek', currentTime)
     }
 
     @action setVolume(volume) {

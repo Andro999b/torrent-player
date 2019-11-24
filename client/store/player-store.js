@@ -42,7 +42,6 @@ export class Device {
 
     @action.bound seeking(seekTime) {
         this.seekTime = seekTime
-        console.trace('seeking', seekTime)
     }
 
     skip(sec) {
