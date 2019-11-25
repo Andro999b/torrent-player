@@ -14,7 +14,7 @@ import ShowIf from './ShowIf'
 import { Typography, CircularProgress } from '@material-ui/core'
 import { observer, inject } from 'mobx-react'
 
-import { isMobile, isElectron, hasArgv } from '../utils'
+import { isTouchDevice, isElectron, hasArgv } from '../utils'
 
 const IDLE_TIMEOUT = 3000
 
@@ -47,7 +47,12 @@ class LocalPlayer extends Component {
 
 
     handleClick = () => {
-        const { props: { playerStore: { device } } } = this
+        const { props: { playerStore: { device } }, state: { idle }  } = this
+
+        if (isTouchDevice() && idle) {
+            this.handleActivity()
+            return
+        }
 
         if (device.isPlaying) {
             device.pause()
@@ -64,7 +69,7 @@ class LocalPlayer extends Component {
         const { playerStore } = this.props
         playerStore.switchFile(fileIndex)
 
-        if (isMobile()) this.setState({ playlistOpen: false })
+        if (isTouchDevice()) this.setState({ playlistOpen: false })
     }
 
     handleToggleFullscreen = () => {
@@ -74,7 +79,12 @@ class LocalPlayer extends Component {
 
     handleSetFullScreen = (fullScreen) => {
         this.setState({ fullScreen })
-        if (fullScreen) this.setState({ idle: true })
+        if (fullScreen) {
+            if (isTouchDevice() && screen.orientation) {
+                screen.orientation.lock('landscape')
+            }
+            this.setState({ idle: true })
+        }
     }
 
     handleKeyUp = (e) => {
@@ -116,7 +126,7 @@ class LocalPlayer extends Component {
         const { idleTimeout } = this
         clearTimeout(idleTimeout);
 
-        ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll'].forEach(
+        ['mousemove', 'mousedown', 'keydown', 'scroll'].forEach(
             (event) => window.removeEventListener(event, this.handleActivity)
         )
 
@@ -124,13 +134,14 @@ class LocalPlayer extends Component {
     }
 
     componentDidMount() {
-        this.setIdleTimeout();
+        this.setIdleTimeout()
+        if (!isTouchDevice()) {
+            ['mousemove', 'mousedown', 'keydown', 'scroll'].forEach(
+                (event) => window.addEventListener(event, this.handleActivity)
+            )
 
-        ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll'].forEach(
-            (event) => window.addEventListener(event, this.handleActivity)
-        )
-
-        window.addEventListener('keyup', this.handleKeyUp)
+            window.addEventListener('keyup', this.handleKeyUp)
+        }
     }
     // --- idle checking ---
 
@@ -176,7 +187,7 @@ class LocalPlayer extends Component {
                                 </Typography>
                             </div>
                         </ShowIf>
-                        <PlayBackZones device={device} onClick={this.handleClick}/>
+                        <PlayBackZones device={device} onClick={this.handleClick} />
                         <ShowIf mustNot={[hideUi]}>
                             <PlayerFilesList
                                 open={playlistOpen}

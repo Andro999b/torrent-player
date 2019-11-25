@@ -10,7 +10,7 @@ import {
     Airplay as CastScreanIcon,
     Input as ConnectIcon
 } from '@material-ui/icons'
-import { isMobile } from '../utils'
+import { isTouchDevice } from '../utils'
 
 const navBarTheme = (mainTheme) => createMuiTheme({
     palette: {
@@ -36,7 +36,7 @@ class MainNavigation extends Component {
 
     render() {
         const { screen, isCastAvaliable } = this.props
-        const mobile = isMobile()
+        const mobile = isTouchDevice()
 
         return (
             <MuiThemeProvider theme={navBarTheme}>

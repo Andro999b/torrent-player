@@ -42,7 +42,7 @@ export function isTablet() {
     return false
 }
 
-export function isMobile() {
+export function isTouchDevice() {
     if(window.matchMedia) {
         const isMobile = window.matchMedia('only screen and (max-width: 570px)')
         return isMobile.matches

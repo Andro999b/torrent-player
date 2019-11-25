@@ -2,7 +2,7 @@ import { autorun, observable, action } from 'mobx'
 import playerStore, { LocalDevice } from '../player-store'
 import transitionStore from '../transition-store'
 import urljoin from 'url-join'
-import { diff, isMobile } from '../../utils'
+import { diff, isTouchDevice } from '../../utils'
 import { API_BASE_URL } from '../../utils/api'
 import io from 'socket.io-client'
 import pick from 'lodash.pick'
@@ -138,7 +138,7 @@ export default () => {
 
     let setAvailability = () => { }
 
-    let isCastAvaliable = !isMobile()
+    let isCastAvaliable = !isTouchDevice()
 
     if (isCastAvaliable) {
         let lastAvaliable = false
