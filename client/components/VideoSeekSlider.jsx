@@ -67,6 +67,8 @@ class VideoSeekSlider extends Component {
     render() {
         const { buffered, currentTime, duration, seekTime } = this.props
 
+        const time = (seekTime != null && seekTime < currentTime) ? seekTime : currentTime
+
         return (
             <div className="ui-video-seek-slider">
                 <div
@@ -78,7 +80,7 @@ class VideoSeekSlider extends Component {
                 >
                     <div className="main">
                         <div className="buffered" style={this.getPositionStyle(buffered, duration)} />
-                        <div className="connect" style={this.getPositionStyle(currentTime, duration)} />
+                        <div className="connect" style={this.getPositionStyle(time, duration)} />
                         { seekTime != null && <div className="seek-hover" style={this.getPositionStyle(seekTime, duration)} /> }
                         <div className="time-indicator shadow-border" >{seekTime?toHHMMSS(seekTime):toHHMMSS(currentTime)} / {toHHMMSS(duration)}</div>
                     </div>

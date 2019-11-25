@@ -66,6 +66,9 @@
   font-weight: bold;
   letter-spacing: 0.1em;
   height: 100%;
+  touch-action: none;
+  pointer-events: none;
+  user-select: none;
 }
 .ui-video-seek-slider {
   display: block;

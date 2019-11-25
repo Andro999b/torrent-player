@@ -14,7 +14,8 @@
   },
   "scripts": {
     "install-mpv-lib": "cp plugins/libs/linux-x64/libmpv.so.1 node_modules/electron/dist/libmpv.so.1",
-    "start": "cd client && yarn build && cd .. && electron ./electron --proxy-region=cz",
+    "start": "cd client && yarn build && cd .. && electron ./electron",
+    "start:dev": "cd client && yarn build:dev && cd .. && electron ./electron",
     "start:nobuild": "electron ./electron",
     "start:tv-mode": "electron ./electron --castscreen",
     "start:web": "concurrently -n \"SERVER,WEBPACK\" -c \"black.bold,blue.bold\" \"cd server && yarn start\" \"cd client && yarn start\"",

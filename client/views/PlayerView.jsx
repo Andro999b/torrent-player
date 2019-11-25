@@ -30,8 +30,6 @@ const playerTheme = (mainTheme) => createMuiTheme({
     },
 })
 
-
-
 @inject('playerStore')
 @observer
 class PlayerView extends Component {
@@ -41,7 +39,9 @@ class PlayerView extends Component {
         return (
             <MuiThemeProvider theme={playerTheme}>
                 <div className="player__screen">
-                    {!device && <CircularProgress  color="secondary" className="center"/>}
+                    {!device && <div className="center">
+                        <CircularProgress color="secondary" />
+                    </div>}
                     {device &&
                         <Fragment>
                             {device.isLocal() && <LocalPlayer />}

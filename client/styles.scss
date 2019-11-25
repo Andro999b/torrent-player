@@ -233,6 +233,7 @@ html {
     height: 50%;
     width: 30%;
     z-index: 1;
+    touch-action: none;
 
     &.forward {
         right: 0

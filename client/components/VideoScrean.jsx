@@ -181,6 +181,7 @@ class VideoScrean extends BaseScrean {
         hls.attachMedia(this.video)
         hls.on(Hls.Events.MANIFEST_PARSED, () => {
             this.restoreVideoState()
+            this.keepHlsAlive()
 
             if(hls.audioTracks && hls.audioTracks.length > 1) {
                 device.setAudioTracks(
