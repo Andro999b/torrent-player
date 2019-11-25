@@ -16,7 +16,7 @@ import { observer, inject } from 'mobx-react'
 
 import { isTouchDevice, isElectron, hasArgv } from '../utils'
 
-const IDLE_TIMEOUT = 3000
+const IDLE_TIMEOUT = 5000
 
 @inject('playerStore', 'transitionStore')
 @observer
@@ -30,8 +30,6 @@ class LocalPlayer extends Component {
             idle: false,
             fullScreen: false
         }
-
-        this.handleActivity = this.handleActivity.bind(this)
     }
 
     handleCloseVideo = () => {

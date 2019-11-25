@@ -21,22 +21,30 @@ class PlayBackZones extends Component {
     }
 
     handleFastFroward = (e) => {
-        this.startSeeking(e, 'ff')
+        this.delayStartSeeking(e, 'ff')
     }
 
     handleFastRewind = (e) => {
-        this.startSeeking(e, 'fr')
+        this.delayStartSeeking(e, 'fr')
     }
 
-    startSeeking = (e, seekMode) =>  {
+    delayStartSeeking = (e, seekMode) => {
         e.stopPropagation()
 
-        this.cleanUp()
+        clearInterval(this.stepInterval)
 
-        window.addEventListener('touchend', this.handleSeekEnd)
-        window.addEventListener('touchmove', this.handlePreventScroll, { passive: false })
-        window.addEventListener('touchcancel', this.handleSeekEnd)
-        window.addEventListener('mouseup', this.handleSeekEnd)
+        window.addEventListener('pointermove', this.handlePreventScroll, { passive: false })
+        window.addEventListener('pointercancel', this.handleSeekEnd)
+        window.addEventListener('pointerup', this.handleSeekEnd)
+
+        this.delayTimeout = setTimeout(() => this.startSeeking(seekMode), 100)
+    }
+
+    startSeeking = (seekMode) =>  {
+        this.lastTs = Date.now()
+        this.accTime = 0
+
+        clearInterval(this.stepInterval)
 
         const { device } = this.props
 
@@ -45,14 +53,11 @@ class PlayBackZones extends Component {
 
         const { currentTime } = device
 
-        this.lastTs = Date.now()
-        this.accTime = 0
-
         this.setState({
             seekMode,
             time: currentTime
         },() => {
-            this.stepInterval = setInterval(this.seekStep, 100)
+            this.stepInterval = setInterval(this.seekStep, 200)
         })
     }
 
@@ -64,13 +69,15 @@ class PlayBackZones extends Component {
     }
 
     handleSeekEnd = () => {
-        const { device } = this.props
+        if(this.lastTs) { // seeking started
+            const { device } = this.props
 
-        device.play(this.targetTime)
+            device.play(this.targetTime)
+        } else {
+            this.props.onClick()
+        }
 
-        this.setState({
-            seekMode: null,
-        })
+        this.setState({ seekMode: null })
 
         this.targetTime = null
         this.lastTs = null
@@ -112,11 +119,15 @@ class PlayBackZones extends Component {
     }
 
     cleanUp() {
-        window.removeEventListener('touchend', this.handleSeekEnd)
-        window.removeEventListener('touchmove', this.handlePreventScroll)
-        window.removeEventListener('touchcancel', this.handleSeekEnd)
-        window.removeEventListener('mouseup', this.handleSeekEnd)
+        window.removeEventListener('pointermove', this.handlePreventScroll)
+        window.removeEventListener('pointercancel', this.handleSeekEnd)
+        window.removeEventListener('pointerup', this.handleSeekEnd)
+
         clearInterval(this.stepInterval)
+        clearTimeout(this.delayTimeout)
+
+        this.stepInterval = null
+        this.delayTimeout = null
     }
 
     render() {
@@ -126,12 +137,11 @@ class PlayBackZones extends Component {
         return (
             <div 
                 className={`player__pause-zone ${(isPlaying || isLoading) ? '' : 'player__pause-cover'}`}
-                onMouseDown={onClick}
+                onPointerDown={onClick}
             >
                 <div
                     className="playback-skip backward"
-                    onTouchStart={this.handleFastRewind}
-                    onMouseDown={this.handleFastRewind}
+                    onPointerDown={this.handleFastRewind}
                 />
                 <div className="playback-skip__indicator">
                     {seekMode == 'fr' && <FastRewindIcon className="center" fontSize="inherit" />}
@@ -140,8 +150,7 @@ class PlayBackZones extends Component {
                 </div>
                 <div
                     className="playback-skip forward"
-                    onTouchStart={this.handleFastFroward}
-                    onMouseDown={this.handleFastFroward}
+                    onPointerDown={this.handleFastFroward}
                 />
             </div>
         )

@@ -5,38 +5,36 @@ import {
     ListItem,
     ListItemText,
     Paper,
-    Slide,
-    Menu,
-    MenuItem
+    Slide
 } from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
-import ExpandMore from '@material-ui/icons/ExpandMore'
+import { NavigateBeforeRounded as BackIcon } from '@material-ui/icons'
 import { observer } from 'mobx-react'
 import memoize from 'memoize-one'
 import { fileGroupingFun } from './GroupFiles'
 
 @observer
-class PlayerPlayList extends Component {    
+class PlayerPlayList extends Component {
 
     constructor(props, context) {
         super(props, context)
-        
+
         this.state = {
             selectedGroup: null,
-            anchorEl: null,
+            selectGroup: false,
         }
     }
 
-    handleOpenGroupsMenu = (event) => {
-        this.setState({ anchorEl: event.currentTarget })
+    handleOpenGroupsMenu = () => {
+        this.setState({ selectGroup: true })
     };
 
     handleCloseGroupsMenu = () => {
-        this.setState({ anchorEl: null })
+        this.setState({ selectGroup: false })
     };
-    
+
     handleSelectGroup = (selectedGroup) => {
-        this.setState({ selectedGroup, anchorEl: null })
+        this.setState({ selectedGroup, selectGroup: false })
     }
 
     getGroups = memoize(fileGroupingFun)
@@ -44,10 +42,10 @@ class PlayerPlayList extends Component {
         groups.find((g) =>
             g.files.find((f) => f.id == fileId) != null
         )
-    )   
+    )
 
     render() {
-        let { selectedGroup, anchorEl } = this.state
+        let { selectedGroup, selectGroup } = this.state
         const { device: { playlist, currentFileIndex }, open, onFileSelected } = this.props
         const { files } = playlist
 
@@ -63,46 +61,44 @@ class PlayerPlayList extends Component {
         return (
             <Slide direction="left" in={open} mountOnEnter unmountOnExit>
                 <Paper elevation={12} square className="player__file-list">
-                    {groups.length > 1 && <Fragment>
-                        <List>
-                            <ListItem  button style={{ background: grey[600] }} onClick={this.handleOpenGroupsMenu}>
-                                <ListItemText primary={selectedGroup.name} />
-                                <ExpandMore nativeColor="white" />
-                            </ListItem>
-                        </List>
-                        <Menu
-                            anchorEl={anchorEl}
-                            open={Boolean(anchorEl)}
-                            onClose={this.handleCloseGroupsMenu}>
-                            {groups.map((group) => (
-                                <MenuItem 
-                                    key={group.name} 
-                                    style={group.name == selectedGroup.name ? { background: grey[600] } : {}}
-                                    onClick={() => this.handleSelectGroup(group)}>
+                    <List>
+                        {!selectGroup && <Fragment>
+                            {groups.length > 1 &&
+                                <ListItem button onClick={this.handleOpenGroupsMenu}>
+                                    <BackIcon nativeColor="white" />
+                                    <ListItemText primary={selectedGroup.name} />
+                                </ListItem>
+                            }
+                            {sortedFiles.map((file) => {
+                                const style = currentFileId == file.id ? { background: grey[600] } : {}
+                                return (
+                                    <ListItem
+                                        button
+                                        key={file.id}
+                                        style={style}
+                                        onClick={() => onFileSelected(files.findIndex((i) => i.id == file.id))}>
+                                        <ListItemText primary={
+                                            <span style={{ wordBreak: 'break-all' }}>
+                                                {file.name}
+                                            </span>
+                                        } />
+                                    </ListItem>
+                                )
+                            })}
+                        </Fragment>}
+                        {selectGroup && groups.map((group) => (
+                            <ListItem
+                                button
+                                key={group.name}
+                                style={group.name == selectedGroup.name ? { background: grey[600] } : {}}
+                                onClick={() => this.handleSelectGroup(group)}>
+                                <ListItemText primary={
                                     <span style={{ wordBreak: 'break-all', whiteSpace: 'normal' }}>
                                         {group.name}
                                     </span>
-                                </MenuItem>
-                            ))}
-                        </Menu>
-                    </Fragment>}
-                    <List>
-                        {sortedFiles.map((file) => {
-                            const style = currentFileId == file.id ? { background: grey[600] } : {}
-                            return (
-                                <ListItem 
-                                    button 
-                                    key={file.id} 
-                                    style={style} 
-                                    onClick={() => onFileSelected(files.findIndex((i) => i.id == file.id))}>
-                                    <ListItemText primary={
-                                        <span style={{ wordBreak: 'break-all' }}>
-                                            {file.name}
-                                        </span>
-                                    } />
-                                </ListItem>
-                            )
-                        })}
+                                } />
+                            </ListItem>
+                        ))}
                     </List>
                 </Paper>
             </Slide>
