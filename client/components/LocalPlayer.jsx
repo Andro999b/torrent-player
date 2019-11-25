@@ -16,7 +16,7 @@ import { observer, inject } from 'mobx-react'
 
 import { isTouchDevice, isElectron, hasArgv } from '../utils'
 
-const IDLE_TIMEOUT = 5000
+const IDLE_TIMEOUT = 3000
 
 @inject('playerStore', 'transitionStore')
 @observer
@@ -124,7 +124,7 @@ class LocalPlayer extends Component {
         const { idleTimeout } = this
         clearTimeout(idleTimeout);
 
-        ['mousemove', 'mousedown', 'keydown', 'scroll'].forEach(
+        ['touchstart', 'touchmove', 'mousemove', 'mousedown', 'keydown', 'scroll'].forEach(
             (event) => window.removeEventListener(event, this.handleActivity)
         )
 
@@ -133,7 +133,11 @@ class LocalPlayer extends Component {
 
     componentDidMount() {
         this.setIdleTimeout()
-        if (!isTouchDevice()) {
+        if (isTouchDevice()) {
+            ['touchstart', 'touchmove', 'scroll'].forEach(
+                (event) => window.addEventListener(event, this.handleActivity)
+            )
+        } else {
             ['mousemove', 'mousedown', 'keydown', 'scroll'].forEach(
                 (event) => window.addEventListener(event, this.handleActivity)
             )

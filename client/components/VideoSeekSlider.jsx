@@ -1,10 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-<<<<<<< Updated upstream
 import { toHHMMSS, isTouchDevice } from '../utils'
-=======
-import { toHHMMSS, isTablet } from '../utils'
->>>>>>> Stashed changes
 
 class VideoSeekSlider extends Component {
 
