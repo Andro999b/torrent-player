@@ -52,5 +52,9 @@
     "seasonvar": {
         "baseUrl": "http://seasonvar.ru",
         "searchUrl": "http://seasonvar.ru/search"
+    },
+    "filmix": {
+        "baseUrl": "https://filmix.co",
+        "searchUrl": "https://filmix.co/search"
     }
 }

@@ -239,11 +239,22 @@ class PlayerStore {
     }
 
     @action.bound nextFile() {
-        this.switchFile(this.device.currentFileIndex + 1)
+        this.switchFileOrShuffle(this.device.currentFileIndex + 1)
     }
 
     @action.bound endFile() {
-        const  {currentFileIndex, shuffle, playlist: { files }} = this.device
+        const  {currentFileIndex, playlist: { files }} = this.device
+
+        if(currentFileIndex == files.length - 1) {
+            this.device.pause()
+        } else {
+            this.switchFileOrShuffle(this.device.currentFileIndex + 1)
+        }
+    }
+
+    @action.bound switchFileOrShuffle(fileIndex) {
+        const { currentFileIndex, shuffle, playlist } = this.device
+        const { files } = playlist
 
         if(files.length > 1 && shuffle) {
             let next
@@ -252,16 +263,12 @@ class PlayerStore {
                 next = Math.round(Math.random() * (files.length - 1))
             } while(next == currentFileIndex)
             
-            this.switchFile(next)
-            
-            return
+            this.device.selectFile(next)
+        } else {
+            this.device.selectFile(fileIndex)
         }
 
-        if(currentFileIndex == files.length - 1) {
-            this.device.pause()
-        } else {
-            this.switchFile(this.device.currentFileIndex + 1)
-        }
+        this.device.play()
     }
 
     @action closePlaylist() {

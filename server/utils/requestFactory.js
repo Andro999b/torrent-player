@@ -48,21 +48,22 @@ const defaultOptions = {
 module.exports = (options) => {
     const effectiveOptions = Object.assign(defaultOptions, options)
 
-
     if (effectiveOptions.proxy) {
         if (proxyUrl) {
             const methods = ['get', 'post']
+            const agent = superagent.agent()
             return methods.reduce((acc, method) => {
                 acc[method] = (url) => {
                     // console.log(`Using proxy ${proxy} for request [${method}]: ${url}`)
-                    return superagent[method](url).proxy(proxyUrl)
+                    return agent[method](url)
+                        .proxy(proxyUrl)
                 }
                 return acc
             }, {})
         }
     }
 
-    return superagent
+    return superagent.agent()
 }
 
 module.exports.updateProxy = () => {

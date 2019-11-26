@@ -2,6 +2,7 @@ const DataLifeProvider = require('./DataLIfeProvider')
 const { getBestPlayerJSQuality } = require('../../../utils')
 const urlencode = require('urlencode')
 const { tableLikeExtractor } = require('../../../utils/detailsExtractors')
+const { convertPlayerJSPlaylist } = require('../../../utils')
 
 class KinogoProvider extends DataLifeProvider {
     constructor() {
@@ -81,28 +82,8 @@ class KinogoProvider extends DataLifeProvider {
         const parts = script.match(/"file" : (\[.*\]),/)
 
         if(parts) {
-            return JSON.parse(parts[1])
-                .map((it, season) => {
-                    if(it.file) {
-                        const urls = getBestPlayerJSQuality(it.file)
-                        return [{
-                            name: `Episode ${season + 1}`,
-                            url: urls.pop(), 
-                            alternativeUrls: urls 
-                        }]
-                    } else {
-                        return it.folder.map(({ file } , episode) => {
-                            const urls = getBestPlayerJSQuality(file)
-                            return {
-                                path: `Season ${season + 1}`,
-                                name: `Season ${season + 1} / Episode ${episode + 1}`,
-                                url: urls.pop(), 
-                                alternativeUrls: urls 
-                            }
-                        })
-                    }
-                })
-                .flatMap((it) => it)
+            return convertPlayerJSPlaylist(JSON.parse(parts[1]))
+                
         }
     }
 

@@ -3,7 +3,6 @@ const requestFactory = require('../../utils/requestFactory')
 const superagent = require('superagent')
 const parseTorrent = require('parse-torrent')
 const { PROVIDERS_CONFIG } = require('../../config')
-const uuid = require('uuid')
 
 class Provider {
     constructor(name, config) {
@@ -88,7 +87,10 @@ class Provider {
         } = this.config
 
         let details = await crawler
-            .get(this.getInfoUrl(resultsId), null)
+            .get(
+                this.getInfoUrl(resultsId), 
+                this._crawlerInfoRequestGenerator(resultsId)
+            )
             .proxy(useProxy)
             .timeout(timeout)
             .limit(1)
@@ -144,6 +146,8 @@ class Provider {
     }
 
     _crawlerSearchRequestGenerator(query, page) { } // eslint-disable-line
+
+    _crawlerInfoRequestGenerator(resultsId) { } // eslint-disable-line
 
     async  _loadTorrentFileInfo(details) {
         if (details.torrentUrl) {

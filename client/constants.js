@@ -5,7 +5,8 @@ export const NO_TORRENTS_SEARCH_RPOVIDERS = {
     'kinogo': 'Kinogo',
     'hdrezka': 'HDRezka',
     'baskino': 'Baskino',
-    'seasonvar': 'Seasonvar'
+    'seasonvar': 'Seasonvar',
+    'filmix': 'Filmix'
 }
 
 export const SEARCH_RPOVIDERS = {
@@ -39,7 +40,7 @@ export const NO_TORRENTS_SEARCH_RPVODERS_PRESET = [
     },
     {
         name: 'Video Hostings',
-        providers: ['hdrezka', 'kinogo', 'baskino']
+        providers: ['hdrezka', 'kinogo', 'baskino', 'seasonvar']
     }
 ]
 

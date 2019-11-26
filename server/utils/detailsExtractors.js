@@ -10,8 +10,6 @@ module.exports.tableLikeExtractor = function($el) {
             let name = parts[0] && parts[0].trim()
             const value = parts[1] && parts[1].trim()
 
-            name = name.substring(0, name.length - 1)
-
             return { name, value }
         })
         .filter((item) => item && item.name && item.value)

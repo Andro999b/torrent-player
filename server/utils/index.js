@@ -155,7 +155,7 @@ function getBestPlayerJSQuality(input) {
         .split(' or ')
         .flatMap((it) => it.split(','))
         .map((link) => {
-            const res = link.match(/(\[\d+p\])?(?<url>.*\/(?<quality>\d+).mp4)/)
+            const res = link.match(/(\[.+\])(?<url>.*[^\d](?<quality>\d+).mp4)/)
             return res && {
                 url: res.groups.url,
                 quality: parseInt(res.groups.quality)
@@ -165,6 +165,32 @@ function getBestPlayerJSQuality(input) {
         .sort((a, b) => a.quality - b.quality)
         .map((it) => it.url)
         .filter((v, i, a) => a.indexOf(v) === i)
+}
+
+function convertPlayerJSPlaylist(playlist) {
+    return playlist.map((it, season) => {
+        if (it.file) {
+            const urls = getBestPlayerJSQuality(it.file)
+            return [{
+                name: `Episode ${season + 1}`,
+                url: urls.pop(),
+                alternativeUrls: urls
+            }]
+        } else {
+            const { title, folder } = it
+            const path = title ? title.trim() : `Season ${season + 1}`
+            return folder.map(({ file }, episode) => {
+                const urls = getBestPlayerJSQuality(file)
+                return {
+                    path,
+                    name: `${path} / Episode ${episode + 1}`,
+                    url: urls.pop(),
+                    alternativeUrls: urls
+                }
+            })
+        }
+    })
+        .flatMap((it) => it)
 }
 
 module.exports = {
@@ -185,5 +211,6 @@ module.exports = {
     touch,
     fileDirectory,
     getExtractorUrl,
-    getBestPlayerJSQuality
+    getBestPlayerJSQuality,
+    convertPlayerJSPlaylist
 }
