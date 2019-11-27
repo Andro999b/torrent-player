@@ -85,11 +85,20 @@ class FilmixProvider extends DirectMediaProvider {
             const playlist = JSON.parse(this._decrypt(res.text))
 
             return convertPlayerJSPlaylist(playlist, this._linksExtractor)
-                .map((file) => ({
-                    ...file,
-                    name: `${translation} ${file.name}`,
-                    path: `${translation} ${file.path}`
-                }))
+                .map((file) => {
+                    if(file.path) {
+                        return {
+                            ...file,
+                            name: `${translation} ${file.name}`,
+                            path: `${translation} ${file.path}`
+                        }
+                    } else {
+                        return {
+                            ...file,
+                            name: `${translation} ${file.name}`
+                        }
+                    }
+                })
         } else {
             const urls = this._linksExtractor(url)
             return [{

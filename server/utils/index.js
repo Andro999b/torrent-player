@@ -171,22 +171,33 @@ function convertPlayerJSPlaylist(playlist, linksExtractor = getBestPlayerJSQuali
     return playlist.map((it, season) => {
         if (it.file) {
             const urls = linksExtractor(it.file)
-            return [{
+            const item = {
                 name: `Episode ${season + 1}`,
-                url: urls.pop(),
-                alternativeUrls: urls
-            }]
+                url: urls.pop()
+            }
+
+            if(urls.length > 0) {
+                item.alternativeUrls = urls
+            }
+
+            return [item]
         } else {
             const { title, folder } = it
             const path = title ? title.trim() : `Season ${season + 1}`
             return folder.map(({ file }, episode) => {
                 const urls = linksExtractor(file)
-                return {
+
+                const item = {
                     path,
                     name: `${path} / Episode ${episode + 1}`,
-                    url: urls.pop(),
-                    alternativeUrls: urls
+                    url: urls.pop()
                 }
+    
+                if(urls.length > 0) {
+                    item.alternativeUrls = urls
+                }
+
+                return item
             })
         }
     })
