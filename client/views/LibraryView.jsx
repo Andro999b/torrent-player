@@ -87,7 +87,7 @@ class LibraryView extends Component {
                     </Typography>
                 }
                 {bookmarks.length != 0 && bookmarks.map((item) =>
-                    <div key={item.playlist.name} className="library__item">
+                    <div key={item.playlist.id} className="library__item">
                         <BookmarkItem item={item}
                             onPlay={playMedia}
                             onCast={openCastDialog}

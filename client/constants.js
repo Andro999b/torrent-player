@@ -30,7 +30,7 @@ export const SEARCH_RPOVIDERS = {
 const getProvidersByType = (type) => Object.keys(SEARCH_RPOVIDERS).filter((p) => p.endsWith(type))
 
 export const DEFUALT_SEARCH_PROVIDERS = [
-    'hdrezka', 'kinogo', 'animeVost', 'seasonvar'
+    'hdrezka', 'filmix', 'animeVost', 'seasonvar'
 ]
 
 export const NO_TORRENTS_SEARCH_RPVODERS_PRESET = [

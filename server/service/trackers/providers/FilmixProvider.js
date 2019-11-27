@@ -81,22 +81,28 @@ class FilmixProvider extends DirectMediaProvider {
                 .get(url)
                 .buffer(true)
                 .parse(superagent.parse.text)
-            
+
             const playlist = JSON.parse(this._decrypt(res.text))
 
-            return convertPlayerJSPlaylist(playlist).map((file) => ({
-                ...file,
-                name: `${translation} ${file.name}`,
-                path: `${translation} ${file.path}`
-            }))
+            return convertPlayerJSPlaylist(playlist, this._linksExtractor)
+                .map((file) => ({
+                    ...file,
+                    name: `${translation} ${file.name}`,
+                    path: `${translation} ${file.path}`
+                }))
         } else {
-            const urls = getBestPlayerJSQuality(url)
+            const urls = this._linksExtractor(url)
             return [{
                 name: translation,
                 url: urls.pop(),
                 alternativeUrls: urls
             }]
         }
+    }
+
+    _linksExtractor(url) {
+        return getBestPlayerJSQuality(url)
+            .filter((link) => link.indexOf('1080') === -1)
     }
 
     _decrypt(x) {

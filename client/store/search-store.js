@@ -147,7 +147,7 @@ class SearchStore {
 
             this.waitingSuggestions = true
             this.suggestions = this.searchHistory
-                .filter((text) => text.search(searchQuery) != -1)
+                .filter((text) => text.indexOf(searchQuery) != -1)
                 .map((text) => ({
                     history: true,
                     text
