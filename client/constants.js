@@ -33,18 +33,11 @@ export const DEFUALT_SEARCH_PROVIDERS = [
     'hdrezka', 'filmix', 'animeVost', 'seasonvar'
 ]
 
-export const NO_TORRENTS_SEARCH_RPVODERS_PRESET = [
-    {
-        name: 'Anime Hostings',
-        providers: ['animeVost', 'anidub']
-    },
-    {
-        name: 'Video Hostings',
-        providers: ['hdrezka', 'kinogo', 'baskino', 'seasonvar']
-    }
-]
-
 export const SEARCH_RPVODERS_PRESET = [
+    {
+        name: 'Default',
+        providers: DEFUALT_SEARCH_PROVIDERS
+    },
     {
         name: 'Torrents',
         presets: [
@@ -70,7 +63,14 @@ export const SEARCH_RPVODERS_PRESET = [
             },
         ]
     },
-    ...NO_TORRENTS_SEARCH_RPVODERS_PRESET
+    {
+        name: 'Anime Hostings',
+        providers: ['animeVost', 'anidub']
+    },
+    {
+        name: 'Video Hostings',
+        providers: ['hdrezka', 'kinogo', 'filmix', 'baskino', 'seasonvar']
+    }
 ]
 
 export const SEARCH_HISTORY_MAX_SIZE = 100

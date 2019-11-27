@@ -88,20 +88,14 @@ class SearchStore {
 
     @action
     initialize() {
-        getConfig().then(({torrentsProviders}) => {
-            const storedSearchProviders = localStore.get('searchProviders') || DEFUALT_SEARCH_PROVIDERS
-            const avalaibleSearchProviders = torrentsProviders ? 
-                Object.keys(SEARCH_RPOVIDERS):
-                Object.keys(NO_TORRENTS_SEARCH_RPOVIDERS)
-            
-            this.avalaibleSearchProviders = avalaibleSearchProviders
-            this.avalaibleSearchPresets = torrentsProviders ? 
-                SEARCH_RPVODERS_PRESET:
-                NO_TORRENTS_SEARCH_RPVODERS_PRESET
-    
-            this.searchProviders = storedSearchProviders.filter((p) => avalaibleSearchProviders.includes(p))
-        })
+        const storedSearchProviders = localStore.get('searchProviders') || DEFUALT_SEARCH_PROVIDERS
+        const avalaibleSearchProviders = Object.keys(SEARCH_RPOVIDERS)
+        
+        this.avalaibleSearchProviders = avalaibleSearchProviders
+        this.avalaibleSearchPresets = SEARCH_RPVODERS_PRESET
 
+        this.searchProviders = storedSearchProviders.filter((p) => avalaibleSearchProviders.includes(p))
+        
         this.checkProxy()
     }
 
