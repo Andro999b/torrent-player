@@ -79,19 +79,23 @@ class KinogoProvider extends DataLifeProvider {
     }
 
     _tryExtractFiles(script) {
-        const parts = script.match(/"file"\s+:\s+"([^"]+)",/)
+        const parts = script.match(/new Playerjs\((.+)\)/)
 
         if(parts) {
-            const str = parts[1]
-            if(str.startsWith('{')) {
-                return convertPlayerJSPlaylist(JSON.parse(parts[1]))
-            } else {
-                const urls = getBestPlayerJSQuality(str)
+            let config
+
+            eval(`config = ${parts[1]}`)
+            
+            const { file } = config
+            if(typeof file === 'string') {
+                const urls = getBestPlayerJSQuality(file)
 
                 return [{ 
                     url: urls.pop(), 
                     alternativeUrls: urls 
                 }]
+            } else {
+                return convertPlayerJSPlaylist(file)
             }
         }
     }
