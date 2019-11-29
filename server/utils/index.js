@@ -170,7 +170,7 @@ function getBestPlayerJSQuality(input) {
 function convertPlayerJSPlaylist(playlist, linksExtractor = getBestPlayerJSQuality) {
     return playlist.map((it, season) => {
         if (it.file) {
-            const urls = linksExtractor(it.file)
+            const urls = [].concat(linksExtractor(it.file))
             const item = {
                 name: `Episode ${season + 1}`,
                 url: urls.pop()
@@ -185,7 +185,7 @@ function convertPlayerJSPlaylist(playlist, linksExtractor = getBestPlayerJSQuali
             const { title, folder } = it
             const path = title ? title.trim() : `Season ${season + 1}`
             return folder.map(({ file }, episode) => {
-                const urls = linksExtractor(file)
+                const urls = [].concat(linksExtractor(file))
 
                 const item = {
                     path,
