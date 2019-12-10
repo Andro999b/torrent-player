@@ -18,11 +18,27 @@ import MobileSoundControl from './MobileSoundControl'
 import SoundControl from './SoundControl'
 import { isElectron, isTouchDevice } from '../utils'
 
-import { observer } from 'mobx-react'
+import { observer, inject } from 'mobx-react'
 import AudioTrackSelector from './AudioTrackSelector'
 
+@inject(({ notificationStore: { showMessage } }) => ({ showMessage }))
 @observer
 class MediaControls extends Component {
+    handleToggleShuffle = () => {
+        const {
+            device: { shuffle, setShuffle },
+            showMessage
+        } = this.props
+
+        if(shuffle) {
+            showMessage('Shuffle playlist mode OFF')
+            setShuffle(false)
+        } else {
+            showMessage('Shuffle playlist mode ON')
+            setShuffle(true)
+        }
+    }
+
     render() {
         const {
             onPlaylistToggle,
@@ -43,6 +59,8 @@ class MediaControls extends Component {
 
         const mobile = isTouchDevice()
         const hasAudioTracks = device.audioTracks.length > 1
+        const disablePrev = shuffle || currentFileIndex == 0
+        const disableNext = currentFileIndex >= files.length - 1 && !shuffle
 
         return (
             <Slide direction="up" in mountOnEnter unmountOnExit>
@@ -57,11 +75,9 @@ class MediaControls extends Component {
                     />
                     <div className="player-controls__panel">
                         <div className="player-controls__panel-section">
-                            {currentFileIndex != 0 &&
-                                <IconButton onClick={onPrev}>
-                                    <PreviousIcon />
-                                </IconButton>
-                            }
+                            <IconButton onClick={onPrev} disabled={disablePrev}>
+                                <PreviousIcon />
+                            </IconButton>
                             {!device.isPlaying &&
                                 <IconButton onClick={() => device.resume()}>
                                     <PlayIcon />
@@ -72,22 +88,14 @@ class MediaControls extends Component {
                                     <PauseIcon />
                                 </IconButton>
                             }
-                            {currentFileIndex < files.length - 1 &&
-                                <IconButton onClick={onNext}>
-                                    <NextIcon />
-                                </IconButton>
-                            }
+                            <IconButton onClick={onNext} disabled={disableNext}>
+                                <NextIcon />
+                            </IconButton>
                             {files.length > 1 && <Fragment>
-                                {shuffle &&
-                                    <IconButton onClick={() => device.setShuffle(false)}>
-                                        <PlaylistPlayIcon />
-                                    </IconButton>
-                                }
-                                {!shuffle &&
-                                    <IconButton onClick={() => device.setShuffle(true)}>
-                                        <ShuffleIcon />
-                                    </IconButton>
-                                }
+                                <IconButton onClick={this.handleToggleShuffle}>
+                                    {shuffle && <PlaylistPlayIcon />}
+                                    {!shuffle && <ShuffleIcon />}
+                                </IconButton>
                             </Fragment>}
                             {mobile && <MobileSoundControl device={device} />}
                             {!mobile && <SoundControl device={device} />}
@@ -112,6 +120,7 @@ class MediaControls extends Component {
 }
 
 MediaControls.propTypes = {
+    showMessage: PropTypes.func,
     device: PropTypes.object.isRequired,
     onPlaylistToggle: PropTypes.func.isRequired,
     onFullScreenToggle: PropTypes.func,

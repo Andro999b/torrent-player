@@ -20,13 +20,13 @@ export default class BaseRemoteDevice extends Device {
         }
     }
 
-    @action seek(currentTime) {
+    @action.bound seek(currentTime) {
         this.currentTime = currentTime
         this.seekTime = null
         this.sendAction('seek', currentTime)
     }
 
-    @action setVolume(volume) {
+    @action.bound setVolume(volume) {
         this.volume = volume
         this.sendAction('setVolume', volume)
     }
@@ -44,10 +44,17 @@ export default class BaseRemoteDevice extends Device {
     }
 
     selectFile(fileIndex) {
+        const { files } = this.playlist
+
+        if (fileIndex < 0 || fileIndex >= files.length)
+            return false
+
         this.sendAction('selectFile', fileIndex)
+
+        return false
     }
 
-    @action setPlaylist(playlist, fileIndex, marks) {
+    @action.bound setPlaylist(playlist, fileIndex, marks) {
         this.playlist = playlist
         this.currentFileIndex = fileIndex
         this.sendAction('openPlaylist', { playlist, fileIndex, marks })
