@@ -5,7 +5,8 @@ const extractors = {
     'animevost': require('./animevostExtractor'),
     'anidub': require('./anidubExtractor'),
     'streamguard': require('./streamguardExtractor'),
-    'direct': require('./directExtractor')
+    'direct': require('./directExtractor'),
+    '123moviesapp': require('./movies123AppExtractor'),
 }
 
 module.exports = async (parmas, res) => {

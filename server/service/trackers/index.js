@@ -10,6 +10,7 @@ const providers = [
     new (require('./providers/FilmixProvider'))(),
     new (require('./providers/1337XTOProvider'))(),
     new (require('./providers/LimeTorrentsProvider'))(),
+    new (require('./providers/VumooProvider'))(),
     ...require('./providers/NNMClubProvider').providers,
     ...require('./providers/FastTorrentsProvider').providers
     // ...require('./providers/RutrackerProvider').providers,

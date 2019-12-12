@@ -6,7 +6,8 @@ export const NO_TORRENTS_SEARCH_RPOVIDERS = {
     'hdrezka': 'HDRezka',
     'baskino': 'Baskino',
     'seasonvar': 'Seasonvar',
-    'filmix': 'Filmix'
+    'filmix': 'Filmix',
+    'vumoo': 'Vumoo'
 }
 
 export const SEARCH_RPOVIDERS = {
