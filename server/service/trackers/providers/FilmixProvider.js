@@ -101,17 +101,21 @@ class FilmixProvider extends DirectMediaProvider {
                 })
         } else {
             const urls = this._linksExtractor(url)
-            return [{
+            
+            return urls.length ? [{
                 name: translation,
                 url: urls.pop(),
                 alternativeUrls: urls
-            }]
+            }] : []
         }
     }
 
     _linksExtractor(url) {
         return getBestPlayerJSQuality(url)
-            .filter((link) => link.indexOf('1080') === -1)
+            .filter((link) => 
+                link.indexOf('1080') === -1 && 
+                link.indexOf('2160') === -1 
+            )
     }
 
     _decrypt(x) {
