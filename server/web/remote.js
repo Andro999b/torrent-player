@@ -17,6 +17,7 @@ class SocketRemoteDevice extends RemoteDevice {
     }
 
     doAction(action, payload) {
+        // console.log('doAction', this.id, action, payload)
         this.socket.emit(SocketRemoteDevice.Events.Action, { action, payload })
     }
 }
@@ -48,6 +49,7 @@ class SocketRemoteControl extends RemoteControl {
     }
 
     syncState(state) {
+        // console.log('sync', this.id, state)
         this.socket.emit(SocketRemoteControl.Events.Sync, state)
     }
 

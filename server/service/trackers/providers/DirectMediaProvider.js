@@ -7,8 +7,7 @@ class DirectMediaProvider extends Provider {
     }
 
     getInfoUrl(resultsId) {
-        const url = urlencode.decode(resultsId)
-        return url.startsWith('/') ? this.config.baseUrl + url : url
+        return this._absoluteUrl(urlencode.decode(resultsId))
     }
 }
 

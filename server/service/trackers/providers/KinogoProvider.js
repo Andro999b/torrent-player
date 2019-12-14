@@ -20,7 +20,7 @@ class KinogoProvider extends DataLifeProvider {
                 title: '.shortstorytitle>h1',
                 image: {
                     selector: '.fullimg>div>a>img',
-                    transform: ($el) => this.config.baseUrl + $el.attr('src')
+                    transform: ($el) => this._absoluteUrl($el.attr('src'))
                 },
                 description: {
                     selector: '.quote',

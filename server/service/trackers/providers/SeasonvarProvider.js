@@ -18,7 +18,7 @@ class SeasonvarProvider extends DirectMediaProvider {
                 description: '.pgs-sinfo-info p:first-child',
                 image: {
                     selector: '.poster img',
-                    transform: ($el) => $el.attr('src')
+                    transform: ($el) => this._absoluteUrl($el.attr('src'))
                 },
                 files: {
                     transform: async ($el) => {

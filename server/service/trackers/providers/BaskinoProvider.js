@@ -16,7 +16,7 @@ class BaskinoProvider extends DataLifeProvider {
                 title: '.title_social h1', 
                 image: {
                     selector: '.mobile_cover img',
-                    transform: ($el) => $el.attr('src')
+                    transform: ($el) => this._absoluteUrl($el.attr('src'))
                 },
                 description: {
                     selector: '.info table tr',

@@ -20,7 +20,7 @@ class FastTorrentsProvider extends Provider {
             detailsSelectors: {
                 image: { 
                     selector: '.film-image a',
-                    transform: ($el) => $el.attr('href')
+                    transform: ($el) => this._absoluteUrl($el.attr('href'))
                 },
                 torrents: {
                     selector: '.torrent-row',

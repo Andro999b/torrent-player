@@ -18,7 +18,7 @@ class KinokradProvider extends DataLifeProvider {
                 title: '.fallsttitle>h1',
                 image: { 
                     selector: '.bigposter>img', 
-                    transform: ($el) => $el.attr('src') 
+                    transform: ($el) => this._absoluteUrl($el.attr('src')) 
                 },
                 description: { 
                     selector: '.janrfall>li',

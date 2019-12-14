@@ -15,7 +15,7 @@ class AnidubProvider extends DataLifeProvider {
             detailsSelectors: {
                 image: {
                     selector: '.poster_img>img',
-                    transform: ($el) => $el.attr('src')
+                    transform: ($el) => this._absoluteUrl($el.attr('src'))
                 },
                 description: {
                     selector: '.maincont>ul>li',

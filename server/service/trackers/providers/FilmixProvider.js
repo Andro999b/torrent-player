@@ -21,7 +21,7 @@ class FilmixProvider extends DirectMediaProvider {
                 description: '.full-story',
                 image: {
                     selector: '.poster',
-                    transform: ($el) => $el.attr('src')
+                    transform: ($el) => this._absoluteUrl($el.attr('src'))
                 },
                 files: {
                     selector: '.players',

@@ -51,7 +51,7 @@ export default class BaseRemoteDevice extends Device {
 
         this.sendAction('selectFile', fileIndex)
 
-        return false
+        return true
     }
 
     @action.bound setPlaylist(playlist, fileIndex, marks) {

@@ -14,7 +14,7 @@ class AnimeVostProvider extends DataLifeProvider {
             detailsSelectors: {
                 image: {
                     selector: '.imgRadius',
-                    transform: ($el) => this.config.baseUrl + $el.attr('src')
+                    transform: ($el) => this._absoluteUrl($el.attr('src'))
                 },
                 description: {
                     selector: 'p',

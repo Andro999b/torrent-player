@@ -11,7 +11,7 @@ class VumooPlayer extends DirectMediaProvider {
                 title: '.film-box>h1',
                 image: {
                     selector: '.poster',
-                    transform: ($el) => $el.attr('src')
+                    transform: ($el) => this._absoluteUrl($el.attr('src'))
                 },
                 description: '.film-box>span',
                 files: {

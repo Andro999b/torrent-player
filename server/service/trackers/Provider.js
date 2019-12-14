@@ -176,6 +176,10 @@ class Provider {
             .sort((f1, f2) => f1.name.localeCompare(f2.name))
     }
 
+    _absoluteUrl(url) {
+        return url.startsWith('/') ? this.config.baseUrl + url : url
+    }
+
     loadTorentFile(torrentUrl) {
         const { useProxy } = this.config
         return requestFactory({ proxy: useProxy })
