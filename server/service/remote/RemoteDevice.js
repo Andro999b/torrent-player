@@ -24,10 +24,14 @@ class RemoteDevice extends EventEmitter {
         if(state.playlist) {
             const playlistId = state.playlist.id
             if(playlistId != this.playlistId) {
-                this.playlistId = playlistId
-                this.playlistName = state.playlist.name
                 newPlaylist = true
             }
+        }
+
+        if(newPlaylist) {
+            this.state = {}
+            this.playlistId = state.playlist.id
+            this.playlistName = state.playlist.name
         }
 
         merge(this.state, state)

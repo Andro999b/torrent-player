@@ -36,7 +36,6 @@ module.exports = {
         if(!playlistId) return
 
         const state = pick(rawState, [
-            'id',
             'playlist',
             'marks',
             'currentFileIndex'
@@ -48,7 +47,7 @@ module.exports = {
 
         if(db.has(['bookmarks', playlistId]).value()){
             await db.get(['bookmarks', playlistId])
-                .merge(state)
+                .assign(state)
                 .write()
         } else {
             await db.set(['bookmarks', playlistId], {
