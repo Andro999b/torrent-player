@@ -93,7 +93,7 @@ class SeasonvarProvider extends DirectMediaProvider {
 
         const playlist = JSON.parse(plistRes.text)
 
-        return convertPlayerJSPlaylist(playlist, this._decryptFilePath)
+        return convertPlayerJSPlaylist(playlist, this._decryptFilePath.bind(this))
     }
 
     _decryptFilePath(x) {
