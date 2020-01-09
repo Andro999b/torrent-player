@@ -314,4 +314,6 @@ module.exports = (ssdpServer) => {
     ssdpServer.on('advertise-bye', removeDevice)
 
     setInterval(search, 5000)
+
+    console.log('DLNA Renderers enable') // eslint-disable-line
 }
