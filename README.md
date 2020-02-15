@@ -100,13 +100,13 @@ Electron version use MPV.js plugin see repo https://github.com/Kagami/mpv.js/ fo
 
 
 # Providers
-- AniDUB
 - AnimeVost
 - FastTorrents
+- 1337x
 - Kinogo
 - Kinokrad
+- Filmix
 - LimeTorrents
 - NNMClub
 - RuTor
-- Baskino
-- Rutracker (disabled)
+- Vummo

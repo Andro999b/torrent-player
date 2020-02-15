@@ -1,11 +1,8 @@
 const providers = [
     new (require('./providers/RutorProvider'))(),
     new (require('./providers/AnimeVostProvider'))(),
-    new (require('./providers/AnidubProvider'))(),
     new (require('./providers/KinokradProvider'))(),
-    new (require('./providers/HDRezkaProvider'))(),
     new (require('./providers/KinogoProvider'))(),
-    new (require('./providers/BaskinoProvider'))(),
     new (require('./providers/SeasonvarProvider'))(),
     new (require('./providers/FilmixProvider'))(),
     new (require('./providers/1337XTOProvider'))(),

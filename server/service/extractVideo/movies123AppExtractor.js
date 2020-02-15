@@ -20,6 +20,8 @@ module.exports = async (params, res) => {
                 return m3u8Extractor(video, res)
             }
         }
+    } else if(url.indexOf('fmoviesfree') != -1) {
+        return m3u8Extractor(params, res)
     }
 
     return directExtractor(params, res)

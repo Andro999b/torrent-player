@@ -1,10 +1,10 @@
 export const NO_TORRENTS_SEARCH_RPOVIDERS = {
     'animeVost': 'AnimeVost',
-    'anidub': 'AniDub',
+    // 'anidub': 'AniDub',
     'kinokrad': 'Kinokrad',
     'kinogo': 'Kinogo',
-    'hdrezka': 'HDRezka',
-    'baskino': 'Baskino',
+    // 'hdrezka': 'HDRezka',
+    // 'baskino': 'Baskino',
     'seasonvar': 'Seasonvar',
     'filmix': 'Filmix',
     'vumoo': 'Vumoo'
@@ -66,11 +66,11 @@ export const SEARCH_RPVODERS_PRESET = [
     },
     {
         name: 'Anime Hostings',
-        providers: ['animeVost', 'anidub']
+        providers: ['animeVost']
     },
     {
         name: 'Video Hostings',
-        providers: ['hdrezka', 'kinogo', 'filmix', 'baskino', 'seasonvar']
+        providers: ['kinogo', 'filmix', 'seasonvar']
     }
 ]
 
