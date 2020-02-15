@@ -69,12 +69,21 @@ class KinogoProvider extends DataLifeProvider {
     _tryExtractMp4(script) {
         const parts = script.match(/fmp4 = "([^"]+)"/)
 
-        if(parts && parts.length > 1) {
+        if (parts && parts.length > 1) {
             const urls = getBestPlayerJSQuality(parts[1])
-            return [{ 
-                url: urls.pop(), 
-                alternativeUrls: urls 
-            }]
+
+            const url = urls.pop()
+
+            if (url.endsWith('m3u8')) { // not actual mp4 lol
+                return [{
+                    manifestUrl: url
+                }]
+            } else {
+                return [{
+                    url: url,
+                    alternativeUrls: urls
+                }]
+            }
         }
     }
 
