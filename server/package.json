@@ -30,7 +30,7 @@
     "m3u8-parser": "^4.4.0",
     "m3u8stream": "^0.6.2",
     "mime-types": "^2.1.24",
-    "minimist": "^1.2.0",
+    "minimist": "^1.2.2",
     "node-ssdp": "^4.0.0",
     "npm-check-updates": "^3.1.20",
     "parse-torrent": "^7.0.0",
